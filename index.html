@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-title" content="Nhà Bắp" />
   <meta name="application-name" content="Nhà Bắp" />
   <meta name="theme-color" content="#1C1917" />
-  <link rel="apple-touch-icon" href="https://placehold.co/192x192/1C1917/F59E0B?text=🌽" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 192 192%22><rect width=%22192%22 height=%22192%22 rx=%2238%22 fill=%22%231C1917%22/><text y=%22.9em%22 font-size=%22130%22 x=%2226%22>🌽</text></svg>" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%231C1917%22/><text y=%22.9em%22 font-size=%2270%22 x=%2212%22>🌽</text></svg>" />
   <style>
     :root {
@@ -983,17 +983,53 @@
     @keyframes chatMsgIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
     .chat-msg { animation: chatMsgIn 0.22s ease; }
     @media (prefers-reduced-motion: reduce) { #chat-panel, #chat-panel.open { transition: none; } .chat-msg { animation: none; } }
-    .chat-head { display: flex; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) 12px 10px; background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); font-size: 14px; }
+    .chat-head { display: flex; align-items: center; justify-content: space-between; padding: calc(10px + env(safe-area-inset-top, 0px)) 14px 10px 56px; background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%); font-size: 14px; min-height: 54px; }
     .chat-head button { border: none; background: transparent; font-size: 18px; cursor: pointer; color: var(--muted); }
     #chat-log { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 6px; min-height: 120px; }
     .chat-msg { max-width: 88%; padding: 8px 11px; border-radius: 14px; font-size: 13.5px; line-height: 1.4; white-space: pre-wrap; word-break: break-word; }
     .chat-msg.user { align-self: flex-end; background: var(--accent); color: #fff; }
-    .chat-msg.bot { align-self: flex-start; background: var(--subtle); }
+    .chat-msg.bot { align-self: flex-start; max-width: 95%; background: #FFFFFF; border: 1.5px solid #FDE68A; box-shadow: 0 2px 8px rgba(28, 25, 23, 0.06); padding: 11px 13px; white-space: normal; }
     .chat-msg.sys { align-self: flex-start; background: #ECFDF5; color: #065F46; font-size: 12.5px; }
-    .chat-row { display: flex; gap: 6px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--subtle); }
-    .chat-row input { flex: 1; min-height: 40px; font-size: 16px; }
-    #chat-mic { width: 44px; min-height: 40px; flex-shrink: 0; border-radius: 12px; border: 1px solid #F59E0B; background: #FEF3C7; font-size: 18px; cursor: pointer; }
+    .chat-bot-header { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px; padding-bottom: 5px; border-bottom: 1px dashed #FDE68A; }
+    .chat-bot-body { font-size: 13.8px; line-height: 1.55; color: #1F2937; }
+    .chat-bot-body p { margin: 0 0 7px; }
+    .chat-bot-body p:last-child { margin-bottom: 0; }
+    .chat-item-card { background: #FFFBEB; border-left: 3.5px solid var(--accent); border-radius: 8px; padding: 7px 10px; margin: 6px 0; font-size: 13.3px; line-height: 1.48; }
+    .chat-item-num { display: inline-block; background: var(--accent); color: #FFFFFF; font-weight: 800; font-size: 11px; padding: 1px 6px; border-radius: 999px; margin-right: 5px; }
+    .chat-bullet-row { display: flex; gap: 6px; align-items: flex-start; margin: 4px 0; padding-left: 2px; }
+    .chat-bullet-dot { color: var(--accent); font-weight: 800; flex-shrink: 0; }
+    .chat-hl-money { color: var(--red); font-weight: 800; background: #FEF2F2; padding: 0 4px; border-radius: 4px; font-variant-numeric: tabular-nums; }
+    .chat-hl-qty { color: var(--green); font-weight: 700; }
+    .chat-quick-bar { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 9px; padding-top: 8px; border-top: 1px dashed var(--border); }
+    .chat-qbtn { border: 1px solid #D1D5DB; background: #F9FAFB; color: var(--ink); border-radius: 999px; padding: 6px 11px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: transform 0.08s ease; }
+    .chat-qbtn:active { transform: scale(0.96); }
+    .chat-qbtn.chi { background: var(--red-soft); border-color: #FECACA; color: var(--red); }
+    .chat-qbtn.thu { background: var(--green-soft); border-color: #BBF7D0; color: var(--green); }
+    .chat-qbtn.acc { background: var(--accent-soft); border-color: #FDE68A; color: var(--accent); }
+    .chat-qbtn.primary { background: var(--accent); border-color: var(--accent); color: #FFFFFF; }
+    .chat-suggest-box { background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 8px 10px; margin-top: 8px; }
+    .chat-suggest-title { font-size: 11.5px; font-weight: 800; color: #475569; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.2px; }
+    .chat-row { display: flex; gap: 6px; padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--subtle); align-items: center; }
+    .chat-row input { flex: 1; min-width: 0; min-height: 40px; font-size: 16px; }
+    #chat-mic, #chat-cam, #chat-gal { width: 40px; min-height: 40px; flex-shrink: 0; border-radius: 12px; border: 1px solid #F59E0B; background: #FEF3C7; font-size: 17px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; padding: 0; }
     #chat-mic.rec { background: #DC2626; border-color: #B91C1C; animation: voicePulse 1.1s infinite ease-in-out; }
+    #chat-img-preview-bar { display: none; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 10px; background: #FFFBEB; border-top: 1px solid #FDE68A; font-size: 12.5px; color: #92400E; }
+    #chat-img-preview-bar.show { display: flex; }
+
+    /* Trợ lý vui nhộn - lớp độc lập, không thay đổi giao diện Chatbox gốc */
+    #corn-assistant{position:fixed;left:12px;top:42%;z-index:59;width:96px;height:120px;pointer-events:none;will-change:left,top;transition:left 2.4s cubic-bezier(.22,.7,.25,1),top 2.4s cubic-bezier(.22,.7,.25,1)}
+    #corn-character{position:absolute;inset:22px 0 0;width:96px;height:96px;padding:0;border:0;background:transparent;cursor:pointer;pointer-events:auto;touch-action:none;filter:drop-shadow(0 5px 5px #0003);animation:corn-bob 2.8s ease-in-out infinite}
+    #corn-character svg{width:100%;height:100%;overflow:visible}.corn-body{fill:#FBBF24;stroke:#D97706;stroke-width:2.5}.corn-leaf{fill:#22C55E;stroke:#15803D;stroke-width:2.5;stroke-linejoin:round}
+    #corn-assistant[data-mood="happy"] #corn-character{animation:corn-hop .55s ease-in-out 3}#corn-assistant[data-mood="run"] #corn-character{animation:corn-run .24s ease-in-out infinite alternate}
+    #corn-assistant[data-mood="think"] .corn-face{transform:translateY(2px);opacity:.85}#corn-assistant[data-mood="worried"] .corn-face{transform:translateY(2px) scale(.96)}
+    #corn-assistant[data-mood="sleep"] #corn-character{animation:corn-bob 4s ease-in-out infinite;filter:grayscale(.15) drop-shadow(0 5px 5px #0003)}#corn-assistant[data-mood="sleep"] .corn-face{opacity:.45}
+    .corn-z{display:none;position:absolute;right:0;top:2px;color:#2563EB;font-weight:900;font-size:15px}#corn-assistant[data-mood="sleep"] .corn-z{display:block}
+    #corn-speech{display:none;position:absolute;bottom:96px;left:-8px;width:min(245px,68vw);padding:11px 28px 11px 12px;background:#fff;border:1.5px solid #FCD34D;border-radius:14px;box-shadow:0 5px 20px #0002;color:#292524;font-size:12.5px;font-weight:650;line-height:1.4;pointer-events:auto;animation:corn-pop .2s ease-out}
+    #corn-speech:after{content:"";position:absolute;bottom:-8px;left:35px;width:13px;height:13px;background:#fff;border-right:1.5px solid #FCD34D;border-bottom:1.5px solid #FCD34D;transform:rotate(45deg)}
+    #corn-speech.show{display:block}#corn-speech-close{position:absolute;right:5px;top:3px;border:0;background:transparent;color:#78716c;font-size:18px;cursor:pointer}
+    @keyframes corn-bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}@keyframes corn-hop{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-22px) scale(1.04)}}@keyframes corn-run{from{transform:translateY(0) rotate(-7deg)}to{transform:translateY(-6px) rotate(7deg)}}@keyframes corn-pop{from{opacity:0;transform:translateY(7px) scale(.96)}to{opacity:1;transform:none}}
+    @media(prefers-reduced-motion:reduce){#corn-character,#corn-speech{animation:none!important}#corn-assistant{transition:none}}@media(max-width:480px){#corn-assistant{width:82px;height:105px}#corn-character{width:82px;height:82px}#corn-speech{width:min(220px,65vw)}}
+
   </style>
 </head>
 <body>
@@ -1774,6 +1810,14 @@
         <input type="checkbox" id="chat-bubble-toggle" style="width:22px; height:22px; flex-shrink:0;" />
       </label>
 
+      <label class="journal-bar" style="cursor:pointer; margin-bottom:10px; border-color:#FCD34D;">
+        <div style="text-align:left; min-width:0;">
+          <div style="font-weight:800; font-size:14.5px;">🌽 Trợ lý vui nhộn</div>
+          <div style="font-size:12px; color:var(--muted);">Bật linh vật quả bắp di chuyển và nhắc việc kinh doanh</div>
+        </div>
+        <span class="switch-wrap"><input type="checkbox" id="fun-assistant-toggle" /><span class="switch-slider"></span></span>
+      </label>
+
       <input type="file" id="input-restore-file" accept=".json,application/json" style="display:none;" />
 
       <button type="button" class="journal-bar" id="btn-open-ai-settings">
@@ -1892,14 +1936,40 @@
     <div class="modal-card" id="modal-card"></div>
   </div>
 
+   <div id="corn-assistant" aria-label="Trợ lý vui nhộn" style="display:none">
+     <div id="corn-speech" role="status"><button type="button" id="corn-speech-close" aria-label="Đóng">×</button><span id="corn-speech-text"></span></div>
+     <button type="button" id="corn-character" aria-label="Mở Chatbox trợ lý">
+       <svg viewBox="0 0 120 150" role="img" aria-label="Nhân vật quả bắp hoạt hình">
+         <path class="corn-leaf leaf-left" d="M48 91 Q5 83 12 43 Q27 55 49 63 Q24 25 43 10 Q61 37 61 68Z"/>
+         <path class="corn-leaf leaf-right" d="M70 91 Q112 79 107 39 Q88 51 72 63 Q94 24 76 9 Q59 36 58 69Z"/>
+         <path class="corn-body" d="M31 47 Q60 28 89 47 Q101 78 86 119 Q60 143 34 119 Q19 80 31 47Z"/>
+         <g class="corn-kernels" fill="#FDE68A"><ellipse cx="43" cy="62" rx="5" ry="6"/><ellipse cx="58" cy="58" rx="5" ry="6"/><ellipse cx="74" cy="62" rx="5" ry="6"/><ellipse cx="36" cy="78" rx="5" ry="6"/><ellipse cx="51" cy="75" rx="5" ry="6"/><ellipse cx="67" cy="76" rx="5" ry="6"/><ellipse cx="83" cy="79" rx="5" ry="6"/><ellipse cx="40" cy="94" rx="5" ry="6"/><ellipse cx="56" cy="92" rx="5" ry="6"/><ellipse cx="72" cy="94" rx="5" ry="6"/><ellipse cx="49" cy="109" rx="5" ry="6"/><ellipse cx="65" cy="109" rx="5" ry="6"/></g>
+         <g class="corn-face"><path d="M42 78 Q49 72 55 79 M65 79 Q72 72 79 78" fill="none" stroke="#713F12" stroke-width="3" stroke-linecap="round"/><ellipse cx="49" cy="86" rx="4" ry="6" fill="#292524"/><ellipse cx="72" cy="86" rx="4" ry="6" fill="#292524"/><path d="M53 99 Q61 107 69 99" fill="none" stroke="#7C2D12" stroke-width="3" stroke-linecap="round"/><circle cx="39" cy="94" r="4" fill="#FB7185" opacity=".65"/><circle cx="82" cy="94" r="4" fill="#FB7185" opacity=".65"/></g>
+         <path class="corn-arm arm-left" d="M30 88 Q12 96 20 109" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linecap="round"/><path class="corn-arm arm-right" d="M89 88 Q108 96 101 108" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linecap="round"/>
+         <path class="corn-leg leg-left" d="M48 123 L43 137 M71 123 L77 137" stroke="#92400E" stroke-width="7" stroke-linecap="round"/><ellipse cx="38" cy="139" rx="10" ry="5" fill="#7C2D12"/><ellipse cx="82" cy="139" rx="10" ry="5" fill="#7C2D12"/>
+       </svg>
+       <span class="corn-z">Zzz</span>
+     </button>
+   </div>
   <button type="button" id="chat-bubble-btn" aria-label="Mở trợ lý AI">✨</button>
   <div id="chat-panel">
     <div class="chat-head"><b>✨ Trợ lý AI Nhà Bắp</b><button type="button" id="chat-close" aria-label="Đóng">✕</button></div>
     <div id="chat-log"></div>
+    <div id="chat-img-preview-bar">
+      <div style="display:flex; align-items:center; gap:8px; min-width:0;">
+        <img id="chat-img-thumb" src="" alt="Ảnh đính kèm" style="width:40px; height:40px; object-fit:cover; border-radius:8px; border:1px solid #F59E0B; flex-shrink:0;" />
+        <span style="font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Đã đính kèm ảnh để kiểm tra</span>
+      </div>
+      <button type="button" id="chat-img-clear" style="border:none; background:var(--red-soft); color:var(--red); font-weight:800; border-radius:999px; width:24px; height:24px; cursor:pointer; flex-shrink:0;">✕</button>
+    </div>
     <div class="chat-row">
-      <input type="text" id="chat-input" placeholder="VD: lên 2 chảo 1, nhập 5 bịch phô mai, hôm nay thu chi bao nhiêu?" />
+      <button type="button" id="chat-cam" aria-label="Chụp hình kiểm tra" title="Chụp hình">📷</button>
+      <button type="button" id="chat-gal" aria-label="Tải hình lên kiểm tra" title="Tải ảnh lên">🖼️</button>
+      <input type="file" id="chat-cam-input" accept="image/*" capture="environment" style="display:none;" />
+      <input type="file" id="chat-gal-input" accept="image/*" style="display:none;" />
+      <input type="text" id="chat-input" placeholder="Nhập lệnh hoặc ghi chú cho ảnh..." />
       <button type="button" id="chat-mic" aria-label="Nhập bằng giọng nói">🎙️</button>
-      <button type="button" class="btn-submit" id="chat-send" style="width:auto; min-height:40px; padding:0 14px; margin:0; font-size:13px;">Gửi</button>
+      <button type="button" class="btn-submit" id="chat-send" style="width:auto; min-height:40px; padding:0 12px; margin:0; font-size:13px;">Gửi</button>
     </div>
   </div>
   <div class="toast" id="toast"></div>
@@ -2109,7 +2179,7 @@
       let backupReminderDays = 3;
       let snoozeUntil = 0;
       let gsheetWebhookUrl = "";
-      let ocrSettings = { settings: { geminiApiKey: "", geminiModel: "gemini-2.5-flash" } };
+      let ocrSettings = { settings: { geminiApiKey: "", geminiModel: "gemini-3.5-flash" } };
       let forcePreviewBackupAlert = false;
       try {
         autoBackupEnabled = localStorage.getItem(AUTO_BACKUP_KEY) === "1";
@@ -2127,7 +2197,13 @@
           const parsedOcr = JSON.parse(rawOcr);
           if (parsedOcr && parsedOcr.settings) {
             ocrSettings.settings.geminiApiKey = String(parsedOcr.settings.geminiApiKey || "");
-            ocrSettings.settings.geminiModel = parsedOcr.settings.geminiModel || "gemini-2.5-flash";
+            let loadedModel = parsedOcr.settings.geminiModel || "gemini-3.5-flash";
+            if (loadedModel === "gemini-2.5-flash" || loadedModel === "gemini-2.0-flash" || loadedModel === "gemini-1.5-flash") {
+              loadedModel = "gemini-3.5-flash";
+            } else if (loadedModel === "gemini-2.5-pro" || loadedModel === "gemini-1.5-pro") {
+              loadedModel = "gemini-3.5-pro";
+            }
+            ocrSettings.settings.geminiModel = loadedModel;
           }
         }
       } catch (e) {}
@@ -3119,17 +3195,104 @@
         const s = (ocrSettings && ocrSettings.settings) || {};
         return {
           apiKey: String(s.geminiApiKey || "").trim(),
-          model: s.geminiModel || "gemini-2.5-flash"
+          model: s.geminiModel || "gemini-3.5-flash"
         };
       }
 
-      function setWhAiFeedback(text, autoHideMs) {
-        if (!whAiFeedback) return;
-        whAiFeedback.style.display = "block";
-        whAiFeedback.textContent = text;
-        if (autoHideMs) {
-          setTimeout(() => { whAiFeedback.style.display = "none"; }, autoHideMs);
+      function getFallbackGeminiModels(primaryModel) {
+        return Array.from(new Set([
+          primaryModel,
+          "gemini-3.5-flash",
+          "gemini-2.5-flash",
+          "gemini-2.5-flash-lite",
+          "gemini-2.5-pro",
+          "gemini-2.0-flash"
+        ].filter(Boolean)));
+      }
+
+      async function callGeminiSmartRequest(parts, options) {
+        const opts = options || {};
+        const cfg = getWhAiConfig();
+        const apiKey = String(opts.apiKey || cfg.apiKey || "").trim();
+        if (!apiKey) throw new Error("Chưa cấu hình Gemini API Key");
+
+        const models = getFallbackGeminiModels(opts.model || cfg.model);
+        const wantJson = opts.expectJson !== false;
+        const useSearchInitially = Boolean(opts.useGoogleSearch);
+
+        // Nếu yêu cầu bật Google Search, thử lượt đầu có Google Search (với 2 model đầu),
+        // nếu bị lỗi 429/400/404/503 sẽ tự hạ cấp sang chế độ không dùng Google Search qua toàn bộ chuỗi dự phòng
+        const attemptsPlan = [];
+        if (useSearchInitially) {
+          models.slice(0, 2).forEach(m => attemptsPlan.push({ model: m, useSearch: true }));
         }
+        models.forEach(m => attemptsPlan.push({ model: m, useSearch: false }));
+
+        let lastErr = null;
+        for (let i = 0; i < attemptsPlan.length; i++) {
+          const step = attemptsPlan[i];
+          const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(step.model)}:generateContent`;
+          const genCfg = { temperature: typeof opts.temperature === "number" ? opts.temperature : 0.2 };
+          if (wantJson && !step.useSearch) {
+            genCfg.responseMimeType = "application/json";
+          }
+          const bodyObj = {
+            contents: [{ parts }],
+            generationConfig: genCfg
+          };
+          if (step.useSearch) {
+            bodyObj.tools = [{ google_search: {} }];
+          }
+
+          try {
+            const res = await fetch(url, {
+              method: "POST",
+              headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
+              body: JSON.stringify(bodyObj)
+            });
+
+            if (!res.ok) {
+              const errBody = await res.text();
+              if ([400, 404, 429, 500, 502, 503, 504].includes(res.status)) {
+                lastErr = new Error(`API (${res.status}) trên ${step.model}`);
+                if (res.status === 503 || res.status === 429) {
+                  await new Promise(r => setTimeout(r, 450));
+                }
+                continue;
+              }
+              throw new Error(`API lỗi (${res.status}): ${errBody.slice(0, 120)}`);
+            }
+
+            const jsonRes = await res.json();
+            const resParts = jsonRes && jsonRes.candidates && jsonRes.candidates[0] &&
+              jsonRes.candidates[0].content && jsonRes.candidates[0].content.parts;
+            const rawText = Array.isArray(resParts) ? resParts.map(p => p.text || "").join("\n").trim() : "";
+            if (!rawText) {
+              lastErr = new Error(`Phản hồi trống từ ${step.model}`);
+              continue;
+            }
+
+            if (!wantJson) return rawText;
+            const start = rawText.indexOf("{");
+            const end = rawText.lastIndexOf("}");
+            if (start < 0 || end <= start) {
+              lastErr = new Error(`Dữ liệu không đúng JSON từ ${step.model}`);
+              continue;
+            }
+            return JSON.parse(rawText.slice(start, end + 1));
+          } catch (err) {
+            lastErr = err;
+            const msg = String(err && err.message || "");
+            if (msg.includes("API_KEY_INVALID") || resIsAuthError(msg)) {
+              throw new Error("Gemini API Key không hợp lệ. Vui lòng kiểm tra lại trong Cài Đặt!");
+            }
+          }
+        }
+        throw lastErr || new Error("Tất cả mô hình AI dự phòng đều đang bận. Vui lòng thử lại sau ít giây!");
+      }
+
+      function resIsAuthError(msg) {
+        return msg.includes("(401)") || msg.includes("(403)") || msg.includes("API key not valid");
       }
 
       function buildWhAiPrompt(instruction) {
@@ -3156,29 +3319,7 @@
       }
 
       async function callGeminiForWarehouse(parts) {
-        const cfg = getWhAiConfig();
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(cfg.model)}:generateContent`;
-        const res = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json", "x-goog-api-key": cfg.apiKey },
-          body: JSON.stringify({
-            contents: [{ parts }],
-            generationConfig: { responseMimeType: "application/json", temperature: 0.1 }
-          })
-        });
-        if (!res.ok) {
-          const errBody = await res.text();
-          throw new Error(`API lỗi (${res.status}): ${errBody.slice(0, 100)}`);
-        }
-        const jsonRes = await res.json();
-        const rawText = jsonRes && jsonRes.candidates && jsonRes.candidates[0] && jsonRes.candidates[0].content &&
-          jsonRes.candidates[0].content.parts && jsonRes.candidates[0].content.parts[0] &&
-          jsonRes.candidates[0].content.parts[0].text;
-        if (!rawText) throw new Error("Không nhận được kết quả từ AI");
-        const start = rawText.indexOf("{");
-        const end = rawText.lastIndexOf("}");
-        if (start < 0 || end <= start) throw new Error("AI trả về dữ liệu không hợp lệ");
-        return JSON.parse(rawText.slice(start, end + 1));
+        return await callGeminiSmartRequest(parts, { expectJson: true, temperature: 0.1 });
       }
 
       function applyWarehouseAiResult(parsed, sourceLabel, fallbackNote) {
@@ -3689,7 +3830,7 @@
       function openNotebookResearchModal() {
         resetModalLayout();
         const apiKey = ((ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "").trim();
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-2.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
 
         if (!apiKey) {
           modalCard.innerHTML = `
@@ -3792,7 +3933,7 @@
 
             const prompt = [
               "Bạn là chuyên gia tư vấn chiến lược kinh doanh F&B, marketing thực chiến và vận hành quán ăn tại Việt Nam.",
-              `Hãy tìm kiếm thông tin chuẩn xác trên mạng, phân tích chuyên sâu và biên soạn một bài viết mẫu hoàn chỉnh về chủ đề: "${topic}".`,
+              `Hãy tìm kiếm thông tin chuẩn xác, phân tích chuyên sâu và biên soạn một bài viết mẫu hoàn chỉnh về chủ đề: "${topic}".`,
               lengthInstruction,
               "Trình bày sạch đẹp bằng văn bản thuần có xuống dòng, gạch đầu dòng rõ ràng (không dùng ký hiệu markdown rối mắt như ** hay ###).",
               "Trả về DUY NHẤT một đối tượng JSON theo đúng cấu trúc sau:",
@@ -3803,39 +3944,13 @@
               "}"
             ].join("\n");
 
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
-            const res = await fetch(url, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "x-goog-api-key": apiKey
-              },
-              body: JSON.stringify({
-                contents: [{ parts: [{ text: prompt }] }],
-                tools: [{ google_search: {} }],
-                generationConfig: {
-                  temperature: 0.35
-                }
-              })
+            const parsed = await callGeminiSmartRequest([{ text: prompt }], {
+              apiKey,
+              model,
+              useGoogleSearch: true,
+              expectJson: true,
+              temperature: 0.35
             });
-
-            if (!res.ok) {
-              const errBody = await res.text();
-              throw new Error(`API lỗi (${res.status}): ${errBody.slice(0, 120)}`);
-            }
-
-            const jsonRes = await res.json();
-            const parts = jsonRes && jsonRes.candidates && jsonRes.candidates[0] && jsonRes.candidates[0].content && jsonRes.candidates[0].content.parts;
-            const rawText = Array.isArray(parts) ? parts.map(p => p.text || "").join("\n") : "";
-            if (!rawText.trim()) throw new Error("Không nhận được bài viết từ AI");
-
-            const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-            let parsed;
-            if (jsonMatch) {
-              parsed = JSON.parse(jsonMatch[0]);
-            } else {
-              parsed = { title: topic, summary: "", content: rawText.trim() };
-            }
 
             const finalTitle = String(parsed.title || topic).trim();
             const finalSummary = String(parsed.summary || "").trim();
@@ -6399,7 +6514,7 @@
 
       function openRecipeAiAssistantModal(initialTab, preselectedRecipeId) {
         const apiKey = ((ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "").trim();
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-2.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
 
         if (!apiKey) {
           modalCard.innerHTML = `
@@ -6526,41 +6641,13 @@
             </div>
           `;
 
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
-          const bodyObj = {
-            contents: [{ parts: [{ text: promptText }] }],
-            generationConfig: {
-              temperature: 0.2
-            }
-          };
-          if (useGoogleSearch) {
-            bodyObj.tools = [{ google_search: {} }];
-          } else {
-            bodyObj.generationConfig.responseMimeType = "application/json";
-          }
-
-          const res = await fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-goog-api-key": apiKey
-            },
-            body: JSON.stringify(bodyObj)
+          return await callGeminiSmartRequest([{ text: promptText }], {
+            apiKey,
+            model,
+            useGoogleSearch: Boolean(useGoogleSearch),
+            expectJson: true,
+            temperature: 0.2
           });
-
-          if (!res.ok) {
-            const errText = await res.text();
-            throw new Error(`API lỗi (${res.status}): ${errText.slice(0, 120)}`);
-          }
-
-          const jsonRes = await res.json();
-          const parts = jsonRes && jsonRes.candidates && jsonRes.candidates[0] && jsonRes.candidates[0].content && jsonRes.candidates[0].content.parts;
-          const rawText = Array.isArray(parts) ? parts.map(p => p.text || "").join("\n") : "";
-          if (!rawText.trim()) throw new Error("Không nhận được kết quả từ AI");
-
-          const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-          if (!jsonMatch) throw new Error("Dữ liệu AI trả về chưa đúng định dạng");
-          return JSON.parse(jsonMatch[0]);
         }
 
         function renderAiRecipeResultCard(recipeObj, modeLabel) {
@@ -6573,29 +6660,20 @@
           resultBox.innerHTML = `
             <div style="background:#FFFBEB; border:1.5px solid #FDE68A; border-radius:12px; padding:12px;">
               <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:6px;">
-                <span style="font-size:11px; font-weight:800; color:var(--accent); background:#FFFFFF; padding:2px 8px; border-radius:999px; border:1px solid #FDE68A;">${modeLabel} • ${chosenCat}</span>
-                ${recipeObj.prepTime ? `<span style="font-size:11.5px; color:var(--muted);">⏱ ${recipeObj.prepTime}</span>` : ""}
+                <span style="font-size:11px; font-weight:800; color:var(--accent); background:#FFFFFF; padding:2px 8px; border-radius:999px; border:1px solid #FDE68A;">${escapeHtmlStr(modeLabel)} • ${escapeHtmlStr(chosenCat)}</span>
+                ${recipeObj.prepTime ? `<span style="font-size:11.5px; color:var(--muted);">⏱ ${escapeHtmlStr(recipeObj.prepTime)}</span>` : ""}
               </div>
-              <div style="font-weight:800; font-size:15px; color:var(--ink); margin-bottom:2px;">${recipeObj.title || "Công thức mới từ AI"}</div>
-              ${recipeObj.yieldText ? `<div style="font-size:12px; color:var(--green); font-weight:700; margin-bottom:8px;">Thành phẩm: ${recipeObj.yieldText}</div>` : ""}
-
-              ${recipeObj.ratioNote ? `<div style="font-size:12px; color:#92400E; background:#FEF3C7; padding:6px 9px; border-radius:8px; margin-bottom:8px; font-weight:600;">📐 ${recipeObj.ratioNote}</div>` : ""}
-
+              <div style="font-weight:800; font-size:15px; color:var(--ink); margin-bottom:2px;">${escapeHtmlStr(recipeObj.title || "Công thức mới từ AI")}</div>
+              ${recipeObj.yieldText ? `<div style="font-size:12px; color:var(--green); font-weight:700; margin-bottom:8px;">Thành phẩm: ${escapeHtmlStr(recipeObj.yieldText)}</div>` : ""}
+              ${recipeObj.ratioNote ? `<div style="font-size:12px; color:#92400E; background:#FEF3C7; padding:6px 9px; border-radius:8px; margin-bottom:8px; font-weight:600;">📐 ${escapeHtmlStr(recipeObj.ratioNote)}</div>` : ""}
               <div style="background:#FFFFFF; border-radius:9px; padding:8px 10px; border:1px solid var(--border); margin-bottom:8px;">
                 <div style="font-weight:700; font-size:12.5px; color:var(--accent); margin-bottom:4px;">Định lượng chi tiết:</div>
                 <ul style="margin:0; padding-left:17px; font-size:13px; line-height:1.45;">
-                  ${ingArr.map(i => `<li>${i}</li>`).join("")}
+                  ${ingArr.map(i => `<li>${escapeHtmlStr(i)}</li>`).join("")}
                 </ul>
               </div>
-
-              ${stepsStr ? `
-                <div style="font-size:12.5px; color:#374151; line-height:1.45; margin-bottom:8px; white-space:pre-line;">
-                  <strong>Cách làm:</strong>\n${stepsStr}
-                </div>
-              ` : ""}
-
-              ${tipsStr ? `<div style="font-size:12px; color:#15803D; margin-bottom:10px;"><strong>💡 Mẹo:</strong> ${tipsStr}</div>` : ""}
-
+              ${stepsStr ? `<div style="font-size:12.5px; color:#374151; line-height:1.45; margin-bottom:8px; white-space:pre-line;"><strong>Cách làm:</strong>\n${escapeHtmlStr(stepsStr)}</div>` : ""}
+              ${tipsStr ? `<div style="font-size:12px; color:#15803D; margin-bottom:10px;"><strong>💡 Mẹo:</strong> ${escapeHtmlStr(tipsStr)}</div>` : ""}
               <button type="button" class="btn-submit" id="btn-rcp-ai-save-book" style="margin:0; min-height:42px; font-size:13.5px; background:var(--green);">
                 📥 Thêm vào Sổ Công Thức Nhà Bắp
               </button>
@@ -6731,7 +6809,7 @@
 
       async function processVoiceRecipeRequest(audioPayload, textFallback) {
         const apiKey = ((ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "").trim();
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-2.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
 
         if (!apiKey) {
           setRecpVoiceBtnState("idle");
@@ -6789,33 +6867,12 @@
             });
           }
 
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
-          const res = await fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-goog-api-key": apiKey
-            },
-            body: JSON.stringify({
-              contents: [{ parts }],
-              generationConfig: {
-                responseMimeType: "application/json",
-                temperature: 0.2
-              }
-            })
+          const parsed = await callGeminiSmartRequest(parts, {
+            apiKey,
+            model,
+            expectJson: true,
+            temperature: 0.2
           });
-
-          if (!res.ok) {
-            const errBody = await res.text();
-            throw new Error(`API lỗi (${res.status}): ${errBody.slice(0, 120)}`);
-          }
-
-          const jsonRes = await res.json();
-          const rawText = jsonRes && jsonRes.candidates && jsonRes.candidates[0] && jsonRes.candidates[0].content && jsonRes.candidates[0].content.parts && jsonRes.candidates[0].content.parts[0] && jsonRes.candidates[0].content.parts[0].text;
-          if (!rawText) throw new Error("Không nhận được phản hồi từ AI");
-
-          const cleanJson = rawText.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
-          const parsed = JSON.parse(cleanJson);
           setRecpVoiceBtnState("idle");
 
           const validCats = recipeCategories.length > 0 ? recipeCategories : DEFAULT_RECIPE_CATEGORIES;
@@ -7915,7 +7972,7 @@
       async function handleDebtOcrImageSelected(file) {
         if (!file) return;
         const apiKey = ((ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "").trim();
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-2.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
 
         if (!apiKey) {
           modalCard.innerHTML = `
@@ -8010,38 +8067,15 @@
             "Lưu ý quy tắc tiền tệ Việt Nam: 'k' = 1.000đ, 'tr' = 1.000.000đ."
           ].join("\n");
 
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
-          const res = await fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-goog-api-key": apiKey
-            },
-            body: JSON.stringify({
-              contents: [{
-                parts: [
-                  { text: prompt },
-                  { inline_data: { mime_type: "image/jpeg", data: base64 } }
-                ]
-              }],
-              generationConfig: {
-                responseMimeType: "application/json",
-                temperature: 0.1
-              }
-            })
+          const parsed = await callGeminiSmartRequest([
+            { text: prompt },
+            { inline_data: { mime_type: "image/jpeg", data: base64 } }
+          ], {
+            apiKey,
+            model,
+            expectJson: true,
+            temperature: 0.1
           });
-
-          if (!res.ok) {
-            const errBody = await res.text();
-            throw new Error(`API lỗi (${res.status}): ${errBody.slice(0, 120)}`);
-          }
-
-          const jsonRes = await res.json();
-          const rawText = jsonRes && jsonRes.candidates && jsonRes.candidates[0] && jsonRes.candidates[0].content && jsonRes.candidates[0].content.parts && jsonRes.candidates[0].content.parts[0] && jsonRes.candidates[0].content.parts[0].text;
-          if (!rawText) throw new Error("Không nhận được dữ liệu đối chiếu từ AI");
-
-          const cleanJson = rawText.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
-          const parsed = JSON.parse(cleanJson);
           openDebtOcrComparisonModal(dataUrl, parsed, scopeEntries, activeScope);
         } catch (err) {
           closeModal();
@@ -8769,11 +8803,11 @@
 
       function openAiSettingsModal() {
         const apiKey = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "";
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-2.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
 
         modalCard.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h3 style="margin:0;">Tích hợp AI (Gemini)</h3>
+            <h3 style="margin:0;">Tích hợp AI (Gemini 3.5)</h3>
           </div>
 
           <div class="form-group" style="margin-bottom:10px;">
@@ -8787,8 +8821,8 @@
           <div class="form-group" style="margin-bottom:10px;">
             <label for="select-gemini-model">Mô hình AI phân tích</label>
             <select id="select-gemini-model" style="min-height:42px; font-size:16px;">
-              <option value="gemini-2.5-flash" ${model === "gemini-2.5-flash" ? "selected" : ""}>gemini-2.5-flash - Nhanh & Miễn phí (Mặc định)</option>
-              <option value="gemini-2.5-pro" ${model === "gemini-2.5-pro" ? "selected" : ""}>gemini-2.5-pro - Đọc chữ viết tay khó</option>
+              <option value="gemini-3.5-flash" ${model === "gemini-3.5-flash" ? "selected" : ""}>gemini-3.5-flash - Siêu nhanh & Thông minh (Mặc định)</option>
+              <option value="gemini-3.5-pro" ${model === "gemini-3.5-pro" ? "selected" : ""}>gemini-3.5-pro - Suy luận sâu & Chữ viết tay khó</option>
             </select>
           </div>
 
@@ -9727,28 +9761,361 @@
       // ======================================================================
       // BONG BÓNG CHAT AI NỔI: điều khiển mọi chức năng AI của app
       // ======================================================================
-      const CHAT_BUBBLE_KEY = "nha_bap_chat_bubble_v1";
-      const chatBubbleBtn = document.getElementById("chat-bubble-btn");
-      const chatPanel = document.getElementById("chat-panel");
-      const chatLog = document.getElementById("chat-log");
-      const chatInput = document.getElementById("chat-input");
-      const chatToggle = document.getElementById("chat-bubble-toggle");
-      let chatHistory = [];
-      let chatBusy = false;
+      function highlightChatInlineText(rawText) {
+        let safe = escapeHtmlStr(rawText);
+        safe = safe.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
+        safe = safe.replace(/(\d[\d.,]*\s*(?:đ|vnđ|vnd|k|nghìn|triệu)\b)/gi, '<span class="chat-hl-money">$1</span>');
+        safe = safe.replace(/(\d[\d.,]*\s*(?:kg|g|gram|quả|ổ|bịch|lon|chai|cây|bình|bó|suất|phần)\b)/gi, '<span class="chat-hl-qty">$1</span>');
+        return safe;
+      }
 
-      function chatBubbleEnabled() {
-        try { return localStorage.getItem(CHAT_BUBBLE_KEY) !== "0"; } catch (e) { return true; }
+      function formatBotReplyHtml(rawText) {
+        const lines = String(rawText || "").split(/\r?\n/);
+        let htmlParts = [];
+        lines.forEach(line => {
+          const trimmed = line.trim();
+          if (!trimmed) return;
+          const numMatch = trimmed.match(/^(\d+[\.\)])\s+(.*)$/);
+          if (numMatch) {
+            htmlParts.push(`<div class="chat-item-card"><span class="chat-item-num">${escapeHtmlStr(numMatch[1])}</span>${highlightChatInlineText(numMatch[2])}</div>`);
+            return;
+          }
+          const bulletMatch = trimmed.match(/^[-•*]\s+(.*)$/);
+          if (bulletMatch) {
+            htmlParts.push(`<div class="chat-bullet-row"><span class="chat-bullet-dot">•</span><span>${highlightChatInlineText(bulletMatch[1])}</span></div>`);
+            return;
+          }
+          htmlParts.push(`<p>${highlightChatInlineText(trimmed)}</p>`);
+        });
+        if (htmlParts.length === 0) {
+          htmlParts.push(`<p>${highlightChatInlineText(rawText)}</p>`);
+        }
+        return `<div class="chat-bot-header"><span>✨</span><span>Trợ lý Nhà Bắp</span></div><div class="chat-bot-body">${htmlParts.join("")}</div>`;
       }
-      function applyChatBubbleSetting() {
-        const on = chatBubbleEnabled();
-        if (chatToggle) chatToggle.checked = on;
-        if (chatBubbleBtn) chatBubbleBtn.style.display = on ? "flex" : "none";
-        if (!on && chatPanel) chatPanel.classList.remove("open");
+
+      function openChatManualEntryModal(mode, prefill) {
+        const p = prefill || {};
+        resetModalLayout();
+        if (mode === "chi") {
+          const matchedCat = chatCategory(p.category) || expenseCategories[0] || "Tạp phẩm khác";
+          const catOpts = expenseCategories.map(c => `<option value="${escapeHtmlStr(c)}" ${c === matchedCat ? "selected" : ""}>${escapeHtmlStr(c)}</option>`).join("");
+          const units = ["", "g", "kg", "quả", "ổ", "bịch", "lon", "chai", "cây", "bình", "bó", "tháng"];
+          const selUnit = chatUnit(p.unit) || (units.includes(p.unit) ? p.unit : "");
+          const unitOpts = units.map(u => `<option value="${u}" ${u === selUnit ? "selected" : ""}>${u || "(Không có)"}</option>`).join("");
+
+          modalCard.innerHTML = `
+            <h3>➖ Nhập khoản CHI thủ công</h3>
+            <div class="row-2">
+              <div class="form-group">
+                <label>Ngày chi</label>
+                <input type="date" id="cm-chi-date" value="${chatDate(p.date)}" />
+              </div>
+              <div class="form-group">
+                <label>Khoản chi / Mặt hàng</label>
+                <select id="cm-chi-cat">${catOpts}</select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Số tiền chi (đ)</label>
+              <input type="number" id="cm-chi-amt" inputmode="numeric" step="1000" value="${Number(p.amount) > 0 ? Math.round(Number(p.amount)) : ""}" placeholder="VD: 717000" />
+            </div>
+            <div class="row-2">
+              <div class="form-group">
+                <label>Số lượng (tự cộng Kho)</label>
+                <input type="number" id="cm-chi-qty" inputmode="decimal" step="any" value="${Number(p.qty) > 0 ? p.qty : ""}" placeholder="VD: 2.93" />
+              </div>
+              <div class="form-group">
+                <label>Đơn vị</label>
+                <select id="cm-chi-unit">${unitOpts}</select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Ghi chú</label>
+              <input type="text" id="cm-chi-note" value="${escapeHtmlStr(p.note || "")}" placeholder="VD: Nhập chợ sáng, phiếu viết tay..." />
+            </div>
+            <div class="modal-btns">
+              <button type="button" class="btn-outline" id="cm-chi-cancel">Hủy</button>
+              <button type="button" class="btn-submit" style="margin:0; background:var(--red);" id="cm-chi-save">Lưu Khoản Chi</button>
+            </div>
+          `;
+          modalBg.classList.add("open");
+          document.getElementById("cm-chi-cancel").addEventListener("click", closeModal);
+          document.getElementById("cm-chi-save").addEventListener("click", () => {
+            const amt = Number(document.getElementById("cm-chi-amt").value) || 0;
+            if (amt <= 0) { showToast("Vui lòng nhập số tiền chi!"); return; }
+            const qRaw = document.getElementById("cm-chi-qty").value;
+            const newRec = {
+              id: "rec_" + Date.now(),
+              type: "chi",
+              date: document.getElementById("cm-chi-date").value || TODAY,
+              category: document.getElementById("cm-chi-cat").value,
+              amount: amt,
+              qty: qRaw === "" ? "" : Number(qRaw),
+              unit: document.getElementById("cm-chi-unit").value,
+              note: document.getElementById("cm-chi-note").value.trim()
+            };
+            records.unshift(newRec);
+            const synced = syncExpenseRecordToWarehouse(newRec);
+            saveRecords();
+            closeModal();
+            renderAll();
+            const msg = `✅ Đã ghi chi ${newRec.category}: ${formatMoney(amt)} (${formatShortDate(newRec.date)})` + (synced ? ` • Đã tự động cộng vào Kho` : "");
+            addChatMsg("sys", msg);
+            showToast("Đã lưu khoản chi!");
+          });
+          return;
+        }
+
+        if (mode === "thu") {
+          modalCard.innerHTML = `
+            <h3>➕ Nhập khoản THU thủ công</h3>
+            <div class="form-group">
+              <label>Ngày thu</label>
+              <input type="date" id="cm-thu-date" value="${chatDate(p.date)}" />
+            </div>
+            <div class="row-2">
+              <div class="form-group">
+                <label>Chuyển khoản (đ)</label>
+                <input type="number" id="cm-thu-tk" inputmode="numeric" step="1000" value="${Number(p.tk) > 0 ? Math.round(Number(p.tk)) : ""}" placeholder="0" />
+              </div>
+              <div class="form-group">
+                <label>Tiền mặt (đ)</label>
+                <input type="number" id="cm-thu-tm" inputmode="numeric" step="1000" value="${Number(p.tm) > 0 ? Math.round(Number(p.tm)) : ""}" placeholder="0" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Ghi chú doanh thu</label>
+              <input type="text" id="cm-thu-note" value="${escapeHtmlStr(p.note || "")}" placeholder="VD: Khách chuyển khoản thanh toán..." />
+            </div>
+            <div class="modal-btns">
+              <button type="button" class="btn-outline" id="cm-thu-cancel">Hủy</button>
+              <button type="button" class="btn-submit" style="margin:0; background:var(--green);" id="cm-thu-save">Lưu Doanh Thu</button>
+            </div>
+          `;
+          modalBg.classList.add("open");
+          document.getElementById("cm-thu-cancel").addEventListener("click", closeModal);
+          document.getElementById("cm-thu-save").addEventListener("click", () => {
+            const tk = Number(document.getElementById("cm-thu-tk").value) || 0;
+            const tm = Number(document.getElementById("cm-thu-tm").value) || 0;
+            if (tk + tm <= 0) { showToast("Vui lòng nhập số tiền thu!"); return; }
+            const nowTime = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+            const dVal = document.getElementById("cm-thu-date").value || TODAY;
+            records.unshift({
+              id: "rec_" + Date.now(),
+              type: "thu",
+              date: dVal,
+              orderTime: nowTime,
+              tk,
+              tm,
+              amount: tk + tm,
+              note: document.getElementById("cm-thu-note").value.trim()
+            });
+            saveRecords();
+            closeModal();
+            renderAll();
+            addChatMsg("sys", `✅ Đã ghi thu ${formatMoney(tk + tm)} (CK: ${formatMoney(tk)} | TM: ${formatMoney(tm)}) ngày ${formatShortDate(dVal)}.`);
+            showToast("Đã lưu doanh thu!");
+          });
+          return;
+        }
+
+        if (mode === "debt") {
+          const isCust = p.ledgerType === "customer";
+          modalCard.innerHTML = `
+            <h3>📒 Ghi Sổ Công Nợ thủ công</h3>
+            <div class="row-2">
+              <div class="form-group">
+                <label>Loại công nợ</label>
+                <select id="cm-debt-type">
+                  <option value="supplier" ${!isCust ? "selected" : ""}>🏪 Nợ Nhà cung cấp</option>
+                  <option value="customer" ${isCust ? "selected" : ""}>👤 Khách quen ghi nợ</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Ngày ghi</label>
+                <input type="date" id="cm-debt-date" value="${chatDate(p.date)}" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Tên đối tác / Khách hàng</label>
+              <input type="text" id="cm-debt-party" value="${escapeHtmlStr(p.partyName || "")}" placeholder="VD: Chị Thủy, Lò bánh mỳ, Anh Minh..." />
+            </div>
+            <div class="row-2">
+              <div class="form-group">
+                <label>Mặt hàng / Nội dung</label>
+                <input type="text" id="cm-debt-item" value="${escapeHtmlStr(p.itemName || "")}" placeholder="VD: Thịt bò đùi 2,93kg..." />
+              </div>
+              <div class="form-group">
+                <label>Số tiền nợ (đ)</label>
+                <input type="number" id="cm-debt-amt" inputmode="numeric" step="1000" value="${Number(p.amount) > 0 ? Math.round(Number(p.amount)) : ""}" placeholder="VD: 717000" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Ghi chú</label>
+              <input type="text" id="cm-debt-note" value="${escapeHtmlStr(p.note || "")}" placeholder="VD: Phiếu giao hàng viết tay..." />
+            </div>
+            <div class="modal-btns">
+              <button type="button" class="btn-outline" id="cm-debt-cancel">Hủy</button>
+              <button type="button" class="btn-submit" style="margin:0; background:var(--accent);" id="cm-debt-save">Lưu Công Nợ</button>
+            </div>
+          `;
+          modalBg.classList.add("open");
+          document.getElementById("cm-debt-cancel").addEventListener("click", closeModal);
+          document.getElementById("cm-debt-save").addEventListener("click", () => {
+            const partyName = document.getElementById("cm-debt-party").value.trim();
+            const amount = Math.round(Number(document.getElementById("cm-debt-amt").value) || 0);
+            if (!partyName || amount <= 0) { showToast("Vui lòng nhập tên đối tác và số tiền nợ!"); return; }
+            const ledgerType = document.getElementById("cm-debt-type").value;
+            const dVal = document.getElementById("cm-debt-date").value || TODAY;
+            const itemName = document.getElementById("cm-debt-item").value.trim() || "Ghi nợ";
+            debtEntries.unshift({
+              id: "debt_chat_" + Date.now(),
+              ledgerType,
+              partyName,
+              itemName,
+              date: dVal,
+              qty: Number(p.qty) || 0,
+              unit: p.unit || "",
+              unitPrice: 0,
+              amount,
+              note: document.getElementById("cm-debt-note").value.trim(),
+              status: "unpaid",
+              paidDate: "",
+              paidMethod: "",
+              linkedRecordId: null
+            });
+            saveDebtEntries();
+            closeModal();
+            renderDebtLedgerView();
+            addChatMsg("sys", `✅ Đã ghi công nợ (${ledgerType === "supplier" ? "Nhà CC" : "Khách nợ"}): ${partyName} • ${itemName} • ${formatMoney(amount)}.`);
+            showToast("Đã lưu vào Sổ Công Nợ!");
+          });
+        }
       }
-      function addChatMsg(role, text) {
+
+      function attachBotManualControls(bubbleEl, suggestions) {
+        if (!bubbleEl) return;
+        const validSug = Array.isArray(suggestions) ? suggestions.filter(s => s && typeof s === "object") : [];
+
+        if (validSug.length > 0) {
+          const sugBox = document.createElement("div");
+          sugBox.className = "chat-suggest-box";
+          const titleEl = document.createElement("div");
+          titleEl.className = "chat-suggest-title";
+          titleEl.textContent = "⚡ Nhập nhanh dữ liệu AI vừa trích xuất:";
+          sugBox.appendChild(titleEl);
+
+          validSug.forEach(sug => {
+            const row = document.createElement("div");
+            row.style.cssText = "display:flex; flex-wrap:wrap; gap:5px; align-items:center; margin-bottom:5px;";
+            const sType = String(sug.type || "chi");
+
+            if (sType === "chi") {
+              const cat = chatCategory(sug.category) || String(sug.category || "Khoản chi");
+              const amt = chatMoney(sug.amount);
+              const qStr = Number(sug.qty) > 0 ? ` (${sug.qty}${sug.unit || ""})` : "";
+
+              const btnSave = document.createElement("button");
+              btnSave.type = "button";
+              btnSave.className = "chat-qbtn chi";
+              btnSave.textContent = `📥 Ghi chi: ${cat}${qStr} - ${formatMoney(amt)}`;
+              btnSave.addEventListener("click", () => {
+                const msg = runChatAction({
+                  type: "add_chi",
+                  category: sug.category,
+                  amount: amt,
+                  qty: sug.qty,
+                  unit: sug.unit,
+                  note: sug.note || "",
+                  date: sug.date || TODAY
+                });
+                btnSave.disabled = true;
+                btnSave.textContent = "✔ Đã ghi chi";
+                if (msg) addChatMsg("sys", msg);
+              });
+
+              const btnEdit = document.createElement("button");
+              btnEdit.type = "button";
+              btnEdit.className = "chat-qbtn";
+              btnEdit.textContent = "✏️ Sửa tay";
+              btnEdit.addEventListener("click", () => openChatManualEntryModal("chi", sug));
+
+              row.appendChild(btnSave);
+              row.appendChild(btnEdit);
+            } else if (sType === "thu") {
+              const tk = chatMoney(sug.tk);
+              const tm = chatMoney(sug.tm);
+              const total = tk + tm || chatMoney(sug.amount);
+              const btnSave = document.createElement("button");
+              btnSave.type = "button";
+              btnSave.className = "chat-qbtn thu";
+              btnSave.textContent = `💰 Ghi thu: ${formatMoney(total)}`;
+              btnSave.addEventListener("click", () => {
+                const msg = runChatAction({
+                  type: "add_thu",
+                  tk: tk || (sug.method === "TK" ? total : 0),
+                  tm: tm || (sug.method !== "TK" ? total : 0),
+                  note: sug.note || "",
+                  date: sug.date || TODAY
+                });
+                btnSave.disabled = true;
+                btnSave.textContent = "✔ Đã ghi thu";
+                if (msg) addChatMsg("sys", msg);
+              });
+
+              const btnEdit = document.createElement("button");
+              btnEdit.type = "button";
+              btnEdit.className = "chat-qbtn";
+              btnEdit.textContent = "✏️ Sửa tay";
+              btnEdit.addEventListener("click", () => openChatManualEntryModal("thu", {
+                tk: tk || (sug.method === "TK" ? total : 0),
+                tm: tm || (sug.method !== "TK" ? total : 0),
+                note: sug.note,
+                date: sug.date
+              }));
+
+              row.appendChild(btnSave);
+              row.appendChild(btnEdit);
+            } else if (sType === "debt") {
+              const amt = chatMoney(sug.amount);
+              const party = String(sug.partyName || "Đối tác");
+              const btnDebt = document.createElement("button");
+              btnDebt.type = "button";
+              btnDebt.className = "chat-qbtn acc";
+              btnDebt.textContent = `📒 Ghi nợ (${party}): ${formatMoney(amt)}`;
+              btnDebt.addEventListener("click", () => openChatManualEntryModal("debt", sug));
+              row.appendChild(btnDebt);
+            }
+            sugBox.appendChild(row);
+          });
+          bubbleEl.appendChild(sugBox);
+        }
+
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }
+
+      function addChatMsg(role, text, imgUrl, suggestions) {
         const d = document.createElement("div");
         d.className = "chat-msg " + role;
-        d.textContent = text;
+        if (role === "bot") {
+          d.innerHTML = formatBotReplyHtml(text);
+          if (suggestions !== false) {
+            attachBotManualControls(d, suggestions);
+          }
+        } else {
+          if (imgUrl) {
+            const im = document.createElement("img");
+            im.src = imgUrl;
+            im.alt = "Hình ảnh gửi kiểm tra";
+            im.style.cssText = "display:block; max-width:190px; max-height:190px; border-radius:10px; margin-bottom:" + (text ? "6px;" : "0;");
+            d.appendChild(im);
+          }
+          if (text) {
+            const span = document.createElement("div");
+            span.textContent = text;
+            d.appendChild(span);
+          }
+        }
         chatLog.appendChild(d);
         chatLog.scrollTop = chatLog.scrollHeight;
         return d;
@@ -9758,7 +10125,7 @@
         if (nav) nav.click();
       }
 
-      function buildChatPrompt(userText) {
+      function buildChatPrompt(userText, hasImage) {
         const sum = (arr, t) => arr.filter(r => r.type === t).reduce((a, r) => a + (Number(r.amount) || 0), 0);
         const todayRecs = records.filter(r => r.date === TODAY);
         const catSel = document.getElementById("chi-cat");
@@ -9766,6 +10133,27 @@
         const low = warehouseItems.filter(i => Number(i.stock) <= Number(i.minStock)).map(i => `${i.name} (${i.stock} ${i.unit})`).join(", ");
         const stock = warehouseItems.map(i => `- id:"${i.id}" | ${i.name} | tồn ${i.stock} ${i.unit}`).join("\n");
         const menu = posItemsList.map(m => `- id:"${m.id}" | ${m.name} | ${m.price}đ`).join("\n");
+        const draftLines = [];
+        getAllPosItems().forEach(m => {
+          const q = posCart[m.id] || 0;
+          if (q > 0) draftLines.push(`${q} ${m.name} (${formatMoney(q * (Number(m.price) || 0))})`);
+        });
+        const draftNoteVal = (document.getElementById("pos-note")?.value || "").trim();
+        const draftTagsVal = [selectedFamiliar, selectedAudience, ...selectedDining].filter(Boolean).join(", ");
+        const draftSummary = draftLines.length > 0
+          ? `${draftLines.join(", ")}${draftNoteVal ? " | Ghi chú: " + draftNoteVal : ""}${draftTagsVal ? " | Thẻ: " + draftTagsVal : ""}`
+          : "(Trống)";
+        const savedSummary = savedOrders.length > 0
+          ? savedOrders.map((o, idx) => `- id:"${o.id}" | Đơn #${idx + 1} (${o.orderTime || ""}): ${o.items.map(i => `${i.qty} ${i.name}`).join(", ")} | Tổng: ${o.total}đ${o.note ? " | Ghi chú: " + o.note : ""}`).join("\n")
+          : "(Không có đơn đang lưu)";
+        const unpaidDebtSummary = debtEntries.filter(d => d.status === "unpaid").length > 0
+          ? debtEntries.filter(d => d.status === "unpaid").map(d => `- id:"${d.id}" | ${d.ledgerType === "supplier" ? "Nhà CC" : "Khách nợ"}: "${d.partyName}" | ${d.date} | ${d.itemName} (${d.qty || 0} ${d.unit || ""}) | ${d.amount}đ`).join("\n")
+          : "(Không có công nợ chưa thanh toán)";
+        const recipesSummary = recipesList.length > 0
+          ? recipesList.map(r => `- id:"${r.id}" | "${r.title}" (${r.category}, ${r.yieldText || ""}): ${(r.ingredients || []).join("; ")}`).join("\n")
+          : "(Chưa có công thức)";
+        const recipeCatsStr = (recipeCategories.length > 0 ? recipeCategories : DEFAULT_RECIPE_CATEGORIES).join(" | ");
+        const notebookTagsStr = (notebookTags.length > 0 ? notebookTags : DEFAULT_NOTEBOOK_TAGS).join(" | ");
         const weekLine = "7 ngày gần nhất (thu/chi): " + Array.from({ length: 7 }, (_, i) => {
           const d = new Date(); d.setDate(d.getDate() - i);
           const iso = d.toLocaleDateString("sv-SE");
@@ -9773,24 +10161,51 @@
           return `${iso}: ${sum(day, "thu")}/${sum(day, "chi")}`;
         }).join("; ");
         const hist = chatHistory.slice(-6).map(h => (h.role === "user" ? "Người dùng: " : "Trợ lý: ") + h.text).join("\n");
+        const reqLine = hasImage
+          ? `Yêu cầu mới: Người dùng vừa gửi kèm MỘT HÌNH ẢNH để kiểm tra${userText ? ` kèm lời nhắn: "${userText}"` : ""}. Hãy đọc kỹ nội dung trong hình ảnh (hóa đơn đi chợ, phiếu giao hàng, ảnh chuyển khoản ngân hàng/MoMo/VietQR, sổ công nợ, món ăn, nguyên liệu...) và đối chiếu với dữ liệu của quán.`
+          : (userText
+              ? `Yêu cầu mới: "${userText}"`
+              : "Yêu cầu mới: Hãy nghe trực tiếp đoạn ghi âm giọng nói của người dùng đính kèm và xử lý yêu cầu.");
         return [
-          "Bạn là trợ lý AI của quán 'Bánh Mỳ Chảo Nhà Bắp', điều khiển app quản lý thu chi, bán hàng (POS) và kho. Trả lời tiếng Việt, ngắn gọn.",
+          "Bạn là trợ lý AI toàn năng của quán 'Bánh Mỳ Chảo Nhà Bắp', điều khiển app quản lý thu chi, bán hàng (POS), kho, công nợ, công thức chế biến và sổ tay nghiên cứu kinh doanh. Trả lời tiếng Việt, rõ ràng.",
           `Hôm nay: ${TODAY}. Hôm nay thu ${sum(todayRecs, "thu")}đ, chi ${sum(todayRecs, "chi")}đ. Tổng ${records.length} bản ghi.\n${weekLine}`,
           "Thực đơn POS:\n" + menu + '\n- id:"custom-item" | món tuỳ chỉnh (kèm customPrice)',
+          "Đơn POS đang soạn hiện tại: " + draftSummary,
+          "Danh sách Đơn đang lưu (chưa thanh toán):\n" + savedSummary,
+          "Danh sách Công nợ chưa thanh toán:\n" + unpaidDebtSummary,
+          "Sổ Công Thức hiện có của quán:\n" + recipesSummary,
           "Kho:\n" + (stock || "(trống)"),
           "Sắp hết hàng: " + (low || "không có"),
           "Danh mục chi: " + cats,
           hist ? "Hội thoại trước:\n" + hist : "",
-          `Yêu cầu mới: "${userText}"`,
-          "Trả về DUY NHẤT JSON (không markdown): {\"reply\":\"câu trả lời/giải thích ngắn\",\"actions\":[...]}. Chỉ thêm action khi người dùng yêu cầu thực hiện; câu hỏi thông tin thì actions=[].",
-          "Các loại action:",
-          '{"type":"pos_order","items":[{"id":"id món","qty":2,"customPrice":0,"customLabel":""}],"note":"","familiarType":"","audienceType":"","diningTypes":[]} (lên món vào đơn POS)',
+          reqLine,
+          "Trả về DUY NHẤT JSON (không markdown): {\"reply\":\"câu trả lời được định dạng mạch lạc từng dòng/mục\",\"suggestions\":[...],\"actions\":[...]}.",
+          "Định dạng trường 'reply': Chia từng ý rõ ràng bằng xuống dòng, đánh số '1. ', '2. ' cho từng mục/hóa đơn, dùng **in đậm** cho tên mặt hàng hoặc kết luận chính để giao diện hiển thị thành các thẻ nổi bật dễ đọc.",
+          "Trường 'suggestions' (tùy chọn): Khi phát hiện trong ảnh hoặc tin nhắn có khoản chi, khoản thu hoặc công nợ tiềm năng chưa lưu ngay (actions=[]), hãy đưa vào 'suggestions' để app tự tạo nút nhập nhanh & nút sửa tay cho người dùng:",
+          '- Đề xuất chi: {"type":"chi","category":"tên danh mục chi","amount":717000,"qty":2.93,"unit":"kg","note":"Ghi chú","date":"YYYY-MM-DD"}',
+          '- Đề xuất thu: {"type":"thu","tk":0,"tm":200000,"note":"Ghi chú","date":"YYYY-MM-DD"}',
+          '- Đề xuất công nợ: {"type":"debt","ledgerType":"supplier|customer","partyName":"Tên đối tác","itemName":"Tên mặt hàng","amount":717000,"qty":2.93,"unit":"kg","note":"Ghi chú","date":"YYYY-MM-DD"}',
+          "Các loại action (chỉ thêm khi người dùng ra lệnh thực hiện ngay; câu hỏi thông tin thì actions=[]):",
+          '{"type":"pos_order","mode":"add|replace","items":[{"id":"id món","qty":2,"customPrice":0,"customLabel":""}],"note":"","familiarType":"","audienceType":"","diningTypes":[]} (lên món hoặc thay đổi đơn POS đang soạn; mode="replace" nếu người dùng muốn đổi/thay thế lại từ đầu, mặc định "add")',
+          '{"type":"pos_save_order"} (lưu đơn POS đang soạn hiện tại vào danh sách Đơn đang lưu khi người dùng xác nhận lưu đơn)',
+          '{"type":"pos_clear_draft"} (xóa/hủy đơn POS đang soạn nếu người dùng muốn làm lại)',
+          '{"type":"list_saved_orders"} (liệt kê các Đơn đang lưu kèm nút thao tác nhanh Thanh toán, Sửa, Hủy)',
+          '{"type":"settle_saved_order","orderId":"id đơn","method":"tm|tk"} (thanh toán/chốt tiền một đơn đang lưu; tm=tiền mặt, tk=chuyển khoản)',
+          '{"type":"edit_saved_order","orderId":"id đơn"} (nạp một đơn đang lưu ra POS để chỉnh sửa)',
+          '{"type":"cancel_saved_order","orderId":"id đơn"} (hủy/xóa một đơn đang lưu)',
           '{"type":"warehouse","action":"in|out|audit","itemId":"","itemName":"","qty":0,"unit":"","reason":"","note":""} (nhập/xuất/kiểm kê kho)',
           '{"type":"add_chi","category":"","amount":0,"qty":0,"unit":"","note":"","date":"YYYY-MM-DD"} (ghi khoản chi)',
           '{"type":"add_thu","tk":0,"tm":0,"note":"","date":"YYYY-MM-DD"} (ghi doanh thu: tk chuyển khoản, tm tiền mặt)',
+          `{"type":"recipe_search","title":"Tên công thức","category":"Chọn 1 trong: ${recipeCatsStr}","prepTime":"VD: 20 phút","yieldText":"VD: 1 mẻ 2kg hoặc 20 suất","ratioNote":"Giải thích tỷ lệ quy đổi nếu chia định lượng từ công thức gốc trong sổ, để rỗng nếu tìm món mới","ingredients":["Nguyên liệu 1: định lượng rõ ràng","Nguyên liệu 2: ..."],"steps":"1. Bước một...\\n2. Bước hai...","tips":"Mẹo chế biến/bảo quản"} (tìm kiếm công thức món ăn/nước sốt/đồ uống mới HOẶC chia/quy đổi định lượng từ Sổ Công Thức hiện có của quán)`,
+          `{"type":"notebook_research","title":"Tiêu đề bài nghiên cứu","tag":"Chọn 1 trong: ${notebookTagsStr}","summary":"Tóm tắt 1-2 câu giá trị cốt lõi","content":"Nội dung bài phân tích thực chiến đầy đủ, chia mục rõ ràng bằng văn bản thuần có xuống dòng (không dùng ** hay ###)"} (nghiên cứu chuyên sâu một chủ đề kinh doanh, marketing F&B, vận hành quán ăn để hiển thị thẻ bài viết và cho phép lưu vào Sổ Tay)`,
           '{"type":"navigate","tab":"pos|entry|reconcile|hub|warehouse|settings"}',
-          '{"type":"open_recipe_ai"} (mở trợ lý công thức/món mới AI)',
           "QUY TẮC BẮT BUỘC:",
+          "- KHI NGƯỜI DÙNG GỬI HÌNH ẢNH ĐỂ CHECK: Hãy phân tích chi tiết từng dòng, số tiền, ngày tháng, nội dung chuyển khoản hoặc đối chiếu với Đơn đang lưu / Sổ Công Nợ / Kho trong 'reply'. Nếu người dùng chỉ gửi ảnh để kiểm tra (không ra lệnh lưu/nhập ngay), hãy báo cáo kết quả kiểm tra rõ ràng trong 'reply' (actions=[]) và hỏi xem họ có muốn ghi vào sổ Thu/Chi hay cập nhật Kho không. Nếu người dùng kèm lệnh rõ ràng (VD: 'nhập hóa đơn này vào chi', 'ghi thu chuyển khoản này'), hãy thực hiện action 'add_chi' hoặc 'add_thu' tương ứng.",
+          "- QUY TRÌNH LÊN ĐƠN POS: Khi người dùng gọi món (VD: 'lên 2 chảo 1, 1 coca'), CHỈ dùng action 'pos_order' (KHÔNG tự động gọi 'pos_save_order' ngay). Trong 'reply', hãy báo cáo chi tiết từng món vừa chọn, ghi chú, tổng tiền của đơn hiện tại và hỏi xác nhận: 'Bạn có muốn lưu đơn này vào Đơn đang lưu không, hay cần thay đổi/thêm bớt gì nữa?'",
+          "- KHI NGƯỜI DÙNG XÁC NHẬN LƯU ĐƠN (VD: 'ok lưu đơn', 'lưu vào đơn đang lưu', 'đúng rồi lưu đi'): dùng action 'pos_save_order'. Nếu người dùng yêu cầu sửa/thêm/bớt món khi đang soạn đơn, dùng 'pos_order' (với mode='add' hoặc 'replace') rồi tiếp tục báo cáo chi tiết đơn mới và hỏi xác nhận lưu.",
+          "- QUẢN LÝ ĐƠN ĐANG LƯU: Khi người dùng yêu cầu xem/liệt kê đơn đang lưu chưa thanh toán, hãy dùng action 'list_saved_orders'. Khi người dùng yêu cầu thanh toán, chỉnh sửa hoặc hủy một đơn trong danh sách đang lưu (dựa theo id, số thứ tự hoặc tên bàn/ghi chú khớp nhất trong danh sách Đơn đang lưu ở trên), dùng action tương ứng ('settle_saved_order', 'edit_saved_order', 'cancel_saved_order'). Nếu chưa rõ hình thức thanh toán (tiền mặt hay chuyển khoản), hãy hỏi lại trong 'reply' hoặc dùng 'list_saved_orders' để hiện nút chọn.",
+          "- TÌM KIẾM & CHIA ĐỊNH LƯỢNG CÔNG THỨC: Khi người dùng hỏi cách làm món ăn, pha nước sốt, đồ uống (VD: 'tìm công thức pate gan gà', 'cách nấu sốt tiêu đen') HOẶC yêu cầu chia/quy đổi định lượng từ công thức có sẵn của quán (VD: 'tính định lượng gia vị cho 300g cà chua theo công thức sốt cà chua'), hãy tạo đầy đủ nội dung trong action 'recipe_search' và trả lời ngắn gọn trong 'reply'.",
+          "- NGHIÊN CỨU KINH DOANH SỔ TAY: Khi người dùng yêu cầu nghiên cứu, phân tích chiến lược, ý tưởng kinh doanh/marketing F&B (VD: 'nghiên cứu cách tăng doanh thu giờ vắng khách', 'nghiên cứu hiệu ứng thị giác trong quán ăn'), hãy soạn bài phân tích thực chiến trong action 'notebook_research' (khoảng 350-600 từ, chia mục rõ ràng) để hiển thị thẻ bài viết kèm nút lưu vào Sổ Tay.",
           "- Số tiền là SỐ NGUYÊN đồng (240k = 240000, 1 triệu = 1000000). Ngày dạng YYYY-MM-DD, quy đổi 'hôm qua', 'thứ 2'... theo hôm nay.",
           "- Số lượng kho luôn tính theo ĐƠN VỊ của mặt hàng trong danh sách kho (VD kho tính g: 2kg -> qty 2000, unit g). qty luôn dương.",
           "- add_chi có qty > 0 sẽ TỰ động nhập kho: KHÔNG thêm action warehouse 'in' cho cùng lần mua.",
@@ -9799,18 +10214,29 @@
         ].filter(Boolean).join("\n");
       }
 
-      async function callChatModel(prompt) {
-        let sample = null;
-        try { if (window.claude && typeof window.claude.use === "function") sample = await window.claude.use("sample"); } catch (e) {}
-        if (sample) {
-          const r = await sample(prompt, { modelTier: "quick", cache: false });
-          const raw = String((r && r.text) || "");
-          const a = raw.indexOf("{"), b = raw.lastIndexOf("}");
-          if (a < 0 || b <= a) throw new Error("AI trả về dữ liệu không hợp lệ");
-          return JSON.parse(raw.slice(a, b + 1));
+      async function callChatModel(prompt, mediaPayload) {
+        const parts = [{ text: prompt }];
+        if (mediaPayload && mediaPayload.base64) {
+          parts.push({
+            inline_data: {
+              mime_type: mediaPayload.mimeType || "audio/webm",
+              data: mediaPayload.base64
+            }
+          });
+        } else {
+          let sample = null;
+          try { if (window.claude && typeof window.claude.use === "function") sample = await window.claude.use("sample"); } catch (e) {}
+          if (sample) {
+            const r = await sample(prompt, { modelTier: "quick", cache: false });
+            const raw = String((r && r.text) || "");
+            const a = raw.indexOf("{"), b = raw.lastIndexOf("}");
+            if (a >= 0 && b > a) return JSON.parse(raw.slice(a, b + 1));
+          }
         }
-        if (!getWhAiConfig().apiKey) throw new Error("Chưa có Gemini API Key. Vào Cài Đặt > Tích hợp AI để nhập.");
-        return await callGeminiForWarehouse([{ text: prompt }]);
+        if (!getWhAiConfig().apiKey) {
+          throw new Error("Chưa có Gemini API Key. Vào Cài Đặt > Tích hợp AI để nhập.");
+        }
+        return await callGeminiForWarehouse(parts);
       }
 
       function chatMoney(v) {
@@ -9824,6 +10250,7 @@
         }
         return parseInt(m[1].replace(/[.,]/g, ""), 10) || 0;
       }
+
       function chatDate(d) {
         const t = String(d || "").trim();
         if (/^\d{4}-\d{2}-\d{2}$/.test(t)) {
@@ -9832,6 +10259,7 @@
         }
         return TODAY;
       }
+
       function chatCategory(name) {
         const sel = document.getElementById("chi-cat");
         const opts = sel ? Array.from(sel.options).map(o => o.value).filter(Boolean) : [];
@@ -9839,6 +10267,7 @@
         const hit = opts.find(o => o.toLowerCase() === n) || opts.find(o => n && (o.toLowerCase().includes(n) || n.includes(o.toLowerCase())));
         return hit || "";
       }
+
       function chatUnit(u) {
         const sel = document.getElementById("chi-unit");
         const opts = sel ? Array.from(sel.options).map(o => o.value).filter(Boolean) : [];
@@ -9846,17 +10275,416 @@
         return opts.find(o => o.toLowerCase() === n) || "";
       }
 
+      function getDraftOrderSummaryLines() {
+        const lines = [];
+        let total = 0;
+        getAllPosItems().forEach(m => {
+          const q = posCart[m.id] || 0;
+          if (q > 0) {
+            const sub = q * (Number(m.price) || 0);
+            total += sub;
+            lines.push(`• ${q} ${m.name}: ${formatMoney(sub)}`);
+          }
+        });
+        const noteVal = (document.getElementById("pos-note")?.value || "").trim();
+        const tagsVal = [selectedFamiliar, selectedAudience, ...selectedDining].filter(Boolean).join(", ");
+        return { lines, total, noteVal, tagsVal };
+      }
+
+      function saveCurrentDraftOrderFromChat() {
+        const items = [];
+        let total = 0;
+        getAllPosItems().forEach(item => {
+          const q = posCart[item.id] || 0;
+          if (q > 0) {
+            const unitP = Number(item.price) || 0;
+            items.push({ id: item.id, name: item.name, price: unitP, qty: q });
+            total += q * unitP;
+          }
+        });
+        if (items.length === 0 || total <= 0) {
+          return { ok: false, msg: "⚠️ Đơn hiện tại đang trống hoặc món Tuỳ chỉnh chưa có giá, không thể lưu." };
+        }
+        const nowTime = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+        const hasBothDining = selectedDining.includes("Mang về, đặt app") && selectedDining.includes("Ăn tại chỗ");
+        const noteVal = (document.getElementById("pos-note")?.value || "").trim();
+        savedOrders.unshift({
+          id: "ord_" + Date.now(),
+          date: (elPosDate && elPosDate.value) ? elPosDate.value : TODAY,
+          orderTime: nowTime,
+          items,
+          total,
+          note: noteVal,
+          familiarType: selectedFamiliar,
+          audienceType: selectedAudience,
+          diningType: selectedDining.join(", "),
+          takeawayMap: hasBothDining ? {} : null
+        });
+        saveSavedOrders();
+        resetCurrentPosOrder();
+        return { ok: true, msg: `✅ Đã lưu đơn (${formatMoney(total)}) vào danh sách Đơn đang lưu (hiện có ${savedOrders.length} đơn chờ).` };
+      }
+
+      function settleSavedOrderFromChat(orderId, method) {
+        const idx = savedOrders.findIndex(o => o.id === orderId);
+        if (idx === -1) return "⚠️ Không tìm thấy đơn đang lưu này (có thể đã thanh toán hoặc bị hủy trước đó).";
+        const ord = savedOrders[idx];
+        const mCode = method === "tk" ? "tk" : "tm";
+        const itemsText = ord.items.map(i => `${i.qty} ${i.name}`).join(", ");
+        const twBreakdown = formatTakeawayBreakdown(ord);
+        const tags = [ord.familiarType, ord.audienceType, ord.diningType].filter(Boolean).join(", ");
+        const noteParts = [itemsText];
+        if (twBreakdown) noteParts.push(twBreakdown);
+        if (ord.note) noteParts.push(ord.note);
+        if (tags) noteParts.push(tags);
+
+        records.unshift({
+          id: "rec_pos_" + Date.now(),
+          type: "thu",
+          date: ord.date || TODAY,
+          orderTime: ord.orderTime || new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" }),
+          tk: mCode === "tk" ? ord.total : 0,
+          tm: mCode === "tm" ? ord.total : 0,
+          amount: ord.total,
+          note: noteParts.join(" • "),
+          soldItems: ord.items,
+          familiarType: ord.familiarType || "",
+          audienceType: ord.audienceType || "",
+          diningType: ord.diningType || "",
+          takeawayMap: ord.takeawayMap || null
+        });
+        savedOrders.splice(idx, 1);
+        saveRecords();
+        saveSavedOrders();
+        renderAll();
+        return `✅ Đã thanh toán đơn (${itemsText}) • Thu ${formatMoney(ord.total)} (${mCode === "tk" ? "Chuyển khoản" : "Tiền mặt"}).`;
+      }
+
+      function loadSavedOrderToPosFromChat(orderId) {
+        const idx = savedOrders.findIndex(o => o.id === orderId);
+        if (idx === -1) return "⚠️ Không tìm thấy đơn đang lưu để chỉnh sửa.";
+        const ord = savedOrders.splice(idx, 1)[0];
+        saveSavedOrders();
+        posCart = {};
+        customPosPrice = 0;
+        ord.items.forEach(i => {
+          posCart[i.id] = i.qty;
+          if (i.id === "custom-item") customPosPrice = Number(i.price) || 0;
+        });
+        selectedFamiliar = ord.familiarType || "";
+        selectedAudience = ord.audienceType || "";
+        selectedDining = ord.diningType ? ord.diningType.split(",").map(s => s.trim()).filter(Boolean) : [];
+        const noteEl = document.getElementById("pos-note");
+        if (noteEl) noteEl.value = ord.note || "";
+        if (elPosDate && ord.date) elPosDate.value = ord.date;
+        refreshCustomerTagButtons();
+        renderPosMenu();
+        updatePosCartUI();
+        return `✏️ Đã nạp đơn (${ord.items.map(i => `${i.qty} ${i.name}`).join(", ")}) lên màn hình soạn đơn. Bạn hãy nhắn/nói món muốn thêm bớt hoặc bấm Lưu lại!`;
+      }
+
+      function renderChatDraftConfirmCard() {
+        const { lines, total, noteVal, tagsVal } = getDraftOrderSummaryLines();
+        if (lines.length === 0) return;
+        const box = document.createElement("div");
+        box.className = "chat-msg sys";
+        box.style.cssText = "max-width:94%; background:#FFFBEB; border:1px solid #FDE68A; color:var(--ink);";
+
+        const info = document.createElement("div");
+        info.style.cssText = "font-size:13px; line-height:1.45; margin-bottom:8px;";
+        info.innerHTML = `<strong>📋 Chi tiết đơn đang soạn:</strong><br>${lines.join("<br>")}` +
+          (noteVal ? `<br><span style="color:var(--muted);">📝 Ghi chú: ${escapeHtmlStr(noteVal)}</span>` : "") +
+          (tagsVal ? `<br><span style="color:var(--muted);">🏷️ Phân loại: ${escapeHtmlStr(tagsVal)}</span>` : "") +
+          `<br><strong style="color:var(--green);">💰 Tổng cộng: ${formatMoney(total)}</strong>`;
+        box.appendChild(info);
+
+        const btnRow = document.createElement("div");
+        btnRow.style.cssText = "display:flex; flex-wrap:wrap; gap:6px;";
+
+        const btnSave = document.createElement("button");
+        btnSave.type = "button";
+        btnSave.textContent = "📥 Lưu vào Đơn đang lưu";
+        btnSave.style.cssText = "border:none; background:var(--accent); color:#fff; border-radius:999px; padding:6px 12px; font-size:12.5px; font-weight:700; cursor:pointer;";
+
+        const btnCancel = document.createElement("button");
+        btnCancel.type = "button";
+        btnCancel.textContent = "🗑️ Hủy đơn này";
+        btnCancel.style.cssText = "border:1px solid #FECACA; background:var(--red-soft); color:var(--red); border-radius:999px; padding:6px 11px; font-size:12.5px; font-weight:700; cursor:pointer;";
+
+        btnSave.addEventListener("click", () => {
+          const res = saveCurrentDraftOrderFromChat();
+          btnSave.disabled = true;
+          btnCancel.disabled = true;
+          addChatMsg("sys", res.msg);
+        });
+
+        btnCancel.addEventListener("click", () => {
+          resetCurrentPosOrder();
+          btnSave.disabled = true;
+          btnCancel.disabled = true;
+          addChatMsg("sys", "🗑️ Đã hủy đơn đang soạn.");
+        });
+
+        btnRow.appendChild(btnSave);
+        btnRow.appendChild(btnCancel);
+        box.appendChild(btnRow);
+        chatLog.appendChild(box);
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }
+
+      function renderChatSavedOrdersCards() {
+        if (savedOrders.length === 0) {
+          addChatMsg("sys", "📭 Hiện không có đơn nào đang lưu chưa thanh toán.");
+          return;
+        }
+        savedOrders.forEach((ord, idx) => {
+          const card = document.createElement("div");
+          card.className = "chat-msg sys";
+          card.style.cssText = "max-width:95%; background:#F9FAFB; border:1px solid var(--border); color:var(--ink);";
+
+          const itemsStr = ord.items.map(i => `${i.qty} ${i.name}`).join(", ");
+          const meta = [ord.orderTime ? `Lúc ${ord.orderTime}` : "", ord.note, ord.familiarType, ord.audienceType, ord.diningType].filter(Boolean).join(" • ");
+          const head = document.createElement("div");
+          head.style.cssText = "font-size:13px; line-height:1.4; margin-bottom:7px;";
+          head.innerHTML = `<strong>🧾 Đơn #${idx + 1}: ${escapeHtmlStr(itemsStr)}</strong>` +
+            (meta ? `<br><span style="font-size:12px; color:var(--muted);">${escapeHtmlStr(meta)}</span>` : "") +
+            `<br><strong style="color:var(--green);">Tổng: ${formatMoney(ord.total)}</strong>`;
+          card.appendChild(head);
+
+          const actionsWrap = document.createElement("div");
+          actionsWrap.style.cssText = "display:flex; flex-wrap:wrap; gap:5px;";
+
+          const makeBtn = (label, css, handler) => {
+            const b = document.createElement("button");
+            b.type = "button";
+            b.textContent = label;
+            b.style.cssText = css + " border-radius:999px; padding:5px 10px; font-size:12px; font-weight:700; cursor:pointer;";
+            b.addEventListener("click", () => {
+              actionsWrap.querySelectorAll("button").forEach(x => x.disabled = true);
+              handler();
+            });
+            return b;
+          };
+
+          actionsWrap.appendChild(makeBtn("💵 Thu TM", "border:1px solid #BBF7D0; background:var(--green-soft); color:var(--green);", () => {
+            addChatMsg("sys", settleSavedOrderFromChat(ord.id, "tm"));
+          }));
+          actionsWrap.appendChild(makeBtn("🏦 Thu CK", "border:1px solid #FDE68A; background:var(--accent-soft); color:var(--accent);", () => {
+            addChatMsg("sys", settleSavedOrderFromChat(ord.id, "tk"));
+          }));
+          actionsWrap.appendChild(makeBtn("✏️ Sửa", "border:1px solid var(--border); background:#FFFFFF; color:var(--ink);", () => {
+            addChatMsg("sys", loadSavedOrderToPosFromChat(ord.id));
+            renderChatDraftConfirmCard();
+          }));
+          actionsWrap.appendChild(makeBtn("🗑️ Hủy", "border:1px solid #FECACA; background:var(--red-soft); color:var(--red);", () => {
+            savedOrders = savedOrders.filter(o => o.id !== ord.id);
+            saveSavedOrders();
+            updatePosCartUI();
+            addChatMsg("sys", `🗑️ Đã hủy Đơn #${idx + 1} (${itemsStr}).`);
+          }));
+
+          card.appendChild(actionsWrap);
+          chatLog.appendChild(card);
+        });
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }
+
+      function renderChatRecipeCard(rData) {
+        const validCats = recipeCategories.length > 0 ? recipeCategories : DEFAULT_RECIPE_CATEGORIES;
+        const chosenCat = validCats.includes(rData.category) ? rData.category : validCats[0];
+        const title = String(rData.title || "Công thức mới từ AI").trim();
+        const prepTime = String(rData.prepTime || "").trim();
+        const yieldText = String(rData.yieldText || "").trim();
+        const ratioNote = String(rData.ratioNote || "").trim();
+        const ingArr = Array.isArray(rData.ingredients) ? rData.ingredients.map(x => String(x).trim()).filter(Boolean) : [];
+        const stepsStr = String(rData.steps || "").trim();
+        const tipsStr = String(rData.tips || "").trim();
+
+        const card = document.createElement("div");
+        card.className = "chat-msg sys";
+        card.style.cssText = "max-width:95%; background:#FFFBEB; border:1.5px solid #FDE68A; color:var(--ink);";
+
+        const body = document.createElement("div");
+        body.style.cssText = "font-size:13px; line-height:1.45; margin-bottom:8px;";
+        body.innerHTML =
+          `<div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:4px;">` +
+            `<span style="font-size:11px; font-weight:800; color:var(--accent); background:#fff; padding:2px 8px; border-radius:999px; border:1px solid #FDE68A;">🍳 ${escapeHtmlStr(chosenCat)}</span>` +
+            (prepTime ? `<span style="font-size:11.5px; color:var(--muted);">⏱ ${escapeHtmlStr(prepTime)}</span>` : "") +
+          `</div>` +
+          `<div style="font-weight:800; font-size:14.5px; margin-bottom:2px;">${escapeHtmlStr(title)}</div>` +
+          (yieldText ? `<div style="font-size:12px; color:var(--green); font-weight:700; margin-bottom:6px;">Thành phẩm: ${escapeHtmlStr(yieldText)}</div>` : "") +
+          (ratioNote ? `<div style="font-size:12px; color:#92400E; background:#FEF3C7; padding:5px 8px; border-radius:7px; margin-bottom:6px; font-weight:600;">📐 ${escapeHtmlStr(ratioNote)}</div>` : "") +
+          (ingArr.length > 0 ? `<div style="background:#fff; border:1px solid var(--border); border-radius:8px; padding:7px 9px; margin-bottom:6px;"><strong style="color:var(--accent); font-size:12px;">Định lượng nguyên liệu:</strong><ul style="margin:4px 0 0; padding-left:16px;">${ingArr.map(i => `<li>${escapeHtmlStr(i)}</li>`).join("")}</ul></div>` : "") +
+          (stepsStr ? `<div style="white-space:pre-line; font-size:12.5px; color:#374151; margin-bottom:6px;"><strong>Cách làm:</strong>\n${escapeHtmlStr(stepsStr)}</div>` : "") +
+          (tipsStr ? `<div style="font-size:12px; color:#15803D;"><strong>💡 Mẹo:</strong> ${escapeHtmlStr(tipsStr)}</div>` : "");
+        card.appendChild(body);
+
+        const btnRow = document.createElement("div");
+        btnRow.style.cssText = "display:flex; flex-wrap:wrap; gap:6px;";
+
+        const btnSave = document.createElement("button");
+        btnSave.type = "button";
+        btnSave.textContent = "📥 Lưu vào Sổ Công Thức";
+        btnSave.style.cssText = "border:none; background:var(--green); color:#fff; border-radius:999px; padding:6px 12px; font-size:12.5px; font-weight:700; cursor:pointer;";
+        btnSave.addEventListener("click", () => {
+          const newRecipe = {
+            id: "rcp_chat_" + Date.now(),
+            title,
+            category: chosenCat,
+            prepTime,
+            yieldText,
+            ingredients: ingArr,
+            steps: stepsStr,
+            tips: tipsStr
+          };
+          recipesList.unshift(newRecipe);
+          saveRecipes();
+          renderRecipesView();
+          btnSave.disabled = true;
+          btnSave.textContent = "✔ Đã lưu vào Sổ Công Thức";
+          showToast(`Đã lưu "${title}" vào Sổ Công Thức!`);
+        });
+
+        const btnViewBook = document.createElement("button");
+        btnViewBook.type = "button";
+        btnViewBook.textContent = "📖 Mở Sổ Công Thức";
+        btnViewBook.style.cssText = "border:1px solid var(--border); background:#fff; color:var(--ink); border-radius:999px; padding:6px 11px; font-size:12.5px; font-weight:700; cursor:pointer;";
+        btnViewBook.addEventListener("click", () => {
+          chatPanel.classList.remove("open");
+          goTab("hub");
+          const recpTabBtn = document.querySelector('#hub-subnav [data-hub-tab="sub-recipes"]');
+          if (recpTabBtn) recpTabBtn.click();
+        });
+
+        btnRow.appendChild(btnSave);
+        btnRow.appendChild(btnViewBook);
+        card.appendChild(btnRow);
+        chatLog.appendChild(card);
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }
+
+      function renderChatResearchCard(nData) {
+        const baseTags = notebookTags.length > 0 ? notebookTags : DEFAULT_NOTEBOOK_TAGS;
+        const defaultTag = baseTags.find(t => t.toLowerCase().includes("ý tưởng")) || baseTags[0] || "Ý tưởng";
+        const chosenTag = baseTags.includes(nData.tag) ? nData.tag : defaultTag;
+        const title = String(nData.title || "Bài nghiên cứu kinh doanh").trim();
+        const summary = String(nData.summary || "").trim();
+        const content = String(nData.content || "").trim();
+
+        const card = document.createElement("div");
+        card.className = "chat-msg sys";
+        card.style.cssText = "max-width:95%; background:#FFFBEB; border:1.5px solid #FDE68A; color:var(--ink);";
+
+        const body = document.createElement("div");
+        body.style.cssText = "font-size:13px; line-height:1.45; margin-bottom:8px;";
+        body.innerHTML =
+          `<div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:4px;">` +
+            `<span style="font-size:11px; font-weight:800; color:var(--accent); background:#fff; padding:2px 8px; border-radius:999px; border:1px solid #FDE68A;">🔬 Nghiên cứu Sổ Tay</span>` +
+            `<span style="font-size:11px; font-weight:700; color:var(--muted);">Thẻ: ${escapeHtmlStr(chosenTag)}</span>` +
+          `</div>` +
+          `<div style="font-weight:800; font-size:14.5px; margin-bottom:5px; line-height:1.35;">${escapeHtmlStr(title)}</div>` +
+          (summary ? `<div style="font-size:12px; color:#92400E; background:#FEF3C7; padding:6px 8px; border-radius:7px; margin-bottom:6px; font-weight:600;">💡 ${escapeHtmlStr(summary)}</div>` : "") +
+          `<div style="background:#fff; border:1px solid var(--border); border-radius:9px; padding:8px 10px; font-size:12.5px; color:#1F2937; line-height:1.55; max-height:220px; overflow-y:auto; white-space:pre-line;">${escapeHtmlStr(content)}</div>`;
+        card.appendChild(body);
+
+        const btnRow = document.createElement("div");
+        btnRow.style.cssText = "display:flex; flex-wrap:wrap; gap:6px;";
+
+        const btnSave = document.createElement("button");
+        btnSave.type = "button";
+        btnSave.textContent = "📥 Lưu vào Sổ Tay";
+        btnSave.style.cssText = "border:none; background:var(--green); color:#fff; border-radius:999px; padding:6px 12px; font-size:12.5px; font-weight:700; cursor:pointer;";
+        btnSave.addEventListener("click", () => {
+          const newNote = {
+            id: "nb_chat_" + Date.now(),
+            title,
+            tag: chosenTag,
+            color: "#FFFBEB",
+            pinned: false,
+            content,
+            updatedAt: new Date().toISOString()
+          };
+          notebookNotes.unshift(newNote);
+          saveNotebookNotes();
+          renderNotebookView();
+          btnSave.disabled = true;
+          btnSave.textContent = "✔ Đã lưu vào Sổ Tay";
+          showToast(`Đã lưu bài nghiên cứu vào Sổ Tay (${chosenTag})!`);
+        });
+
+        const btnCopy = document.createElement("button");
+        btnCopy.type = "button";
+        btnCopy.textContent = "📋 Sao chép";
+        btnCopy.style.cssText = "border:1px solid var(--border); background:#fff; color:var(--ink); border-radius:999px; padding:6px 11px; font-size:12.5px; font-weight:700; cursor:pointer;";
+        btnCopy.addEventListener("click", () => {
+          const ta = document.createElement("textarea");
+          ta.value = `${title}\n\n${content}`;
+          document.body.appendChild(ta);
+          ta.select();
+          try {
+            document.execCommand("copy");
+            showToast("Đã sao chép bài nghiên cứu!");
+          } catch (e) {}
+          document.body.removeChild(ta);
+        });
+
+        btnRow.appendChild(btnSave);
+        btnRow.appendChild(btnCopy);
+        card.appendChild(btnRow);
+        chatLog.appendChild(card);
+        chatLog.scrollTop = chatLog.scrollHeight;
+      }
+
       function runChatAction(a) {
         try {
           switch (a && a.type) {
             case "pos_order": {
+              if (a.mode === "replace") {
+                posCart = {};
+                customPosPrice = 0;
+                selectedFamiliar = "";
+                selectedAudience = "";
+                selectedDining = [];
+                const noteEl = document.getElementById("pos-note");
+                if (noteEl) noteEl.value = "";
+              }
               const cartQty = () => Object.values(posCart).reduce((x, y) => x + (Number(y) || 0), 0);
               const before = cartQty();
               applyParsedVoiceOrder(a);
-              const added = cartQty() - before;
-              if (added <= 0) return "⚠️ Không khớp món nào trong thực đơn, chưa thêm vào đơn.";
-              goTab("pos");
-              return `🛒 Đã thêm ${added} món vào đơn POS, kiểm tra lại rồi thanh toán.`;
+              const after = cartQty();
+              if (after <= 0 && before <= 0) return "⚠️ Không khớp món nào trong thực đơn, chưa thêm vào đơn.";
+              renderChatDraftConfirmCard();
+              return null;
+            }
+            case "pos_save_order": {
+              const res = saveCurrentDraftOrderFromChat();
+              return res.msg;
+            }
+            case "pos_clear_draft": {
+              resetCurrentPosOrder();
+              return "🗑️ Đã hủy đơn đang soạn.";
+            }
+            case "list_saved_orders": {
+              renderChatSavedOrdersCards();
+              return null;
+            }
+            case "settle_saved_order": {
+              return settleSavedOrderFromChat(String(a.orderId || ""), String(a.method || "tm"));
+            }
+            case "edit_saved_order": {
+              const msg = loadSavedOrderToPosFromChat(String(a.orderId || ""));
+              addChatMsg("sys", msg);
+              renderChatDraftConfirmCard();
+              return null;
+            }
+            case "cancel_saved_order": {
+              const targetId = String(a.orderId || "");
+              const idx = savedOrders.findIndex(o => o.id === targetId);
+              if (idx === -1) return "⚠️ Không tìm thấy đơn đang lưu cần hủy.";
+              const removed = savedOrders.splice(idx, 1)[0];
+              saveSavedOrders();
+              updatePosCartUI();
+              return `🗑️ Đã hủy đơn (${removed.items.map(i => `${i.qty} ${i.name}`).join(", ")}).`;
             }
             case "warehouse":
               return applyWarehouseAiResult(a, "Chat AI", "Lệnh chat AI");
@@ -9899,9 +10727,11 @@
             case "navigate":
               goTab(String(a.tab || "pos"));
               return null;
-            case "open_recipe_ai":
-              chatPanel.classList.remove("open");
-              openRecipeAiAssistantModal();
+            case "recipe_search":
+              renderChatRecipeCard(a);
+              return null;
+            case "notebook_research":
+              renderChatResearchCard(a);
               return null;
             default:
               return null;
@@ -9909,6 +10739,26 @@
         } catch (err) {
           return "⚠️ Không thực hiện được một tác vụ: " + (err && err.message ? err.message : "lỗi không rõ");
         }
+      }
+
+      const CHAT_BUBBLE_KEY = "nha_bap_chat_bubble_v1";
+      const chatBubbleBtn = document.getElementById("chat-bubble-btn");
+      const chatPanel = document.getElementById("chat-panel");
+      const chatLog = document.getElementById("chat-log");
+      const chatInput = document.getElementById("chat-input");
+      const chatToggle = document.getElementById("chat-bubble-toggle");
+      let chatHistory = [];
+      let chatBusy = false;
+
+      function chatBubbleEnabled() {
+        try { return localStorage.getItem(CHAT_BUBBLE_KEY) !== "0"; } catch (e) { return true; }
+      }
+
+      function applyChatBubbleSetting() {
+        const on = chatBubbleEnabled();
+        if (chatToggle) chatToggle.checked = on;
+        if (chatBubbleBtn) chatBubbleBtn.style.display = (on && localStorage.getItem("nha_bap_fun_assistant_v1") !== "1") ? "flex" : "none";
+        if (!on && chatPanel) chatPanel.classList.remove("open");
       }
 
       function addChatUndo(snap) {
@@ -9936,35 +10786,100 @@
         chatLog.scrollTop = chatLog.scrollHeight;
       }
 
+      function executeChatResponse(out, userHistLabel) {
+        const replyText = String((out && out.reply) || "Đã xử lý.");
+        chatHistory.push({ role: "user", text: userHistLabel }, { role: "bot", text: replyText });
+        const acts = Array.isArray(out && out.actions) ? out.actions : [];
+        const chiNames = acts.filter(a => a && a.type === "add_chi" && Number(a.qty) > 0)
+          .map(a => (chatCategory(a.category) || String(a.category || "")).trim().toLowerCase());
+        const finalActs = acts.filter(a => {
+          if (!a || a.type !== "warehouse" || a.action !== "in") return true;
+          const nm = ((warehouseItems.find(x => x.id === a.itemId) || {}).name || a.itemName || "").trim().toLowerCase();
+          return !(nm && chiNames.includes(nm));
+        });
+        const writes = finalActs.some(a => a && (a.type === "add_chi" || a.type === "add_thu" || a.type === "warehouse"));
+        const snap = writes ? { records: JSON.stringify(records), items: JSON.stringify(warehouseItems), tx: JSON.stringify(warehouseTxList) } : null;
+        if (finalActs.length < acts.length) addChatMsg("sys", "ℹ️ Bỏ qua nhập kho riêng vì khoản chi có số lượng đã tự nhập kho.");
+        finalActs.forEach(a => {
+          const m = runChatAction(a);
+          if (m) addChatMsg("sys", m);
+        });
+        if (snap && (JSON.stringify(records) !== snap.records || JSON.stringify(warehouseItems) !== snap.items || JSON.stringify(warehouseTxList) !== snap.tx)) {
+          addChatUndo(snap);
+        }
+        return replyText;
+      }
+
+      let pendingChatImage = null;
+      const chatPreviewBar = document.getElementById("chat-img-preview-bar");
+      const chatImgThumb = document.getElementById("chat-img-thumb");
+
+      function clearPendingChatImage() {
+        pendingChatImage = null;
+        if (chatPreviewBar) chatPreviewBar.classList.remove("show");
+        if (chatImgThumb) chatImgThumb.src = "";
+      }
+
+      async function handleChatImageSelect(file) {
+        if (!file) return;
+        try {
+          const compressed = await compressImageForOcr(file);
+          pendingChatImage = compressed;
+          if (chatImgThumb) chatImgThumb.src = compressed.dataUrl;
+          if (chatPreviewBar) chatPreviewBar.classList.add("show");
+          if (chatInput) chatInput.focus();
+          showToast("Đã đính kèm ảnh. Bấm Gửi để AI kiểm tra!");
+        } catch (err) {
+          showToast("Không thể đọc hình ảnh này!");
+        }
+      }
+
+      const chatCamBtn = document.getElementById("chat-cam");
+      const chatGalBtn = document.getElementById("chat-gal");
+      const chatCamInput = document.getElementById("chat-cam-input");
+      const chatGalInput = document.getElementById("chat-gal-input");
+      const chatImgClearBtn = document.getElementById("chat-img-clear");
+
+      if (chatCamBtn && chatCamInput) {
+        chatCamBtn.addEventListener("click", () => chatCamInput.click());
+        chatCamInput.addEventListener("change", (e) => {
+          const f = e.target.files && e.target.files[0];
+          e.target.value = "";
+          if (f) handleChatImageSelect(f);
+        });
+      }
+      if (chatGalBtn && chatGalInput) {
+        chatGalBtn.addEventListener("click", () => chatGalInput.click());
+        chatGalInput.addEventListener("change", (e) => {
+          const f = e.target.files && e.target.files[0];
+          e.target.value = "";
+          if (f) handleChatImageSelect(f);
+        });
+      }
+      if (chatImgClearBtn) {
+        chatImgClearBtn.addEventListener("click", clearPendingChatImage);
+      }
+
       async function sendChat() {
         const text = chatInput.value.trim();
-        if (!text || chatBusy) return;
+        const imgPayload = pendingChatImage;
+        if ((!text && !imgPayload) || chatBusy) return;
         chatInput.value = "";
-        addChatMsg("user", text);
+        clearPendingChatImage();
+
+        const userDisplay = text || (imgPayload ? "📷 Kiểm tra hình ảnh này giúp tôi" : "");
+        addChatMsg("user", userDisplay, imgPayload ? imgPayload.dataUrl : null);
         chatBusy = true;
-        const wait = addChatMsg("bot", "⏳ Đang xử lý...");
+        const wait = addChatMsg("bot", imgPayload ? "⏳ AI đang phân tích hình ảnh..." : "⏳ Đang xử lý...", null, false);
         try {
-          const out = await callChatModel(buildChatPrompt(text));
-          wait.textContent = String(out.reply || "Đã xử lý.");
-          chatHistory.push({ role: "user", text }, { role: "bot", text: wait.textContent });
-          const acts = Array.isArray(out.actions) ? out.actions : [];
-          const chiNames = acts.filter(a => a && a.type === "add_chi" && Number(a.qty) > 0)
-            .map(a => (chatCategory(a.category) || String(a.category || "")).trim().toLowerCase());
-          const finalActs = acts.filter(a => {
-            if (!a || a.type !== "warehouse" || a.action !== "in") return true;
-            const nm = ((warehouseItems.find(x => x.id === a.itemId) || {}).name || a.itemName || "").trim().toLowerCase();
-            return !(nm && chiNames.includes(nm));
-          });
-          const writes = finalActs.some(a => a && (a.type === "add_chi" || a.type === "add_thu" || a.type === "warehouse"));
-          const snap = writes ? { records: JSON.stringify(records), items: JSON.stringify(warehouseItems), tx: JSON.stringify(warehouseTxList) } : null;
-          if (finalActs.length < acts.length) addChatMsg("sys", "ℹ️ Bỏ qua nhập kho riêng vì khoản chi có số lượng đã tự nhập kho.");
-          finalActs.forEach(a => {
-            const m = runChatAction(a);
-            if (m) addChatMsg("sys", m);
-          });
-          if (snap && (JSON.stringify(records) !== snap.records || JSON.stringify(warehouseItems) !== snap.items || JSON.stringify(warehouseTxList) !== snap.tx)) addChatUndo(snap);
+          const media = imgPayload ? { base64: imgPayload.base64, mimeType: "image/jpeg" } : null;
+          const out = await callChatModel(buildChatPrompt(text, Boolean(imgPayload)), media);
+          const replyText = executeChatResponse(out, imgPayload ? `[Gửi hình ảnh] ${userDisplay}` : userDisplay);
+          wait.innerHTML = formatBotReplyHtml(replyText);
+          attachBotManualControls(wait, out && out.suggestions);
         } catch (err) {
-          wait.textContent = "Lỗi: " + (err && err.message ? err.message : "vui lòng thử lại");
+          wait.innerHTML = formatBotReplyHtml("Lỗi: " + (err && err.message ? err.message : "vui lòng thử lại"));
+          attachBotManualControls(wait, []);
         } finally {
           chatBusy = false;
         }
@@ -9977,7 +10892,7 @@
           chatPanel.style.transformOrigin = (br.left + br.width / 2) + "px " + (br.top + br.height / 2) + "px";
           chatPanel.classList.toggle("open");
           if (chatPanel.classList.contains("open")) {
-            if (!chatLog.children.length) addChatMsg("bot", "Xin chào! Tôi có thể lên món POS, nhập/xuất kho, ghi thu chi, trả lời số liệu hoặc mở trợ lý công thức. Bạn cần gì?");
+            if (!chatLog.children.length) addChatMsg("bot", "Xin chào! Tôi có thể lên món POS, nhập/xuất kho, ghi thu chi, kiểm tra hình ảnh hóa đơn/chuyển khoản hoặc nghiên cứu công thức.\n• Chạm các nút bên dưới để nhập liệu thủ công nhanh bất cứ lúc nào.", null, []);
           }
         });
       }
@@ -10034,141 +10949,123 @@
       chatBubbleBtn.addEventListener("pointerup", endChatDrag);
       chatBubbleBtn.addEventListener("pointercancel", endChatDrag);
 
-      // --- Nhập lệnh bằng giọng nói ---
+      // --- Gửi trực tiếp audio qua API cho AI xử lý ---
       const chatMic = document.getElementById("chat-mic");
-      let dictationNs = null, chatListening = false, chatSpeech = null, chatVoiceBase = "";
+      let chatListening = false;
+      let chatRecorder = null, chatRecStream = null, chatRecChunks = [];
+
       function setChatMic(on) {
         if (!chatMic) return;
         chatMic.classList.toggle("rec", !!on);
         chatMic.textContent = on ? "⏹️" : "🎙️";
       }
+
+      function stopChatRecStream() {
+        if (chatRecStream) {
+          try { chatRecStream.getTracks().forEach(t => t.stop()); } catch (e) {}
+          chatRecStream = null;
+        }
+      }
+
       function chatVoiceHelp(code) {
         chatListening = false;
         setChatMic(false);
         const why = code === "not_granted" ? "Trang chưa được cấp quyền micro. " : "";
-        addChatMsg("sys", "🎙️ " + why + "Ứng dụng/trình duyệt này không cho trang nhận giọng nói trực tiếp. Hãy chạm vào ô nhập, bấm biểu tượng micro trên bàn phím điện thoại để đọc lệnh, rồi bấm Gửi.");
+        addChatMsg("sys", "🎙️ " + why + "Không thể bật Micro trực tiếp trên trình duyệt này. Hãy chạm vào ô nhập và dùng micro trên bàn phím điện thoại rồi bấm Gửi.");
       }
 
-      let chatRecorder = null, chatRecStream = null, chatRecChunks = [];
-      async function chatVoiceViaGemini() {
+      async function sendChatAudioToAI(audioBlob, mimeType) {
+        if (chatBusy) return;
         const cfg = getWhAiConfig();
-        if (!cfg.apiKey || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === "undefined") {
-          chatVoiceHelp();
+        if (!cfg.apiKey) {
+          addChatMsg("sys", "⚠️ Vui lòng nhập Gemini API Key trong Cài Đặt › Tích hợp AI để dùng tính năng gửi giọng nói trực tiếp.");
           return;
         }
+        addChatMsg("user", "🎙️ [Tin nhắn thoại]");
+        chatBusy = true;
+        const wait = addChatMsg("bot", "⏳ AI đang nghe và xử lý lệnh thoại...", null, false);
+        try {
+          const b64 = await blobToBase64(audioBlob);
+          const cleanMime = String(mimeType || "audio/webm").split(";")[0] || "audio/webm";
+          const out = await callChatModel(buildChatPrompt(""), { base64: b64, mimeType: cleanMime });
+          const replyText = executeChatResponse(out, "[Lệnh thoại]");
+          wait.innerHTML = formatBotReplyHtml(replyText);
+          attachBotManualControls(wait, out && out.suggestions);
+        } catch (err) {
+          wait.innerHTML = formatBotReplyHtml("Lỗi xử lý giọng nói: " + (err && err.message ? err.message : "vui lòng thử lại"));
+          attachBotManualControls(wait, []);
+        } finally {
+          chatBusy = false;
+        }
+      }
+
+      async function toggleChatDirectAudio() {
+        if (chatListening) {
+          if (chatRecorder && chatRecorder.state === "recording") {
+            try { chatRecorder.stop(); } catch (e) {
+              stopChatRecStream();
+              chatListening = false;
+              setChatMic(false);
+            }
+          }
+          return;
+        }
+
+        if (chatBusy) return;
+        const cfg = getWhAiConfig();
+        if (!cfg.apiKey) {
+          addChatMsg("sys", "⚠️ Vui lòng nhập Gemini API Key trong Cài Đặt › Tích hợp AI để gửi giọng nói trực tiếp.");
+          return;
+        }
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === "undefined") {
+          chatVoiceHelp("unavailable");
+          return;
+        }
+
         try {
           chatRecStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          const candidateTypes = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg;codecs=opus"];
+          let chosenMime = "";
+          if (typeof MediaRecorder.isTypeSupported === "function") {
+            chosenMime = candidateTypes.find(t => MediaRecorder.isTypeSupported(t)) || "";
+          }
+
           chatRecChunks = [];
-          chatRecorder = new MediaRecorder(chatRecStream);
-          chatRecorder.ondataavailable = (ev) => { if (ev.data && ev.data.size > 0) chatRecChunks.push(ev.data); };
+          chatRecorder = chosenMime
+            ? new MediaRecorder(chatRecStream, { mimeType: chosenMime })
+            : new MediaRecorder(chatRecStream);
+
+          chatRecorder.ondataavailable = (ev) => {
+            if (ev.data && ev.data.size > 0) chatRecChunks.push(ev.data);
+          };
+
           chatRecorder.onstop = async () => {
-            const mime = chatRecorder.mimeType || "audio/webm";
-            try { chatRecStream.getTracks().forEach(t => t.stop()); } catch (e) {}
+            const mime = (chatRecorder && chatRecorder.mimeType) || chosenMime || "audio/webm";
+            stopChatRecStream();
             chatListening = false;
             setChatMic(false);
             const blob = new Blob(chatRecChunks, { type: mime });
-            if (blob.size < 200) { showToast("Đoạn ghi âm quá ngắn!"); return; }
-            const wait = addChatMsg("bot", "⏳ Đang chép lại giọng nói...");
-            try {
-              const b64 = await blobToBase64(blob);
-              const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(cfg.model)}:generateContent`;
-              const res = await fetch(url, {
-                method: "POST",
-                headers: { "Content-Type": "application/json", "x-goog-api-key": cfg.apiKey },
-                body: JSON.stringify({
-                  contents: [{ parts: [
-                    { text: "Chép lại chính xác lời nói tiếng Việt trong đoạn ghi âm. Chỉ trả về đúng văn bản, không giải thích." },
-                    { inline_data: { mime_type: mime.split(";")[0], data: b64 } }
-                  ] }],
-                  generationConfig: { temperature: 0 }
-                })
-              });
-              if (!res.ok) throw new Error("API lỗi (" + res.status + ")");
-              const j = await res.json();
-              const text = String(j.candidates[0].content.parts[0].text || "").trim();
-              wait.remove();
-              if (!text) throw new Error("empty");
-              chatInput.value = text;
-              finishChatVoice();
-            } catch (err) {
-              wait.remove();
-              chatVoiceHelp();
+            chatRecChunks = [];
+            if (!blob || blob.size < 200) {
+              showToast("Đoạn ghi âm quá ngắn!");
+              return;
             }
+            await sendChatAudioToAI(blob, mime);
           };
+
           chatRecorder.start();
           chatListening = true;
           setChatMic(true);
+          showToast("🎙️ Đang thu âm... Nói xong bấm lại nút đỏ để gửi!");
         } catch (err) {
+          stopChatRecStream();
           chatVoiceHelp("not_granted");
         }
       }
 
-      function finishChatVoice() {
-        setChatMic(false);
-        if (chatInput.value.trim()) sendChat();
-      }
-      try {
-        if (window.claude && typeof window.claude.use === "function") {
-          window.claude.use("dictation").then(d => {
-            if (!d) return;
-            dictationNs = d;
-            d.onPartial(({ text }) => { chatInput.value = (chatVoiceBase + " " + text).trim(); });
-            d.onFinal(({ text }) => { chatVoiceBase = (chatVoiceBase + " " + text).trim(); chatInput.value = chatVoiceBase; });
-            d.onState(({ state, reason }) => {
-              if (state === "listening") { setChatMic(true); return; }
-              if (state === "idle" && chatListening) {
-                chatListening = false;
-                if (reason === "not_granted" || reason === "unavailable" || reason === "upstream_error") { chatVoiceHelp(reason); return; }
-                finishChatVoice();
-              }
-            });
-          }).catch(() => {});
-        }
-      } catch (e) {}
       if (chatMic) {
-        chatMic.addEventListener("click", () => {
-          if (chatListening) {
-            if (chatRecorder && chatRecorder.state === "recording") chatRecorder.stop();
-            else if (dictationNs) dictationNs.stop().catch(() => {});
-            else if (chatSpeech) { try { chatSpeech.stop(); } catch (e) {} }
-            return;
-          }
-          chatVoiceBase = chatInput.value.trim();
-          if (dictationNs) {
-            chatListening = true;
-            setChatMic(true);
-            dictationNs.start().catch(err => {
-              chatListening = false;
-              setChatMic(false);
-              chatVoiceHelp(err && err.code);
-            });
-            return;
-          }
-          const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-          if (!SR) { chatVoiceViaGemini(); return; }
-          chatSpeech = new SR();
-          chatSpeech.lang = "vi-VN";
-          chatSpeech.interimResults = true;
-          chatSpeech.continuous = false;
-          chatSpeech.onresult = (ev) => {
-            let t = "";
-            for (let i = 0; i < ev.results.length; i++) t += ev.results[i][0].transcript;
-            chatInput.value = (chatVoiceBase + " " + t).trim();
-          };
-          chatSpeech.onerror = () => {
-            chatSpeech = null;
-            chatListening = false;
-            setTimeout(chatVoiceViaGemini, 300);
-          };
-          chatSpeech.onend = () => {
-            const was = chatListening;
-            chatListening = false;
-            if (was) finishChatVoice(); else setChatMic(false);
-          };
-          chatListening = true;
-          setChatMic(true);
-          try { chatSpeech.start(); } catch (e) { chatListening = false; setChatMic(false); }
-        });
+        chatMic.addEventListener("click", toggleChatDirectAudio);
       }
 
       applyChatBubbleSetting();
@@ -10341,7 +11238,7 @@
 
       async function sendVoiceOrderToGemini(audioPayload, textFallback) {
         const apiKey = ((ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "").trim();
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-2.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
 
         if (!apiKey) {
           setVoiceOrderBtnState("idle");
@@ -10374,33 +11271,7 @@
             });
           }
 
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
-          const res = await fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-goog-api-key": apiKey
-            },
-            body: JSON.stringify({
-              contents: [{ parts }],
-              generationConfig: {
-                responseMimeType: "application/json",
-                temperature: 0.1
-              }
-            })
-          });
-
-          if (!res.ok) {
-            const errBody = await res.text();
-            throw new Error(`API lỗi (${res.status}): ${errBody.slice(0, 120)}`);
-          }
-
-          const jsonRes = await res.json();
-          const rawText = jsonRes && jsonRes.candidates && jsonRes.candidates[0] && jsonRes.candidates[0].content && jsonRes.candidates[0].content.parts && jsonRes.candidates[0].content.parts[0] && jsonRes.candidates[0].content.parts[0].text;
-          if (!rawText) throw new Error("Không nhận được phản hồi từ AI");
-
-          const cleanJson = rawText.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
-          const parsed = JSON.parse(cleanJson);
+          const parsed = await callGeminiForWarehouse(parts);
           setVoiceOrderBtnState("idle");
           applyParsedVoiceOrder(parsed);
         } catch (err) {
@@ -10520,7 +11391,7 @@
       // ======================================================================
       function renderOcrSettingsUI() {
         const apiKey = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "";
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-2.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
         const hasKey = apiKey.trim().length > 0;
 
         const badgeEl = document.getElementById("ocr-settings-badge");
@@ -10789,7 +11660,7 @@
       async function handleOcrImageSelected(file) {
         if (!file) return;
         const apiKey = ((ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "").trim();
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-2.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
 
         if (!apiKey) {
           modalCard.innerHTML = `
@@ -10838,38 +11709,15 @@
             "Lưu ý quy tắc tiền tệ Việt Nam: 'k' = 1.000đ (ví dụ 120k -> 120000), 'tr' = 1.000.000đ. Tách riêng từng dòng mặt hàng nếu là hóa đơn nhiều món."
           ].join("\n");
 
-          const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
-          const res = await fetch(url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-goog-api-key": apiKey
-            },
-            body: JSON.stringify({
-              contents: [{
-                parts: [
-                  { text: prompt },
-                  { inline_data: { mime_type: "image/jpeg", data: base64 } }
-                ]
-              }],
-              generationConfig: {
-                responseMimeType: "application/json",
-                temperature: 0.1
-              }
-            })
+          const parsed = await callGeminiSmartRequest([
+            { text: prompt },
+            { inline_data: { mime_type: "image/jpeg", data: base64 } }
+          ], {
+            apiKey,
+            model,
+            expectJson: true,
+            temperature: 0.1
           });
-
-          if (!res.ok) {
-            const errBody = await res.text();
-            throw new Error(`API lỗi (${res.status}): ${errBody.slice(0, 120)}`);
-          }
-
-          const jsonRes = await res.json();
-          const rawText = jsonRes && jsonRes.candidates && jsonRes.candidates[0] && jsonRes.candidates[0].content && jsonRes.candidates[0].content.parts && jsonRes.candidates[0].content.parts[0] && jsonRes.candidates[0].content.parts[0].text;
-          if (!rawText) throw new Error("Không nhận được dữ liệu bóc tách từ AI");
-
-          const cleanJson = rawText.replace(/^```json\s*/i, "").replace(/```\s*$/i, "").trim();
-          const parsed = JSON.parse(cleanJson);
           openOcrReviewModal(dataUrl, parsed, fallbackDate);
         } catch (err) {
           closeModal();
@@ -10953,7 +11801,7 @@
             ocrSettings = {
               settings: {
                 geminiApiKey: keyInp ? keyInp.value.trim() : "",
-                geminiModel: modSel ? modSel.value : "gemini-2.5-flash"
+                geminiModel: modSel ? modSel.value : "gemini-3.5-flash"
               }
             };
             try {
@@ -11008,6 +11856,170 @@
           }
         });
       }
+
+
+      // ================================================================
+      // TRỢ LÝ VUI NHỘN - bật/tắt độc lập, không can thiệp Chatbox gốc
+      // ================================================================
+      const FUN_ASSISTANT_KEY = "nha_bap_fun_assistant_v1";
+      const funToggle = document.getElementById("fun-assistant-toggle");
+      const cornRoot = document.getElementById("corn-assistant");
+      const cornActor = document.getElementById("corn-character");
+      const cornSpeech = document.getElementById("corn-speech");
+      const cornSpeechText = document.getElementById("corn-speech-text");
+      let cornMoveTimer = null, cornSpeechTimer = null, cornAuditTimer = null;
+      let cornEnabled = false, cornLastNotice = Object.create(null), cornDragging = false;
+      try { cornLastNotice = JSON.parse(localStorage.getItem(FUN_ASSISTANT_KEY + "_notices") || "{}") || {}; } catch(e) {}
+      function cornShow(text, mood) {
+        if (!cornEnabled || !cornRoot) return;
+        cornRoot.dataset.mood = mood || "normal";
+        cornSpeechText.textContent = text;
+        cornSpeech.classList.add("show");
+        clearTimeout(cornSpeechTimer);
+        cornSpeechTimer = setTimeout(() => cornSpeech.classList.remove("show"), 8500);
+      }
+      function cornMove() {
+        if (!cornEnabled || document.hidden || cornDragging) return;
+        const margin = 8, w = cornRoot.offsetWidth || 90, h = cornRoot.offsetHeight || 110;
+        const maxX = Math.max(margin, innerWidth - w - margin);
+        const maxY = Math.max(80, innerHeight - h - 100);
+        const x = margin + Math.random() * Math.max(1, maxX - margin);
+        const y = Math.min(maxY, 85 + Math.random() * Math.max(1, maxY - 85));
+        cornRoot.style.left = Math.round(x) + "px";
+        cornRoot.style.top = Math.round(y) + "px";
+        const moods = ["normal","happy","think","sleep","run"];
+        const mood = moods[Math.floor(Math.random()*moods.length)];
+        cornRoot.dataset.mood = mood;
+        setTimeout(() => { if(cornEnabled && mood==="sleep") cornRoot.dataset.mood="normal"; }, 4500);
+      }
+      function cornAudit() {
+        if (!cornEnabled || document.hidden) return;
+        const todayRows = records.filter(r => r && r.date === TODAY);
+        const revenue = todayRows.filter(r => r.type === "thu").reduce((n,r)=>n+(Number(r.amount)||0),0);
+        const cost = todayRows.filter(r => r.type === "chi").reduce((n,r)=>n+(Number(r.amount)||0),0);
+        const lowStock = Array.isArray(warehouseItems) ? warehouseItems.filter(x => Number.isFinite(Number(x.stock)) && Number.isFinite(Number(x.minStock)) && Number(x.stock) <= Number(x.minStock)) : [];
+        let notice = null, mood = "think", noticeKey = "";
+        if (lowStock.length) {
+          const item = lowStock[0]; noticeKey = "stock:"+item.id+":"+TODAY;
+          notice = "Chủ quán ơi, "+(item.name || item.category || "một nguyên liệu")+" đang ở mức tồn kho tối thiểu ("+item.stock+" "+(item.unit||"")+") nha. Mình kiểm tra nhé!";
+          mood = "worried";
+        } else if (revenue > 0 && cost > revenue) {
+          noticeKey = "cost-over-revenue:"+TODAY;
+          notice = "Hôm nay chi phí ghi nhận đang cao hơn doanh thu. Chủ quán kiểm tra sổ thu – chi thử nhé!";
+          mood = "worried";
+        } else {
+          const yesterday = new Date(TODAY+"T12:00:00"); yesterday.setDate(yesterday.getDate()-1);
+          const ymd = [yesterday.getFullYear(),String(yesterday.getMonth()+1).padStart(2,"0"),String(yesterday.getDate()).padStart(2,"0")].join("-");
+          const prevRevenue = records.filter(r=>r && r.date===ymd && r.type==="thu").reduce((n,r)=>n+(Number(r.amount)||0),0);
+          if (revenue > 0 && prevRevenue > 0 && revenue < prevRevenue * .7) {
+            noticeKey = "revenue-drop:"+TODAY;
+            notice = "Doanh thu ghi nhận hôm nay thấp hơn hôm qua khá nhiều. Mình cùng xem báo cáo nhé!";
+            mood = "worried";
+          } else if (revenue > 0 && cost >= 0) {
+            noticeKey = "positive:"+TODAY;
+            notice = "Hôm nay đã ghi nhận "+revenue.toLocaleString("vi-VN")+"đ doanh thu. Cố lên, chủ quán!";
+            mood = "happy";
+          }
+        }
+        if (notice && noticeKey && !cornLastNotice[noticeKey]) {
+          cornLastNotice[noticeKey] = Date.now();
+          try { localStorage.setItem(FUN_ASSISTANT_KEY+"_notices", JSON.stringify(cornLastNotice)); } catch(e) {}
+          cornShow(notice,mood);
+        } else if (!notice) {
+          cornRoot.dataset.mood = "normal";
+        }
+      }
+      function stopCornAssistant() {
+        clearTimeout(cornMoveTimer); clearTimeout(cornSpeechTimer); clearInterval(cornAuditTimer);
+        cornMoveTimer = cornSpeechTimer = cornAuditTimer = null;
+        if(cornRoot) { cornRoot.style.display="none"; cornRoot.classList.remove("active"); }
+      }
+      function scheduleCornMove() {
+        clearTimeout(cornMoveTimer);
+        if(!cornEnabled || document.hidden) return;
+        cornMoveTimer = setTimeout(() => {
+          cornMove();
+          scheduleCornMove();
+        }, 9000 + Math.random()*11000);
+      }
+      function setCornAssistant(on) {
+        cornEnabled = !!on;
+        try { localStorage.setItem(FUN_ASSISTANT_KEY, cornEnabled ? "1" : "0"); } catch(e) {}
+        if(funToggle) funToggle.checked = cornEnabled;
+        if(!cornRoot) return;
+        if(!cornEnabled) {
+          stopCornAssistant();
+          if(chatBubbleBtn) chatBubbleBtn.style.display = chatBubbleEnabled() ? "flex" : "none";
+          return;
+        }
+        cornRoot.style.display = "block";
+        if(chatBubbleBtn) chatBubbleBtn.style.display = "none";
+        cornRoot.style.left = Math.max(8, innerWidth-112)+"px";
+        cornRoot.style.top = Math.max(90, innerHeight-245)+"px";
+        cornRoot.dataset.mood = "happy";
+        cornShow("Xin chào chủ quán! Bắp đã sẵn sàng đồng hành cùng Nhà Bắp 🌽","happy");
+        cornAudit();
+        clearInterval(cornAuditTimer);
+        cornAuditTimer = setInterval(cornAudit, 5*60*1000);
+        scheduleCornMove();
+      }
+      if(funToggle) {
+        let savedFun = false;
+        try { savedFun = localStorage.getItem(FUN_ASSISTANT_KEY) === "1"; } catch(e) {}
+        funToggle.checked = savedFun;
+        funToggle.addEventListener("change", () => setCornAssistant(funToggle.checked));
+        if(savedFun) setCornAssistant(true);
+      }
+      if(cornActor) {
+        cornActor.addEventListener("click", () => {
+          if(cornDragging) return;
+          cornShow("Có Bắp đây! Chủ quán muốn kiểm tra việc gì nào?","happy");
+          cornActor.style.animation = "corn-hop .55s ease-in-out 2";
+          setTimeout(()=>{ if(cornActor) cornActor.style.animation=""; },1200);
+          if(chatBubbleBtn) chatBubbleBtn.click();
+        });
+        let dragStart = null;
+        cornActor.addEventListener("pointerdown", e => {
+          dragStart = {x:e.clientX,y:e.clientY,left:cornRoot.offsetLeft,top:cornRoot.offsetTop,id:e.pointerId};
+          cornDragging = false;
+          try { cornActor.setPointerCapture(e.pointerId); } catch(err) {}
+        });
+        cornActor.addEventListener("pointermove", e => {
+          if(!dragStart || dragStart.id!==e.pointerId) return;
+          if(Math.abs(e.clientX-dragStart.x)>6 || Math.abs(e.clientY-dragStart.y)>6) cornDragging=true;
+          if(cornDragging) {
+            cornRoot.style.transition="none";
+            cornRoot.style.left=Math.max(0,Math.min(innerWidth-cornRoot.offsetWidth,dragStart.left+e.clientX-dragStart.x))+"px";
+            cornRoot.style.top=Math.max(65,Math.min(innerHeight-cornRoot.offsetHeight-75,dragStart.top+e.clientY-dragStart.y))+"px";
+          }
+        });
+        const endCornDrag = () => {
+          if(dragStart) { dragStart=null; cornRoot.style.transition=""; setTimeout(()=>cornDragging=false,180); }
+        };
+        cornActor.addEventListener("pointerup",endCornDrag);
+        cornActor.addEventListener("pointercancel",endCornDrag);
+      }
+      document.getElementById("corn-speech-close")?.addEventListener("click", e => {
+        e.stopPropagation(); cornSpeech.classList.remove("show"); clearTimeout(cornSpeechTimer);
+      });
+      cornSpeech?.addEventListener("click", e => {
+        if(e.target && e.target.id === "corn-speech-close") return;
+        if(chatBubbleBtn) chatBubbleBtn.click();
+      });
+      document.addEventListener("visibilitychange", () => {
+        if(!cornEnabled) return;
+        if(document.hidden) {
+          clearTimeout(cornMoveTimer); clearInterval(cornAuditTimer);
+          cornMoveTimer=cornAuditTimer=null;
+        } else {
+          cornAudit(); cornAuditTimer=setInterval(cornAudit,5*60*1000); scheduleCornMove();
+        }
+      });
+      window.addEventListener("resize", () => {
+        if(!cornEnabled) return;
+        cornRoot.style.left=Math.min(cornRoot.offsetLeft,innerWidth-cornRoot.offsetWidth-6)+"px";
+        cornRoot.style.top=Math.min(cornRoot.offsetTop,innerHeight-cornRoot.offsetHeight-75)+"px";
+      });
 
       if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", () => {
