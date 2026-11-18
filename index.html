@@ -1030,6 +1030,183 @@
     @keyframes corn-bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}@keyframes corn-hop{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-22px) scale(1.04)}}@keyframes corn-run{from{transform:translateY(0) rotate(-7deg)}to{transform:translateY(-6px) rotate(7deg)}}@keyframes corn-pop{from{opacity:0;transform:translateY(7px) scale(.96)}to{opacity:1;transform:none}}
     @media(prefers-reduced-motion:reduce){#corn-character,#corn-speech{animation:none!important}#corn-assistant{transition:none}}@media(max-width:480px){#corn-assistant{width:82px;height:105px}#corn-character{width:82px;height:82px}#corn-speech{width:min(220px,65vw)}}
 
+
+    /* Thiết kế Trợ lý vui nhộn được chuyển từ bản Gemini */
+    /* ========================================================================
+       BONG BÓNG CHAT CŨ (KHI TRỢ LÝ VUI NHỘN = OFF)
+       ======================================================================== */
+    #chat-bubble-btn {
+      position: fixed; right: 14px; bottom: 88px; width: 64px; height: 64px;
+      border-radius: 50%; border: none; background: var(--accent); color: #fff;
+      font-size: 30px; box-shadow: 0 6px 18px rgba(0,0,0,0.28); z-index: 55;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      touch-action: none; user-select: none;
+    }
+    #chat-bubble-btn:active { transform: scale(0.94); }
+
+    /* ========================================================================
+       NHÂN VẬT QUẢ BẮP HOẠT HÌNH (KHI TRỢ LÝ VUI NHỘN = ON)
+       ======================================================================== */
+    #corn-mascot-wrap {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 74px;
+      height: 86px;
+      z-index: 56;
+      display: none;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: none;
+      cursor: grab;
+      will-change: transform;
+      filter: drop-shadow(0 5px 10px rgba(28, 25, 23, 0.22));
+    }
+    #corn-mascot-wrap.active { display: block; }
+    #corn-mascot-wrap:active { cursor: grabbing; }
+
+    #corn-mascot-inner {
+      width: 100%;
+      height: 100%;
+      transform-origin: 50% 90%;
+      transition: transform 0.18s ease;
+    }
+
+    @keyframes cornWalkBob {
+      0%, 100% { transform: translateY(0) rotate(-3deg); }
+      50% { transform: translateY(-5px) rotate(3deg); }
+    }
+    @keyframes cornRunBob {
+      0%, 100% { transform: translateY(0) rotate(-6deg) scaleX(1.03); }
+      50% { transform: translateY(-9px) rotate(6deg) scaleY(1.04); }
+    }
+    @keyframes cornJumpHigh {
+      0%, 100% { transform: translateY(0) scaleY(0.95); }
+      40% { transform: translateY(-24px) scaleY(1.06); }
+      75% { transform: translateY(-4px) scaleY(0.96); }
+    }
+    @keyframes cornIdleBounce {
+      0%, 100% { transform: scaleY(1) translateY(0); }
+      50% { transform: scaleY(0.96) translateY(2px); }
+    }
+    @keyframes cornSitDown {
+      0%, 100% { transform: translateY(7px) scaleY(0.92) scaleX(1.05); }
+      50% { transform: translateY(8px) scaleY(0.90) scaleX(1.06); }
+    }
+    @keyframes cornLegLeft {
+      0%, 100% { transform: rotate(-22deg); }
+      50% { transform: rotate(24deg); }
+    }
+    @keyframes cornLegRight {
+      0%, 100% { transform: rotate(24deg); }
+      50% { transform: rotate(-22deg); }
+    }
+    @keyframes cornArmWave {
+      0%, 100% { transform: rotate(-10deg); }
+      50% { transform: rotate(-55deg); }
+    }
+    @keyframes cornArmPoint {
+      0%, 100% { transform: rotate(-48deg) translateX(2px); }
+      50% { transform: rotate(-60deg) translateX(4px); }
+    }
+    @keyframes cornZzzFloat {
+      0% { opacity: 0; transform: translate(0, 0) scale(0.7); }
+      40% { opacity: 1; }
+      100% { opacity: 0; transform: translate(12px, -22px) scale(1.15); }
+    }
+
+    #corn-mascot-wrap[data-state="walk"] #corn-mascot-inner { animation: cornWalkBob 0.46s infinite ease-in-out; }
+    #corn-mascot-wrap[data-state="walk"] .corn-leg-l { transform-origin: 31px 66px; animation: cornLegLeft 0.46s infinite ease-in-out; }
+    #corn-mascot-wrap[data-state="walk"] .corn-leg-r { transform-origin: 43px 66px; animation: cornLegRight 0.46s infinite ease-in-out; }
+
+    #corn-mascot-wrap[data-state="run"] #corn-mascot-inner { animation: cornRunBob 0.28s infinite ease-in-out; }
+    #corn-mascot-wrap[data-state="run"] .corn-leg-l { transform-origin: 31px 66px; animation: cornLegLeft 0.28s infinite ease-in-out; }
+    #corn-mascot-wrap[data-state="run"] .corn-leg-r { transform-origin: 43px 66px; animation: cornLegRight 0.28s infinite ease-in-out; }
+
+    #corn-mascot-wrap[data-state="jump"] #corn-mascot-inner,
+    #corn-mascot-wrap[data-state="celebrate"] #corn-mascot-inner { animation: cornJumpHigh 0.58s infinite ease-in-out; }
+    #corn-mascot-wrap[data-state="celebrate"] .corn-arm-l { transform-origin: 20px 44px; animation: cornArmWave 0.32s infinite ease-in-out; }
+    #corn-mascot-wrap[data-state="celebrate"] .corn-arm-r { transform-origin: 54px 44px; animation: cornArmWave 0.32s infinite reverse ease-in-out; }
+
+    #corn-mascot-wrap[data-state="idle"] #corn-mascot-inner,
+    #corn-mascot-wrap[data-state="happy"] #corn-mascot-inner,
+    #corn-mascot-wrap[data-state="surprised"] #corn-mascot-inner,
+    #corn-mascot-wrap[data-state="worried"] #corn-mascot-inner { animation: cornIdleBounce 1.6s infinite ease-in-out; }
+
+    #corn-mascot-wrap[data-state="sit"] #corn-mascot-inner,
+    #corn-mascot-wrap[data-state="sleep"] #corn-mascot-inner { animation: cornSitDown 2.2s infinite ease-in-out; }
+
+    #corn-mascot-wrap[data-state="point"] .corn-arm-r { transform-origin: 54px 44px; animation: cornArmPoint 0.65s infinite ease-in-out; }
+    #corn-mascot-wrap[data-state="think"] .corn-arm-r { transform-origin: 54px 44px; transform: rotate(-72deg); }
+    #corn-mascot-wrap[data-state="wave"] .corn-arm-l { transform-origin: 20px 44px; animation: cornArmWave 0.4s infinite ease-in-out; }
+
+    #corn-zzz {
+      position: absolute; top: -6px; right: 2px; font-size: 12px; font-weight: 900;
+      color: #B45309; display: none; pointer-events: none;
+    }
+    #corn-mascot-wrap[data-state="sleep"] #corn-zzz { display: block; animation: cornZzzFloat 1.8s infinite ease-out; }
+
+    /* ========================================================================
+       KHUNG THOẠI TRUYỆN TRANH CỦA NHÂN VẬT QUẢ BẮP
+       ======================================================================== */
+    #corn-speech-bubble {
+      position: fixed;
+      z-index: 57;
+      max-width: 245px;
+      min-width: 165px;
+      background: #FFFBEB;
+      border: 2px solid #F59E0B;
+      border-radius: 16px;
+      padding: 10px 26px 10px 12px;
+      box-shadow: 0 8px 20px rgba(28, 25, 23, 0.16);
+      font-size: 12.5px;
+      line-height: 1.4;
+      color: #1C1917;
+      display: none;
+      cursor: pointer;
+      animation: cornSpeechIn 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    #corn-speech-bubble.open { display: block; }
+    #corn-speech-bubble.warn { background: #FEF2F2; border-color: #EF4444; }
+    #corn-speech-bubble.good { background: #ECFDF5; border-color: #10B981; }
+
+    @keyframes cornSpeechIn {
+      from { opacity: 0; transform: scale(0.86) translateY(6px); }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    #corn-speech-close {
+      position: absolute; top: 5px; right: 6px; width: 20px; height: 20px;
+      border: none; border-radius: 50%; background: rgba(0,0,0,0.08);
+      color: #374151; font-size: 11px; font-weight: 800; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; padding: 0;
+    }
+    #corn-speech-tag {
+      font-size: 10px; font-weight: 800; text-transform: uppercase;
+      letter-spacing: 0.3px; color: #B45309; margin-bottom: 3px;
+    }
+    #corn-speech-bubble.warn #corn-speech-tag { color: #B91C1C; }
+    #corn-speech-bubble.good #corn-speech-tag { color: #15803D; }
+
+    #corn-speech-tail {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: inherit;
+      border-right: 2px solid;
+      border-bottom: 2px solid;
+      border-color: inherit;
+      transform: rotate(45deg);
+      bottom: -7px;
+      left: 24px;
+    }
+    #corn-speech-bubble.tail-top #corn-speech-tail {
+      bottom: auto;
+      top: -7px;
+      transform: rotate(-135deg);
+    }
+
+
   </style>
 </head>
 <body>
@@ -1936,22 +2113,96 @@
     <div class="modal-card" id="modal-card"></div>
   </div>
 
-   <div id="corn-assistant" aria-label="Trợ lý vui nhộn" style="display:none">
-     <div id="corn-speech" role="status"><button type="button" id="corn-speech-close" aria-label="Đóng">×</button><span id="corn-speech-text"></span></div>
-     <button type="button" id="corn-character" aria-label="Mở Chatbox trợ lý">
-       <svg viewBox="0 0 120 150" role="img" aria-label="Nhân vật quả bắp hoạt hình">
-         <path class="corn-leaf leaf-left" d="M48 91 Q5 83 12 43 Q27 55 49 63 Q24 25 43 10 Q61 37 61 68Z"/>
-         <path class="corn-leaf leaf-right" d="M70 91 Q112 79 107 39 Q88 51 72 63 Q94 24 76 9 Q59 36 58 69Z"/>
-         <path class="corn-body" d="M31 47 Q60 28 89 47 Q101 78 86 119 Q60 143 34 119 Q19 80 31 47Z"/>
-         <g class="corn-kernels" fill="#FDE68A"><ellipse cx="43" cy="62" rx="5" ry="6"/><ellipse cx="58" cy="58" rx="5" ry="6"/><ellipse cx="74" cy="62" rx="5" ry="6"/><ellipse cx="36" cy="78" rx="5" ry="6"/><ellipse cx="51" cy="75" rx="5" ry="6"/><ellipse cx="67" cy="76" rx="5" ry="6"/><ellipse cx="83" cy="79" rx="5" ry="6"/><ellipse cx="40" cy="94" rx="5" ry="6"/><ellipse cx="56" cy="92" rx="5" ry="6"/><ellipse cx="72" cy="94" rx="5" ry="6"/><ellipse cx="49" cy="109" rx="5" ry="6"/><ellipse cx="65" cy="109" rx="5" ry="6"/></g>
-         <g class="corn-face"><path d="M42 78 Q49 72 55 79 M65 79 Q72 72 79 78" fill="none" stroke="#713F12" stroke-width="3" stroke-linecap="round"/><ellipse cx="49" cy="86" rx="4" ry="6" fill="#292524"/><ellipse cx="72" cy="86" rx="4" ry="6" fill="#292524"/><path d="M53 99 Q61 107 69 99" fill="none" stroke="#7C2D12" stroke-width="3" stroke-linecap="round"/><circle cx="39" cy="94" r="4" fill="#FB7185" opacity=".65"/><circle cx="82" cy="94" r="4" fill="#FB7185" opacity=".65"/></g>
-         <path class="corn-arm arm-left" d="M30 88 Q12 96 20 109" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linecap="round"/><path class="corn-arm arm-right" d="M89 88 Q108 96 101 108" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linecap="round"/>
-         <path class="corn-leg leg-left" d="M48 123 L43 137 M71 123 L77 137" stroke="#92400E" stroke-width="7" stroke-linecap="round"/><ellipse cx="38" cy="139" rx="10" ry="5" fill="#7C2D12"/><ellipse cx="82" cy="139" rx="10" ry="5" fill="#7C2D12"/>
-       </svg>
-       <span class="corn-z">Zzz</span>
-     </button>
-   </div>
+  <!-- BONG BÓNG CHAT CŨ (HIỂN THỊ KHI TRỢ LÝ VUI NHỘN = OFF) -->
   <button type="button" id="chat-bubble-btn" aria-label="Mở trợ lý AI">✨</button>
+
+  <!-- NHÂN VẬT QUẢ BẮP HOẠT HÌNH SVG (HIỂN THỊ KHI TRỢ LÝ VUI NHỘN = ON) -->
+  <div id="corn-mascot-wrap" data-state="idle" role="button" tabindex="0" aria-label="Trợ lý Quả Bắp Nhà Bắp">
+    <div id="corn-zzz">Zzz</div>
+    <div id="corn-mascot-inner">
+      <svg id="corn-svg" viewBox="0 0 74 86" width="74" height="86" xmlns="http://www.w3.org/2000/svg">
+        <!-- Bóng đổ dưới chân -->
+        <ellipse cx="37" cy="81" rx="18" ry="4" fill="rgba(28,25,23,0.18)" />
+        <!-- Chân trái & Chân phải -->
+        <g class="corn-leg-l">
+          <path d="M31 65 L28 76" stroke="#92400E" stroke-width="4" stroke-linecap="round" />
+          <ellipse cx="26" cy="77" rx="5.5" ry="3.2" fill="#B45309" />
+        </g>
+        <g class="corn-leg-r">
+          <path d="M43 65 L46 76" stroke="#92400E" stroke-width="4" stroke-linecap="round" />
+          <ellipse cx="48" cy="77" rx="5.5" ry="3.2" fill="#B45309" />
+        </g>
+        <!-- Tay trái & Tay phải -->
+        <g class="corn-arm-l">
+          <path d="M21 44 Q11 46 10 38" stroke="#92400E" stroke-width="3.6" stroke-linecap="round" fill="none" />
+          <circle cx="10" cy="37" r="3.5" fill="#FDE68A" stroke="#92400E" stroke-width="1.5" />
+        </g>
+        <g class="corn-arm-r">
+          <path d="M53 44 Q63 46 64 38" stroke="#92400E" stroke-width="3.6" stroke-linecap="round" fill="none" />
+          <circle cx="64" cy="37" r="3.5" fill="#FDE68A" stroke="#92400E" stroke-width="1.5" />
+        </g>
+        <!-- Chỏm râu bắp trên đỉnh -->
+        <path d="M37 11 C34 4, 29 5, 31 11 M37 11 C37 3, 41 3, 39 11 M37 11 C42 5, 46 7, 42 12" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" fill="none" />
+        <!-- Thân trái bắp vàng tươi -->
+        <defs>
+          <linearGradient id="cornBodyGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#FDE047" />
+            <stop offset="55%" stop-color="#FACC15" />
+            <stop offset="100%" stop-color="#EAB308" />
+          </linearGradient>
+        </defs>
+        <path d="M37 11 C23 11, 18 28, 20 48 C21 60, 28 66, 37 66 C46 66, 53 60, 54 48 C56 28, 51 11, 37 11 Z" fill="url(#cornBodyGrad)" stroke="#B45309" stroke-width="2" />
+        <!-- Các hàng hạt bắp nổi -->
+        <g fill="#FEF08A" opacity="0.85">
+          <rect x="26" y="17" width="6" height="5" rx="2.5" />
+          <rect x="34" y="16" width="6" height="5" rx="2.5" />
+          <rect x="42" y="17" width="6" height="5" rx="2.5" />
+          <rect x="23" y="24" width="6" height="5" rx="2.5" />
+          <rect x="45" y="24" width="6" height="5" rx="2.5" />
+          <rect x="23" y="45" width="6" height="5" rx="2.5" />
+          <rect x="31" y="46" width="5.5" height="5" rx="2.5" />
+          <rect x="38" y="46" width="5.5" height="5" rx="2.5" />
+          <rect x="45" y="45" width="6" height="5" rx="2.5" />
+        </g>
+        <!-- Lá bắp xanh ôm quanh thân dưới -->
+        <path d="M20 44 C11 49, 13 64, 29 67 C25 59, 23 52, 20 44 Z" fill="#22C55E" stroke="#15803D" stroke-width="1.8" stroke-linejoin="round" />
+        <path d="M54 44 C63 49, 61 64, 45 67 C49 59, 51 52, 54 44 Z" fill="#16A34A" stroke="#15803D" stroke-width="1.8" stroke-linejoin="round" />
+        <path d="M25 56 C31 61, 43 61, 49 56 C46 65, 41 68, 37 68 C33 68, 28 65, 25 56 Z" fill="#4ADE80" stroke="#15803D" stroke-width="1.6" />
+        <!-- Khuôn mặt biểu cảm động (được JS cập nhật theo trạng thái) -->
+        <g id="corn-face">
+          <!-- Má hồng -->
+          <ellipse cx="26" cy="38" rx="3.2" ry="1.8" fill="#FB7185" opacity="0.55" />
+          <ellipse cx="48" cy="38" rx="3.2" ry="1.8" fill="#FB7185" opacity="0.55" />
+          <!-- Lông mày -->
+          <path id="corn-brow-l" d="M27 27 Q30 25.5 33 27" stroke="#78350F" stroke-width="2" stroke-linecap="round" fill="none" />
+          <path id="corn-brow-r" d="M41 27 Q44 25.5 47 27" stroke="#78350F" stroke-width="2" stroke-linecap="round" fill="none" />
+          <!-- Mắt -->
+          <g id="corn-eyes-open">
+            <circle cx="30" cy="32.5" r="3" fill="#1C1917" />
+            <circle cx="31" cy="31.5" r="1.1" fill="#FFFFFF" />
+            <circle cx="44" cy="32.5" r="3" fill="#1C1917" />
+            <circle cx="45" cy="31.5" r="1.1" fill="#FFFFFF" />
+          </g>
+          <g id="corn-eyes-sleep" style="display:none;">
+            <path d="M27 33 Q30 35.5 33 33" stroke="#1C1917" stroke-width="2.2" stroke-linecap="round" fill="none" />
+            <path d="M41 33 Q44 35.5 47 33" stroke="#1C1917" stroke-width="2.2" stroke-linecap="round" fill="none" />
+          </g>
+          <!-- Miệng -->
+          <path id="corn-mouth" d="M33 39 Q37 43 41 39" stroke="#78350F" stroke-width="2.2" stroke-linecap="round" fill="none" />
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- KHUNG THOẠI TRUYỆN TRANH CỦA QUẢ BẮP -->
+  <div id="corn-speech-bubble" role="button" tabindex="0">
+    <button type="button" id="corn-speech-close" aria-label="Đóng lời nhắc">✕</button>
+    <div id="corn-speech-tag">🌽 Quả Bắp nhắc nhẹ</div>
+    <div id="corn-speech-text"></div>
+    <div id="corn-speech-tail"></div>
+  </div>
+
+  <!-- CỬA SỔ CHATBOX AI -->
   <div id="chat-panel">
     <div class="chat-head"><b>✨ Trợ lý AI Nhà Bắp</b><button type="button" id="chat-close" aria-label="Đóng">✕</button></div>
     <div id="chat-log"></div>
@@ -2179,7 +2430,7 @@
       let backupReminderDays = 3;
       let snoozeUntil = 0;
       let gsheetWebhookUrl = "";
-      let ocrSettings = { settings: { geminiApiKey: "", geminiModel: "gemini-3.5-flash" } };
+      let ocrSettings = { settings: { geminiApiKey: "", geminiModel: "gemini-3.8-flash" } };
       let forcePreviewBackupAlert = false;
       try {
         autoBackupEnabled = localStorage.getItem(AUTO_BACKUP_KEY) === "1";
@@ -2197,12 +2448,15 @@
           const parsedOcr = JSON.parse(rawOcr);
           if (parsedOcr && parsedOcr.settings) {
             ocrSettings.settings.geminiApiKey = String(parsedOcr.settings.geminiApiKey || "");
-            let loadedModel = parsedOcr.settings.geminiModel || "gemini-3.5-flash";
-            if (loadedModel === "gemini-2.5-flash" || loadedModel === "gemini-2.0-flash" || loadedModel === "gemini-1.5-flash") {
-              loadedModel = "gemini-3.5-flash";
-            } else if (loadedModel === "gemini-2.5-pro" || loadedModel === "gemini-1.5-pro") {
-              loadedModel = "gemini-3.5-pro";
-            }
+            let loadedModel = parsedOcr.settings.geminiModel || "gemini-3.8-flash";
+            // Tự chuyển các model đã ngừng hỗ trợ sang model Flash hiện hành.
+            const retiredModels = [
+              "gemini-2.0-flash", "gemini-2.0-flash-001", "gemini-2.0-flash-lite",
+              "gemini-2.0-flash-lite-001", "gemini-1.5-flash", "gemini-1.5-flash-001",
+              "gemini-1.5-flash-002", "gemini-2.5-flash", "gemini-2.5-flash-preview-09-25",
+              "gemini-3.5-flash", "gemini-3.7-flash"
+            ];
+            if (retiredModels.includes(loadedModel)) loadedModel = "gemini-3.8-flash";
             ocrSettings.settings.geminiModel = loadedModel;
           }
         }
@@ -3195,18 +3449,23 @@
         const s = (ocrSettings && ocrSettings.settings) || {};
         return {
           apiKey: String(s.geminiApiKey || "").trim(),
-          model: s.geminiModel || "gemini-3.5-flash"
+          model: s.geminiModel || "gemini-3.8-flash"
         };
       }
 
       function getFallbackGeminiModels(primaryModel) {
+        // Chuỗi dự phòng theo danh sách model Gemini general-use đang được Google công bố.
+        // Một số model Gemini 4 có thể yêu cầu gói thanh toán/quyền truy cập phù hợp;
+        // nếu API key không có quyền, ứng dụng tiếp tục thử model kế tiếp.
         return Array.from(new Set([
           primaryModel,
-          "gemini-3.5-flash",
-          "gemini-2.5-flash",
-          "gemini-2.5-flash-lite",
-          "gemini-2.5-pro",
-          "gemini-2.0-flash"
+          "gemini-3.8-flash",
+          "gemini-4-hydrogen",
+          "gemini-4-carbon",
+          "gemini-4-argon",
+          "gemini-3.6-flash",
+          "gemini-3.5-flash-lite",
+          "gemini-3.1-flash-lite"
         ].filter(Boolean)));
       }
 
@@ -3253,7 +3512,11 @@
 
             if (!res.ok) {
               const errBody = await res.text();
-              if ([400, 404, 429, 500, 502, 503, 504].includes(res.status)) {
+              const lowerErr = errBody.toLowerCase();
+              const modelAccessIssue = res.status === 403 && lowerErr.includes("model") &&
+                (lowerErr.includes("not found") || lowerErr.includes("not supported") ||
+                 lowerErr.includes("does not have access") || lowerErr.includes("permission"));
+              if ([400, 404, 429, 500, 502, 503, 504].includes(res.status) || modelAccessIssue) {
                 lastErr = new Error(`API (${res.status}) trên ${step.model}`);
                 if (res.status === 503 || res.status === 429) {
                   await new Promise(r => setTimeout(r, 450));
@@ -3830,7 +4093,7 @@
       function openNotebookResearchModal() {
         resetModalLayout();
         const apiKey = ((ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "").trim();
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.8-flash";
 
         if (!apiKey) {
           modalCard.innerHTML = `
@@ -6514,7 +6777,7 @@
 
       function openRecipeAiAssistantModal(initialTab, preselectedRecipeId) {
         const apiKey = ((ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "").trim();
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.8-flash";
 
         if (!apiKey) {
           modalCard.innerHTML = `
@@ -6809,7 +7072,7 @@
 
       async function processVoiceRecipeRequest(audioPayload, textFallback) {
         const apiKey = ((ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "").trim();
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.8-flash";
 
         if (!apiKey) {
           setRecpVoiceBtnState("idle");
@@ -7972,7 +8235,7 @@
       async function handleDebtOcrImageSelected(file) {
         if (!file) return;
         const apiKey = ((ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "").trim();
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.8-flash";
 
         if (!apiKey) {
           modalCard.innerHTML = `
@@ -8803,11 +9066,11 @@
 
       function openAiSettingsModal() {
         const apiKey = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "";
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.8-flash";
 
         modalCard.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h3 style="margin:0;">Tích hợp AI (Gemini 3.5)</h3>
+            <h3 style="margin:0;">Tích hợp AI (Gemini)</h3>
           </div>
 
           <div class="form-group" style="margin-bottom:10px;">
@@ -8821,9 +9084,15 @@
           <div class="form-group" style="margin-bottom:10px;">
             <label for="select-gemini-model">Mô hình AI phân tích</label>
             <select id="select-gemini-model" style="min-height:42px; font-size:16px;">
-              <option value="gemini-3.5-flash" ${model === "gemini-3.5-flash" ? "selected" : ""}>gemini-3.5-flash - Siêu nhanh & Thông minh (Mặc định)</option>
-              <option value="gemini-3.5-pro" ${model === "gemini-3.5-pro" ? "selected" : ""}>gemini-3.5-pro - Suy luận sâu & Chữ viết tay khó</option>
+              <option value="gemini-3.8-flash" ${model === "gemini-3.8-flash" ? "selected" : ""}>Gemini 3.8 Flash - Nhanh, cân bằng (Mặc định)</option>
+              <option value="gemini-4-hydrogen" ${model === "gemini-4-hydrogen" ? "selected" : ""}>Gemini 4 Hydrogen - Mạnh, suy luận tốt</option>
+              <option value="gemini-4-carbon" ${model === "gemini-4-carbon" ? "selected" : ""}>Gemini 4 Carbon - Model thế hệ mới</option>
+              <option value="gemini-4-argon" ${model === "gemini-4-argon" ? "selected" : ""}>Gemini 4 Argon - Model thế hệ mới</option>
+              <option value="gemini-3.6-flash" ${model === "gemini-3.6-flash" ? "selected" : ""}>Gemini 3.6 Flash - Nhanh, ổn định</option>
+              <option value="gemini-3.5-flash-lite" ${model === "gemini-3.5-flash-lite" ? "selected" : ""}>Gemini 3.5 Flash-Lite - Nhẹ, tiết kiệm</option>
+              <option value="gemini-3.1-flash-lite" ${model === "gemini-3.1-flash-lite" ? "selected" : ""}>Gemini 3.1 Flash-Lite - Nhẹ, tiết kiệm</option>
             </select>
+            <small style="display:block; margin-top:6px; color:var(--muted); line-height:1.45;">Nếu model chính gặp lỗi tạm thời/không khả dụng, ứng dụng tự thử các model dự phòng. Một số model Gemini 4 có thể yêu cầu quyền truy cập hoặc gói thanh toán phù hợp.</small>
           </div>
 
           <button type="button" class="btn-submit" data-action="save-ocr-settings" style="margin:0 0 10px; min-height:42px; font-size:14px; background:var(--green);">
@@ -11238,7 +11507,7 @@
 
       async function sendVoiceOrderToGemini(audioPayload, textFallback) {
         const apiKey = ((ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "").trim();
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.8-flash";
 
         if (!apiKey) {
           setVoiceOrderBtnState("idle");
@@ -11391,7 +11660,7 @@
       // ======================================================================
       function renderOcrSettingsUI() {
         const apiKey = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "";
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.8-flash";
         const hasKey = apiKey.trim().length > 0;
 
         const badgeEl = document.getElementById("ocr-settings-badge");
@@ -11660,7 +11929,7 @@
       async function handleOcrImageSelected(file) {
         if (!file) return;
         const apiKey = ((ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiApiKey) || "").trim();
-        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.5-flash";
+        const model = (ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.8-flash";
 
         if (!apiKey) {
           modalCard.innerHTML = `
@@ -11801,7 +12070,7 @@
             ocrSettings = {
               settings: {
                 geminiApiKey: keyInp ? keyInp.value.trim() : "",
-                geminiModel: modSel ? modSel.value : "gemini-3.5-flash"
+                geminiModel: modSel ? modSel.value : "gemini-3.8-flash"
               }
             };
             try {
@@ -11858,177 +12127,407 @@
       }
 
 
-      // ================================================================
-      // TRỢ LÝ VUI NHỘN - bật/tắt độc lập, không can thiệp Chatbox gốc
-      // ================================================================
+      // TRỢ LÝ VUI NHỘN – thiết kế và chuyển động từ bản Gemini, dùng Chatbox gốc của Nhà Bắp
+
+      function openMascotChat(promptText) {
+        if (chatBubbleBtn) chatBubbleBtn.click();
+        if (promptText) {
+          setTimeout(() => {
+            const input = document.getElementById("chat-input");
+            const send = document.getElementById("chat-send");
+            if (input && send) {
+              input.value = promptText;
+              send.click();
+            }
+          }, 260);
+        }
+      }
+
       const FUN_ASSISTANT_KEY = "nha_bap_fun_assistant_v1";
-      const funToggle = document.getElementById("fun-assistant-toggle");
-      const cornRoot = document.getElementById("corn-assistant");
-      const cornActor = document.getElementById("corn-character");
-      const cornSpeech = document.getElementById("corn-speech");
-      const cornSpeechText = document.getElementById("corn-speech-text");
-      let cornMoveTimer = null, cornSpeechTimer = null, cornAuditTimer = null;
-      let cornEnabled = false, cornLastNotice = Object.create(null), cornDragging = false;
-      try { cornLastNotice = JSON.parse(localStorage.getItem(FUN_ASSISTANT_KEY + "_notices") || "{}") || {}; } catch(e) {}
-      function cornShow(text, mood) {
-        if (!cornEnabled || !cornRoot) return;
-        cornRoot.dataset.mood = mood || "normal";
-        cornSpeechText.textContent = text;
-        cornSpeech.classList.add("show");
-        clearTimeout(cornSpeechTimer);
-        cornSpeechTimer = setTimeout(() => cornSpeech.classList.remove("show"), 8500);
-      }
-      function cornMove() {
-        if (!cornEnabled || document.hidden || cornDragging) return;
-        const margin = 8, w = cornRoot.offsetWidth || 90, h = cornRoot.offsetHeight || 110;
-        const maxX = Math.max(margin, innerWidth - w - margin);
-        const maxY = Math.max(80, innerHeight - h - 100);
-        const x = margin + Math.random() * Math.max(1, maxX - margin);
-        const y = Math.min(maxY, 85 + Math.random() * Math.max(1, maxY - 85));
-        cornRoot.style.left = Math.round(x) + "px";
-        cornRoot.style.top = Math.round(y) + "px";
-        const moods = ["normal","happy","think","sleep","run"];
-        const mood = moods[Math.floor(Math.random()*moods.length)];
-        cornRoot.dataset.mood = mood;
-        setTimeout(() => { if(cornEnabled && mood==="sleep") cornRoot.dataset.mood="normal"; }, 4500);
-      }
-      function cornAudit() {
-        if (!cornEnabled || document.hidden) return;
-        const todayRows = records.filter(r => r && r.date === TODAY);
-        const revenue = todayRows.filter(r => r.type === "thu").reduce((n,r)=>n+(Number(r.amount)||0),0);
-        const cost = todayRows.filter(r => r.type === "chi").reduce((n,r)=>n+(Number(r.amount)||0),0);
-        const lowStock = Array.isArray(warehouseItems) ? warehouseItems.filter(x => Number.isFinite(Number(x.stock)) && Number.isFinite(Number(x.minStock)) && Number(x.stock) <= Number(x.minStock)) : [];
-        let notice = null, mood = "think", noticeKey = "";
-        if (lowStock.length) {
-          const item = lowStock[0]; noticeKey = "stock:"+item.id+":"+TODAY;
-          notice = "Chủ quán ơi, "+(item.name || item.category || "một nguyên liệu")+" đang ở mức tồn kho tối thiểu ("+item.stock+" "+(item.unit||"")+") nha. Mình kiểm tra nhé!";
-          mood = "worried";
-        } else if (revenue > 0 && cost > revenue) {
-          noticeKey = "cost-over-revenue:"+TODAY;
-          notice = "Hôm nay chi phí ghi nhận đang cao hơn doanh thu. Chủ quán kiểm tra sổ thu – chi thử nhé!";
-          mood = "worried";
+      let funMascotOn = localStorage.getItem(FUN_ASSISTANT_KEY) === "1";
+      const mascotWrap = document.getElementById("corn-mascot-wrap");
+      const mascotInner = document.getElementById("corn-mascot-inner");
+      const speechBubble = document.getElementById("corn-speech-bubble");
+      const speechTag = document.getElementById("corn-speech-tag");
+      const speechText = document.getElementById("corn-speech-text");
+      const speechClose = document.getElementById("corn-speech-close");
+      const browL = document.getElementById("corn-brow-l");
+      const browR = document.getElementById("corn-brow-r");
+      const eyesOpen = document.getElementById("corn-eyes-open");
+      const eyesSleep = document.getElementById("corn-eyes-sleep");
+      const mouthPath = document.getElementById("corn-mouth");
+
+      const chatBubbleToggle = document.getElementById("chat-bubble-toggle");
+      const funMascotToggle = document.getElementById("fun-assistant-toggle");
+
+      let mascotRafId = null;
+      let mascotBehaviorTimer = null;
+      let mascotCheckTimer = null;
+      let speechHideTimer = null;
+      let speechTypingTimer = null;
+
+      let mPos = { x: Math.max(16, window.innerWidth - 96), y: Math.max(80, window.innerHeight - 175) };
+      let mTarget = { x: mPos.x, y: mPos.y };
+      let mSpeed = 0;
+      let mFacing = 1;
+      let mDragging = false;
+      let mDragMoved = false;
+      let mDragOffset = { x: 0, y: 0 };
+      let activeSpeechPrompt = "";
+      const seenAlerts = new Set();
+
+      function setMascotExpression(state) {
+        mascotWrap.dataset.state = state;
+        eyesOpen.style.display = state === "sleep" ? "none" : "block";
+        eyesSleep.style.display = state === "sleep" ? "block" : "none";
+
+        if (state === "worried") {
+          browL.setAttribute("d", "M27 28.5 Q30 26.5 33 25.5");
+          browR.setAttribute("d", "M41 25.5 Q44 26.5 47 28.5");
+          mouthPath.setAttribute("d", "M33 42 Q37 38.5 41 42");
+        } else if (state === "surprised") {
+          browL.setAttribute("d", "M27 25 Q30 23 33 25");
+          browR.setAttribute("d", "M41 25 Q44 23 47 25");
+          mouthPath.setAttribute("d", "M35 40 A2.5 3 0 1 0 39 40 A2.5 3 0 1 0 35 40");
+        } else if (state === "happy" || state === "celebrate") {
+          browL.setAttribute("d", "M27 26 Q30 24 33 26");
+          browR.setAttribute("d", "M41 26 Q44 24 47 26");
+          mouthPath.setAttribute("d", "M31.5 38.5 Q37 45 42.5 38.5 Z");
+        } else if (state === "think") {
+          browL.setAttribute("d", "M27 27 Q30 25.5 33 27");
+          browR.setAttribute("d", "M41 25 Q44 24 47 26");
+          mouthPath.setAttribute("d", "M34 40.5 L40 39.5");
         } else {
-          const yesterday = new Date(TODAY+"T12:00:00"); yesterday.setDate(yesterday.getDate()-1);
-          const ymd = [yesterday.getFullYear(),String(yesterday.getMonth()+1).padStart(2,"0"),String(yesterday.getDate()).padStart(2,"0")].join("-");
-          const prevRevenue = records.filter(r=>r && r.date===ymd && r.type==="thu").reduce((n,r)=>n+(Number(r.amount)||0),0);
-          if (revenue > 0 && prevRevenue > 0 && revenue < prevRevenue * .7) {
-            noticeKey = "revenue-drop:"+TODAY;
-            notice = "Doanh thu ghi nhận hôm nay thấp hơn hôm qua khá nhiều. Mình cùng xem báo cáo nhé!";
-            mood = "worried";
-          } else if (revenue > 0 && cost >= 0) {
-            noticeKey = "positive:"+TODAY;
-            notice = "Hôm nay đã ghi nhận "+revenue.toLocaleString("vi-VN")+"đ doanh thu. Cố lên, chủ quán!";
-            mood = "happy";
-          }
-        }
-        if (notice && noticeKey && !cornLastNotice[noticeKey]) {
-          cornLastNotice[noticeKey] = Date.now();
-          try { localStorage.setItem(FUN_ASSISTANT_KEY+"_notices", JSON.stringify(cornLastNotice)); } catch(e) {}
-          cornShow(notice,mood);
-        } else if (!notice) {
-          cornRoot.dataset.mood = "normal";
+          browL.setAttribute("d", "M27 27 Q30 25.5 33 27");
+          browR.setAttribute("d", "M41 27 Q44 25.5 47 27");
+          mouthPath.setAttribute("d", "M33 39 Q37 43 41 39");
         }
       }
-      function stopCornAssistant() {
-        clearTimeout(cornMoveTimer); clearTimeout(cornSpeechTimer); clearInterval(cornAuditTimer);
-        cornMoveTimer = cornSpeechTimer = cornAuditTimer = null;
-        if(cornRoot) { cornRoot.style.display="none"; cornRoot.classList.remove("active"); }
-      }
-      function scheduleCornMove() {
-        clearTimeout(cornMoveTimer);
-        if(!cornEnabled || document.hidden) return;
-        cornMoveTimer = setTimeout(() => {
-          cornMove();
-          scheduleCornMove();
-        }, 9000 + Math.random()*11000);
-      }
-      function setCornAssistant(on) {
-        cornEnabled = !!on;
-        try { localStorage.setItem(FUN_ASSISTANT_KEY, cornEnabled ? "1" : "0"); } catch(e) {}
-        if(funToggle) funToggle.checked = cornEnabled;
-        if(!cornRoot) return;
-        if(!cornEnabled) {
-          stopCornAssistant();
-          if(chatBubbleBtn) chatBubbleBtn.style.display = chatBubbleEnabled() ? "flex" : "none";
-          return;
-        }
-        cornRoot.style.display = "block";
-        if(chatBubbleBtn) chatBubbleBtn.style.display = "none";
-        cornRoot.style.left = Math.max(8, innerWidth-112)+"px";
-        cornRoot.style.top = Math.max(90, innerHeight-245)+"px";
-        cornRoot.dataset.mood = "happy";
-        cornShow("Xin chào chủ quán! Bắp đã sẵn sàng đồng hành cùng Nhà Bắp 🌽","happy");
-        cornAudit();
-        clearInterval(cornAuditTimer);
-        cornAuditTimer = setInterval(cornAudit, 5*60*1000);
-        scheduleCornMove();
-      }
-      if(funToggle) {
-        let savedFun = false;
-        try { savedFun = localStorage.getItem(FUN_ASSISTANT_KEY) === "1"; } catch(e) {}
-        funToggle.checked = savedFun;
-        funToggle.addEventListener("change", () => setCornAssistant(funToggle.checked));
-        if(savedFun) setCornAssistant(true);
-      }
-      if(cornActor) {
-        cornActor.addEventListener("click", () => {
-          if(cornDragging) return;
-          cornShow("Có Bắp đây! Chủ quán muốn kiểm tra việc gì nào?","happy");
-          cornActor.style.animation = "corn-hop .55s ease-in-out 2";
-          setTimeout(()=>{ if(cornActor) cornActor.style.animation=""; },1200);
-          if(chatBubbleBtn) chatBubbleBtn.click();
-        });
-        let dragStart = null;
-        cornActor.addEventListener("pointerdown", e => {
-          dragStart = {x:e.clientX,y:e.clientY,left:cornRoot.offsetLeft,top:cornRoot.offsetTop,id:e.pointerId};
-          cornDragging = false;
-          try { cornActor.setPointerCapture(e.pointerId); } catch(err) {}
-        });
-        cornActor.addEventListener("pointermove", e => {
-          if(!dragStart || dragStart.id!==e.pointerId) return;
-          if(Math.abs(e.clientX-dragStart.x)>6 || Math.abs(e.clientY-dragStart.y)>6) cornDragging=true;
-          if(cornDragging) {
-            cornRoot.style.transition="none";
-            cornRoot.style.left=Math.max(0,Math.min(innerWidth-cornRoot.offsetWidth,dragStart.left+e.clientX-dragStart.x))+"px";
-            cornRoot.style.top=Math.max(65,Math.min(innerHeight-cornRoot.offsetHeight-75,dragStart.top+e.clientY-dragStart.y))+"px";
-          }
-        });
-        const endCornDrag = () => {
-          if(dragStart) { dragStart=null; cornRoot.style.transition=""; setTimeout(()=>cornDragging=false,180); }
+
+      function clampMascotBounds(x, y) {
+        const minX = 8;
+        const maxX = Math.max(minX, window.innerWidth - 82);
+        const minY = 18;
+        const maxY = Math.max(minY, window.innerHeight - 154);
+        return {
+          x: Math.min(maxX, Math.max(minX, x)),
+          y: Math.min(maxY, Math.max(minY, y))
         };
-        cornActor.addEventListener("pointerup",endCornDrag);
-        cornActor.addEventListener("pointercancel",endCornDrag);
       }
-      document.getElementById("corn-speech-close")?.addEventListener("click", e => {
-        e.stopPropagation(); cornSpeech.classList.remove("show"); clearTimeout(cornSpeechTimer);
-      });
-      cornSpeech?.addEventListener("click", e => {
-        if(e.target && e.target.id === "corn-speech-close") return;
-        if(chatBubbleBtn) chatBubbleBtn.click();
-      });
-      document.addEventListener("visibilitychange", () => {
-        if(!cornEnabled) return;
-        if(document.hidden) {
-          clearTimeout(cornMoveTimer); clearInterval(cornAuditTimer);
-          cornMoveTimer=cornAuditTimer=null;
+
+      function positionSpeechBubble() {
+        if (!speechBubble.classList.contains("open")) return;
+        const bw = speechBubble.offsetWidth || 210;
+        const bh = speechBubble.offsetHeight || 72;
+        let bx = mPos.x + 37 - bw / 2;
+        bx = Math.min(window.innerWidth - bw - 10, Math.max(10, bx));
+
+        let by = mPos.y - bh - 12;
+        if (by < 12) {
+          by = mPos.y + 92;
+          speechBubble.classList.add("tail-top");
         } else {
-          cornAudit(); cornAuditTimer=setInterval(cornAudit,5*60*1000); scheduleCornMove();
+          speechBubble.classList.remove("tail-top");
+        }
+
+        const tail = document.getElementById("corn-speech-tail");
+        if (tail) {
+          const tailLeft = Math.min(bw - 26, Math.max(14, (mPos.x + 37) - bx - 6));
+          tail.style.left = tailLeft + "px";
+        }
+
+        speechBubble.style.left = bx + "px";
+        speechBubble.style.top = by + "px";
+      }
+
+      function hideSpeechBubble() {
+        if (speechHideTimer) clearTimeout(speechHideTimer);
+        if (speechTypingTimer) clearInterval(speechTypingTimer);
+        speechBubble.classList.remove("open");
+      }
+
+      function showCornSpeech(message, opts) {
+        if (!funMascotOn || chatPanel.classList.contains("open")) return;
+        const { type = "normal", tag = "🌽 Quả Bắp nhắn nhẹ", expression = "happy", prompt = "", duration = 7500 } = opts || {};
+
+        if (speechHideTimer) clearTimeout(speechHideTimer);
+        if (speechTypingTimer) clearInterval(speechTypingTimer);
+
+        mSpeed = 0;
+        setMascotExpression(expression);
+        activeSpeechPrompt = prompt;
+
+        speechBubble.className = "open" + (type === "warn" ? " warn" : (type === "good" ? " good" : ""));
+        speechTag.textContent = tag;
+        speechText.textContent = "";
+        positionSpeechBubble();
+
+        let idx = 0;
+        speechTypingTimer = setInterval(() => {
+          idx++;
+          speechText.textContent = message.slice(0, idx);
+          positionSpeechBubble();
+          if (idx >= message.length) {
+            clearInterval(speechTypingTimer);
+          }
+        }, 20);
+
+        speechHideTimer = setTimeout(hideSpeechBubble, duration);
+      }
+
+      function inspectBusinessDataAndSpeak() {
+        if (!funMascotOn || document.hidden || chatPanel.classList.contains("open")) return;
+
+        // 1. Kiểm tra tồn kho thấp
+        const lowStock = warehouseItems.filter(it => Number(it.stock) <= Number(it.minStock || 0));
+        if (lowStock.length > 0) {
+          const item = lowStock[0];
+          const key = `low_${item.id}_${item.stock}`;
+          if (!seenAlerts.has(key)) {
+            seenAlerts.add(key);
+            showCornSpeech(
+              `${item.name} chỉ còn ${item.stock} ${item.unit}, sắp chạm ngưỡng tối thiểu rồi đó! Chủ quán kiểm tra kho nha.`,
+              { type: "warn", tag: "⚠️ Nhắc tồn kho", expression: "point", prompt: "Kiểm tra tình hình tồn kho nguyên vật liệu" }
+            );
+            return;
+          }
+        }
+
+        // 2. Kiểm tra công nợ chưa thanh toán
+        const unpaid = debtEntries.filter(d => d.status === "unpaid");
+        if (unpaid.length > 0) {
+          const totalDebt = unpaid.reduce((s, d) => s + (Number(d.amount) || 0), 0);
+          const key = `debt_${unpaid.length}_${totalDebt}`;
+          if (!seenAlerts.has(key)) {
+            seenAlerts.add(key);
+            showCornSpeech(
+              `Chủ quán ơi, đang có ${unpaid.length} khoản công nợ (${formatMoney(totalDebt)}) chưa chốt. Bấm vào đây để xem nhé!`,
+              { type: "warn", tag: "📒 Nhắc công nợ", expression: "worried", prompt: "Liệt kê các khoản công nợ chưa thanh toán" }
+            );
+            return;
+          }
+        }
+
+        // 3. Kiểm tra doanh thu & lợi nhuận hôm nay
+        const todayRev = records.filter(r => r.type === "thu" && r.date === TODAY).reduce((s, r) => s + (Number(r.amount) || 0), 0);
+        const todayCost = records.filter(r => r.type === "chi" && r.date === TODAY).reduce((s, r) => s + (Number(r.amount) || 0), 0);
+        if (todayRev > 0) {
+          const net = todayRev - todayCost;
+          const revKey = `rev_${TODAY}_${todayRev}_${todayCost}`;
+          if (!seenAlerts.has(revKey)) {
+            seenAlerts.add(revKey);
+            if (net >= 300000) {
+              showCornSpeech(
+                `Tuyệt vời! Hôm nay quán đã thu ${formatMoney(todayRev)}, lãi gộp tạm tính ${formatMoney(net)} rồi đó!`,
+                { type: "good", tag: "🎉 Tin vui doanh thu", expression: "celebrate", prompt: "Xem báo cáo doanh thu và lợi nhuận hôm nay" }
+              );
+            } else {
+              showCornSpeech(
+                `Hôm nay doanh thu đang là ${formatMoney(todayRev)}, chi phí ${formatMoney(todayCost)}. Mình cùng theo dõi thêm nhé!`,
+                { type: "normal", tag: "📊 Cập nhật trong ngày", expression: "think", prompt: "Xem báo cáo doanh thu và chi phí hôm nay" }
+              );
+            }
+            return;
+          }
+        }
+
+        // 4. Lời nhắc thân thiện chung
+        const tips = [
+          "Chào chủ quán! Cần mình tính giá vốn công thức hay kiểm tra sổ thu chi thì chạm vào mình nha!",
+          "Mình đang đi tuần quanh quán đây! Mọi thứ vẫn đang vận hành rất trơn tru.",
+          "Đừng quên đối soát tiền mặt & chuyển khoản cuối ngày để quỹ luôn khớp nhé!"
+        ];
+        const pick = tips[Math.floor(Math.random() * tips.length)];
+        showCornSpeech(pick, { type: "normal", tag: "🌽 Quả Bắp đồng hành", expression: "wave", prompt: "" });
+      }
+
+      function scheduleNextMascotBehavior() {
+        if (!funMascotOn) return;
+        if (mascotBehaviorTimer) clearTimeout(mascotBehaviorTimer);
+
+        const nextDelay = 2600 + Math.random() * 3400;
+        mascotBehaviorTimer = setTimeout(() => {
+          if (!funMascotOn || document.hidden || mDragging) {
+            scheduleNextMascotBehavior();
+            return;
+          }
+          if (speechBubble.classList.contains("open")) {
+            scheduleNextMascotBehavior();
+            return;
+          }
+
+          const actions = ["walk", "walk", "run", "jump", "sit", "think", "wave", "sleep", "idle"];
+          const chosen = actions[Math.floor(Math.random() * actions.length)];
+
+          if (chosen === "walk" || chosen === "run") {
+            const safeEdges = [
+              { x: 10 + Math.random() * 26, y: 70 + Math.random() * Math.max(80, window.innerHeight - 250) },
+              { x: Math.max(20, window.innerWidth - 96 - Math.random() * 24), y: 70 + Math.random() * Math.max(80, window.innerHeight - 250) },
+              { x: 14 + Math.random() * Math.max(40, window.innerWidth - 110), y: Math.max(80, window.innerHeight - 165) }
+            ];
+            const dest = clampMascotBounds(
+              safeEdges[Math.floor(Math.random() * safeEdges.length)].x,
+              safeEdges[Math.floor(Math.random() * safeEdges.length)].y
+            );
+            mTarget = dest;
+            mSpeed = chosen === "run" ? 2.4 : 1.05;
+            mFacing = mTarget.x >= mPos.x ? 1 : -1;
+            setMascotExpression(chosen);
+          } else {
+            mSpeed = 0;
+            setMascotExpression(chosen);
+          }
+
+          scheduleNextMascotBehavior();
+        }, nextDelay);
+      }
+
+      function mascotAnimationLoop() {
+        if (!funMascotOn) return;
+
+        if (!mDragging && mSpeed > 0) {
+          const dx = mTarget.x - mPos.x;
+          const dy = mTarget.y - mPos.y;
+          const dist = Math.hypot(dx, dy);
+          if (dist <= mSpeed + 1) {
+            mPos.x = mTarget.x;
+            mPos.y = mTarget.y;
+            mSpeed = 0;
+            setMascotExpression("idle");
+          } else {
+            mPos.x += (dx / dist) * mSpeed;
+            mPos.y += (dy / dist) * mSpeed;
+          }
+        }
+
+        const clamped = clampMascotBounds(mPos.x, mPos.y);
+        mPos.x = clamped.x;
+        mPos.y = clamped.y;
+        mascotWrap.style.transform = `translate3d(${mPos.x.toFixed(1)}px, ${mPos.y.toFixed(1)}px, 0)`;
+        mascotInner.style.transform = mFacing < 0 ? "scaleX(-1)" : "scaleX(1)";
+        positionSpeechBubble();
+
+        mascotRafId = requestAnimationFrame(mascotAnimationLoop);
+      }
+
+      function startFunMascotEngine() {
+        stopFunMascotEngine();
+        mascotWrap.classList.add("active");
+        mPos = clampMascotBounds(mPos.x, mPos.y);
+        setMascotExpression("wave");
+        mascotRafId = requestAnimationFrame(mascotAnimationLoop);
+        scheduleNextMascotBehavior();
+
+        setTimeout(() => {
+          if (funMascotOn) inspectBusinessDataAndSpeak();
+        }, 1200);
+
+        mascotCheckTimer = setInterval(() => {
+          inspectBusinessDataAndSpeak();
+        }, 28000);
+      }
+
+      function stopFunMascotEngine() {
+        if (mascotRafId) { cancelAnimationFrame(mascotRafId); mascotRafId = null; }
+        if (mascotBehaviorTimer) { clearTimeout(mascotBehaviorTimer); mascotBehaviorTimer = null; }
+        if (mascotCheckTimer) { clearInterval(mascotCheckTimer); mascotCheckTimer = null; }
+        hideSpeechBubble();
+        mascotWrap.classList.remove("active");
+      }
+
+      function syncAssistantVisibilityUI() {
+        chatToggle.checked = chatBubbleEnabled();
+        funMascotToggle.checked = funMascotOn;
+
+        if (funMascotOn) {
+          chatBubbleBtn.style.display = "none";
+          startFunMascotEngine();
+        } else {
+          stopFunMascotEngine();
+          chatBubbleBtn.style.display = chatBubbleEnabled() ? "flex" : "none";
+        }
+      }
+
+      funMascotToggle.addEventListener("change", () => {
+        funMascotOn = funMascotToggle.checked;
+        localStorage.setItem(FUN_ASSISTANT_KEY, funMascotOn ? "1" : "0");
+        syncAssistantVisibilityUI();
+        showToast(funMascotOn ? "🌽 Đã bật Trợ lý Quả Bắp vui nhộn!" : "Đã tắt Trợ lý vui nhộn, quay về bong bóng cũ");
+      });
+
+      // Kéo thả & chạm vào nhân vật Quả Bắp
+      mascotWrap.addEventListener("pointerdown", (e) => {
+        mDragging = true;
+        mDragMoved = false;
+        mSpeed = 0;
+        mDragOffset.x = e.clientX - mPos.x;
+        mDragOffset.y = e.clientY - mPos.y;
+        setMascotExpression("surprised");
+        try { mascotWrap.setPointerCapture(e.pointerId); } catch (err) {}
+      });
+
+      mascotWrap.addEventListener("pointermove", (e) => {
+        if (!mDragging) return;
+        const nx = e.clientX - mDragOffset.x;
+        const ny = e.clientY - mDragOffset.y;
+        if (Math.hypot(nx - mPos.x, ny - mPos.y) > 5) mDragMoved = true;
+        const c = clampMascotBounds(nx, ny);
+        mPos.x = c.x;
+        mPos.y = c.y;
+      });
+
+      mascotWrap.addEventListener("pointerup", () => {
+        if (!mDragging) return;
+        mDragging = false;
+        if (!mDragMoved) {
+          hideSpeechBubble();
+          setMascotExpression("celebrate");
+          setTimeout(() => {
+            openMascotChat("");
+          }, 160);
+        } else {
+          setMascotExpression("happy");
         }
       });
-      window.addEventListener("resize", () => {
-        if(!cornEnabled) return;
-        cornRoot.style.left=Math.min(cornRoot.offsetLeft,innerWidth-cornRoot.offsetWidth-6)+"px";
-        cornRoot.style.top=Math.min(cornRoot.offsetTop,innerHeight-cornRoot.offsetHeight-75)+"px";
+
+      speechClose.addEventListener("click", (e) => {
+        e.stopPropagation();
+        hideSpeechBubble();
       });
+
+      speechBubble.addEventListener("click", () => {
+        const promptToRun = activeSpeechPrompt;
+        hideSpeechBubble();
+        openMascotChat(promptToRun);
+      });
+
+      document.addEventListener("visibilitychange", () => {
+        if (!funMascotOn) return;
+        if (document.hidden) {
+          if (mascotRafId) { cancelAnimationFrame(mascotRafId); mascotRafId = null; }
+        } else if (!mascotRafId) {
+          mascotRafId = requestAnimationFrame(mascotAnimationLoop);
+        }
+      });
+
+      window.addEventListener("resize", () => {
+        if (funMascotOn) {
+          mPos = clampMascotBounds(mPos.x, mPos.y);
+          positionSpeechBubble();
+        }
+      });
+
 
       if (document.readyState === "loading") {
         document.addEventListener("DOMContentLoaded", () => {
           initBackupReminderDelegation();
           renderAll();
+          syncAssistantVisibilityUI();
         });
       } else {
         initBackupReminderDelegation();
         renderAll();
+        syncAssistantVisibilityUI();
       }
     })();
   </script>
