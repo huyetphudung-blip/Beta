@@ -2654,7 +2654,10 @@
           materialHistory: manualMaterialHistory,
           suppliers: suppliersList,
           recipes: recipesList,
+          recipeCategories,
           debtEntries,
+          notebookNotes,
+          notebookTags,
           warehouseItems,
           warehouseTxList
         }, null, 2);
@@ -3654,6 +3657,29 @@
 
         const sign = act === "audit" ? "Kiểm kê chốt" : (act === "in" ? "+" : "−") + inputQty;
         return `✅ Đã xử lý: ${targetItem.name} (${sign} ${targetItem.unit}) • Tồn mới: ${afterStock} ${targetItem.unit}`;
+      }
+
+      
+      let whAiFeedbackTimer = null;
+      function setWhAiFeedback(msg, autoHideMs) {
+        if (!whAiFeedback) return;
+        if (whAiFeedbackTimer) {
+          clearTimeout(whAiFeedbackTimer);
+          whAiFeedbackTimer = null;
+        }
+        const text = String(msg || "").trim();
+        if (!text) {
+          whAiFeedback.style.display = "none";
+          whAiFeedback.textContent = "";
+          return;
+        }
+        whAiFeedback.textContent = text;
+        whAiFeedback.style.display = "block";
+        if (autoHideMs && Number(autoHideMs) > 0) {
+          whAiFeedbackTimer = setTimeout(() => {
+            whAiFeedback.style.display = "none";
+          }, Number(autoHideMs));
+        }
       }
 
       async function processWarehouseAiCommand(rawText) {
@@ -4687,6 +4713,7 @@
 
       function closeModal() {
         modalBg.classList.remove("open");
+        modalCard.onclick = null;
         resetModalLayout();
       }
 
@@ -7657,7 +7684,7 @@
         document.getElementById("debt-f-qty").addEventListener("input", () => recalcDebtAmount(false));
         document.getElementById("debt-f-unitprice").addEventListener("input", () => recalcDebtAmount(false));
 
-        modalCard.addEventListener("click", (e) => {
+        modalCard.onclick = (e) => {
           const pBtn = e.target.closest(".debt-pick-party");
           if (pBtn) {
             document.getElementById("debt-f-party").value = pBtn.dataset.val;
@@ -9120,7 +9147,7 @@
       document.getElementById("btn-check-app-update").addEventListener("click", () => {
         showToast("Đang kiểm tra và tải phiên bản mới nhất từ máy chủ...");
         setTimeout(() => {
-          window.location.reload(true);
+          window.location.reload();
         }, 800);
       });
 
@@ -9296,7 +9323,11 @@
           suppliers: suppliersList,
           recipes: recipesList,
           recipeCategories,
-          debtEntries
+          debtEntries,
+          notebookNotes,
+          notebookTags,
+          warehouseItems,
+          warehouseTxList
         }, null, 2);
 
         try {
@@ -9368,6 +9399,8 @@
           if (Array.isArray(parsed.recipes)) recipesList = parsed.recipes;
           if (Array.isArray(parsed.recipeCategories) && parsed.recipeCategories.length > 0) recipeCategories = parsed.recipeCategories;
           if (Array.isArray(parsed.debtEntries)) debtEntries = parsed.debtEntries;
+          if (Array.isArray(parsed.notebookNotes)) notebookNotes = parsed.notebookNotes;
+          if (Array.isArray(parsed.notebookTags) && parsed.notebookTags.length > 0) notebookTags = parsed.notebookTags;
           if (Array.isArray(parsed.warehouseItems)) warehouseItems = parsed.warehouseItems;
           if (Array.isArray(parsed.warehouseTxList)) warehouseTxList = parsed.warehouseTxList;
 
@@ -9381,6 +9414,8 @@
           saveRecipes(true);
           saveRecipeCategories(true);
           saveDebtEntries(true);
+          saveNotebookNotes(true);
+          saveNotebookTags(true);
           saveWarehouseItems(true);
           saveWarehouseTxList(true);
           renderAll();
@@ -12130,7 +12165,18 @@
       // TRỢ LÝ VUI NHỘN – thiết kế và chuyển động từ bản Gemini, dùng Chatbox gốc của Nhà Bắp
 
       function openMascotChat(promptText) {
-        if (chatBubbleBtn) chatBubbleBtn.click();
+        if (chatPanel) {
+          const mr = mascotWrap ? mascotWrap.getBoundingClientRect() : null;
+          if (mr && mr.width > 0) {
+            chatPanel.style.transformOrigin = (mr.left + mr.width / 2) + "px " + (mr.top + mr.height / 2) + "px";
+          } else {
+            chatPanel.style.transformOrigin = (mPos.x + 37) + "px " + (mPos.y + 43) + "px";
+          }
+          chatPanel.classList.add("open");
+          if (!chatLog.children.length) {
+            addChatMsg("bot", "Xin chào! Tôi có thể lên món POS, nhập/xuất kho, ghi thu chi, kiểm tra hình ảnh hóa đơn/chuyển khoản hoặc nghiên cứu công thức.\n• Chạm các nút bên dưới để nhập liệu thủ công nhanh bất cứ lúc nào.", null, []);
+          }
+        }
         if (promptText) {
           setTimeout(() => {
             const input = document.getElementById("chat-input");
@@ -12476,10 +12522,10 @@
         mPos.y = c.y;
       });
 
-      mascotWrap.addEventListener("pointerup", () => {
+      function finishMascotDrag(triggerClick) {
         if (!mDragging) return;
         mDragging = false;
-        if (!mDragMoved) {
+        if (triggerClick && !mDragMoved) {
           hideSpeechBubble();
           setMascotExpression("celebrate");
           setTimeout(() => {
@@ -12488,7 +12534,10 @@
         } else {
           setMascotExpression("happy");
         }
-      });
+      }
+
+      mascotWrap.addEventListener("pointerup", () => finishMascotDrag(true));
+      mascotWrap.addEventListener("pointercancel", () => finishMascotDrag(false));
 
       speechClose.addEventListener("click", (e) => {
         e.stopPropagation();
