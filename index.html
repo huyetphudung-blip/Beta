@@ -1110,6 +1110,34 @@
 
   </style>
 
+  <style id="visual-assistant-mode-styles">
+    /* Chế độ tương tác mới: không còn bảng điều khiển cố định ở đáy màn hình. */
+    #visual-assistant-controls { display:none !important; }
+    #visual-assistant-controls.open { display:none !important; }
+    #visual-assistant-controls.open { display:block; animation:cornSpeechIn .2s ease-out; }
+    #visual-assistant-controls .va-title { display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:800; color:#92400E; font-size:13px; margin:0 2px 8px; }
+    #visual-assistant-controls .va-voice-row { display:flex; gap:11px; align-items:center; padding:5px 2px; }
+    #visual-assistant-mic { height:54px; min-width:58px; border:0; border-radius:16px; font-size:25px; font-weight:800; cursor:pointer; background:#FDE68A; color:#92400E; box-shadow:0 2px 0 #F59E0B; }
+    #visual-assistant-mic.recording { background:#DC2626; color:white; animation:voicePulse 1.1s infinite; }
+    #visual-assistant-voice-status { flex:1; color:#78350F; font-size:13px; font-weight:700; line-height:1.4; }
+    #visual-assistant-hint { margin:7px 3px 0; color:#78716C; font-size:11px; line-height:1.4; }
+    #corn-speech-actions { display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
+    #corn-speech-actions:empty { display:none; }
+    #corn-speech-actions .va-action-card { width:100%; max-height:34vh; overflow:auto; background:#fff; border:1px solid #FCD34D; border-radius:12px; padding:9px; }
+    #corn-speech-actions button { border-radius:10px; padding:8px 11px; font-size:12px; font-weight:800; }
+    #corn-speech-actions .va-change { background:#FEF3C7; border:1px solid #F59E0B; color:#92400E; }
+    #corn-speech-actions .va-action-card button { margin:3px; }
+    #corn-speech-actions { cursor:default; }
+    #corn-speech-actions button { cursor:pointer; }
+    #corn-speech-actions .va-action-card { white-space:normal; }
+    #corn-speech-bubble.visual-reply { box-sizing:border-box; width:min( min(82vw, 390px), calc(100vw - 20px)); max-width:calc(100vw - 20px); min-width:190px; max-height:min(52vh, 430px); overflow-y:auto; overscroll-behavior:contain; overflow-wrap:anywhere; font-size:14px; padding:12px 30px 12px 14px; line-height:1.48; white-space:pre-line; z-index:10030; cursor:default; }
+    #corn-speech-bubble.visual-reply #corn-speech-actions { position:sticky; bottom:-12px; background:inherit; padding:8px 0 2px; }
+    #corn-speech-bubble.visual-reply .va-cancel-request { background:#FEE2E2; border:1px solid #FCA5A5; color:#991B1B; border-radius:10px; padding:8px 11px; font-weight:800; }
+    #corn-speech-bubble.visual-reply .va-listening-state { display:inline-flex; align-items:center; gap:7px; font-weight:800; }
+    #corn-speech-bubble.visual-reply .va-listening-dot { width:9px; height:9px; border-radius:50%; background:#DC2626; box-shadow:0 0 0 5px rgba(220,38,38,.13); animation:voicePulse 1s infinite; }
+    #corn-speech-bubble.visual-reply #corn-speech-tag { font-size:11px; }
+    @media (max-width:420px) { #visual-assistant-controls { width:calc(100vw - 20px); } #corn-speech-bubble.visual-reply { max-width:78vw; } }
+  </style>
   <style id="reconcile-date-overflow-fix">
     #view-reconcile, #view-reconcile .card, #view-reconcile .form-group { min-width: 0; }
     #view-reconcile input[type="date"],
@@ -1947,6 +1975,13 @@
         </div>
         <span class="switch-wrap"><input type="checkbox" id="fun-assistant-toggle" /><span class="switch-slider"></span></span>
       </label>
+      <label class="journal-bar" id="visual-assistant-setting-row" style="cursor:pointer; margin-bottom:10px; border-color:#A7F3D0; opacity:.55;">
+        <div style="text-align:left; min-width:0;">
+          <div style="font-weight:800; font-size:14.5px;">💬 Tương tác trực quan</div>
+          <div style="font-size:12px; color:var(--muted);">Nói chuyện trực tiếp với Bắp bằng giọng nói và khung thoại truyện tranh</div>
+        </div>
+        <span class="switch-wrap"><input type="checkbox" id="visual-assistant-toggle" disabled /><span class="switch-slider"></span></span>
+      </label>
 
       <input type="file" id="input-restore-file" accept=".json,application/json" style="display:none;" />
 
@@ -2009,7 +2044,7 @@
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-          <span id="app-version-badge" style="background:var(--accent-soft); color:var(--accent); padding:4px 9px; border-radius:999px; font-size:11.5px; font-weight:800;">v8.8</span>
+          <span id="app-version-badge" style="background:var(--accent-soft); color:var(--accent); padding:4px 9px; border-radius:999px; font-size:11.5px; font-weight:800;">v8.11</span>
           <span style="color:var(--muted); font-size:18px; font-weight:700;">›</span>
         </div>
       </button>
@@ -2153,7 +2188,17 @@
     <button type="button" id="corn-speech-close" aria-label="Đóng lời nhắc">✕</button>
     <div id="corn-speech-tag">🌽 Quả Bắp nhắc nhẹ</div>
     <div id="corn-speech-text"></div>
+    <div id="corn-speech-actions"></div>
     <div id="corn-speech-tail"></div>
+  </div>
+
+  <div id="visual-assistant-controls" aria-label="Tương tác trực quan với Bắp AI">
+    <div class="va-title"><span>🌽 Nói chuyện với Bắp</span><button type="button" id="visual-assistant-close" aria-label="Đóng" style="border:0;background:transparent;font-size:18px;color:#92400E;padding:2px 6px;">✕</button></div>
+    <div class="va-voice-row">
+      <button type="button" id="visual-assistant-mic" aria-label="Bắt đầu hoặc dừng ghi âm">🎙️</button>
+      <div id="visual-assistant-voice-status">Chạm vào Bắp hoặc micro để nói chuyện</div>
+    </div>
+    <div id="visual-assistant-hint">Bắp tự nhận biết khi bạn nói xong và sẽ tự gửi yêu cầu. Bạn cũng có thể chạm nút micro để kết thúc sớm.</div>
   </div>
 
   <!-- CỬA SỔ CHATBOX AI -->
@@ -2449,7 +2494,7 @@
         toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
       }
       // QUẢN LÝ PHIÊN BẢN VÀ NHẬT KÝ CẬP NHẬT DỮ LIỆU
-      const APP_VERSION = "8.8";
+      const APP_VERSION = "8.11";
       const DATA_UPDATE_HISTORY_KEY = "nha_bap_data_update_history_v1";
       function readDataUpdateHistory() {
         try { const v = JSON.parse(localStorage.getItem(DATA_UPDATE_HISTORY_KEY) || "[]"); return Array.isArray(v) ? v : []; }
@@ -2486,6 +2531,8 @@
       }
 
       const APP_CHANGELOG = [
+        {v:"8.11", title:"Tương tác giọng nói và xác nhận trực quan", changes:["Loại bỏ ô nhập chữ và nút gửi khỏi chế độ Tương tác trực quan; thao tác bằng giọng nói.","Tự nhận biết khoảng lặng để kết thúc ghi âm và gửi yêu cầu, vẫn có nút dừng thủ công.","Đưa thẻ xác nhận, hủy và thay đổi vào khung thoại của Bắp.","Tinh chỉnh câu trả lời tự nhiên, rõ ý; ngăn lời nhắc vui nhộn chen ngang khi AI đang xử lý hoặc trả lời."]},
+        {v:"8.9", title:"Tương tác trực quan", changes:["Bổ sung chế độ trò chuyện trực tiếp với Bắp bằng bong bóng thoại truyện tranh.","Kết nối chế độ tương tác với chatbox AI hiện có."]},
         {v:"8.8", title:"Trung tâm phiên bản & lịch sử dữ liệu", changes:["Thay nút nạp dữ liệu mẫu bằng lịch sử cập nhật dữ liệu.","Bổ sung thông tin phiên bản, kiểm tra cập nhật và nhật ký thay đổi theo phiên bản."]},
         {v:"8.7", title:"Cải tiến giao diện đối soát", changes:["Sửa bố cục hai khung chọn ngày trên tab Đối soát.","Chuyển thiết lập sổ quỹ và chuyển tiền nội bộ xuống cuối trang."]},
         {v:"8.6", title:"Icon ứng dụng Bắp", changes:["Đổi tên ứng dụng thành Quản lý kinh doanh - Bắp.","Bổ sung icon và cấu hình thêm vào màn hình chính."]},
@@ -3821,11 +3868,13 @@
             bodyObj.tools = [{ google_search: {} }];
           }
 
+          const requestSignal = opts.signal || (chatBusy && activeChatAbortController ? activeChatAbortController.signal : undefined);
           try {
             const res = await fetch(url, {
               method: "POST",
               headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
-              body: JSON.stringify(bodyObj)
+              body: JSON.stringify(bodyObj),
+              ...(requestSignal ? { signal: requestSignal } : {})
             });
 
             if (!res.ok) {
@@ -3862,6 +3911,7 @@
             }
             return JSON.parse(rawText.slice(start, end + 1));
           } catch (err) {
+            if ((requestSignal && requestSignal.aborted) || (err && err.name === "AbortError")) throw err;
             lastErr = err;
             const msg = String(err && err.message || "");
             if (msg.includes("API_KEY_INVALID") || resIsAuthError(msg)) {
@@ -11075,7 +11125,7 @@
           hist ? "Hội thoại trước:\n" + hist : "",
           reqLine,
           "Trả về DUY NHẤT JSON (không markdown): {\"reply\":\"câu trả lời được định dạng mạch lạc từng dòng/mục\",\"suggestions\":[...],\"actions\":[...]}.",
-          "Định dạng trường 'reply': Chia từng ý rõ ràng bằng xuống dòng, đánh số '1. ', '2. ' cho từng mục/hóa đơn, dùng **in đậm** cho tên mặt hàng hoặc kết luận chính để giao diện hiển thị thành các thẻ nổi bật dễ đọc.",
+          "Định dạng trường 'reply': Trả lời tự nhiên như đang nói chuyện trực tiếp với chủ quán. Không tự đánh số 1,2 cho lời chào hoặc câu văn thông thường. Chỉ dùng danh sách đánh số khi thực sự có các bước hoặc nhiều mục độc lập. Mỗi đoạn ngắn 1-3 câu, xuống dòng khi đổi ý; dùng **in đậm** có chọn lọc cho kết luận hoặc số liệu quan trọng. Với yêu cầu tìm công thức, nói rõ tên món và thông báo đã tạo thẻ công thức; không viết lời dẫn dài hoặc lặp lại câu hỏi.",
           "Trường 'suggestions' (tùy chọn): Khi phát hiện trong ảnh hoặc tin nhắn có khoản chi, khoản thu hoặc công nợ tiềm năng chưa lưu ngay (actions=[]), hãy đưa vào 'suggestions' để app tự tạo nút nhập nhanh & nút sửa tay cho người dùng:",
           '- Đề xuất chi: {"type":"chi","category":"tên danh mục chi","amount":717000,"qty":2.93,"unit":"kg","note":"Ghi chú","date":"YYYY-MM-DD"}',
           '- Đề xuất thu: {"type":"thu","tk":0,"tm":200000,"note":"Ghi chú","date":"YYYY-MM-DD"}',
@@ -11133,6 +11183,9 @@
           "- QUẢN LÝ ĐƠN ĐANG LƯU: Khi người dùng yêu cầu xem/liệt kê đơn đang lưu chưa thanh toán, hãy dùng action 'list_saved_orders'. Khi người dùng yêu cầu thanh toán, chỉnh sửa hoặc hủy một đơn trong danh sách đang lưu (dựa theo id, số thứ tự hoặc tên bàn/ghi chú khớp nhất trong danh sách Đơn đang lưu ở trên), dùng action tương ứng ('settle_saved_order', 'edit_saved_order', 'cancel_saved_order'). Nếu chưa rõ hình thức thanh toán (tiền mặt hay chuyển khoản), hãy hỏi lại trong 'reply' hoặc dùng 'list_saved_orders' để hiện nút chọn.",
           "- TÌM KIẾM & CHIA ĐỊNH LƯỢNG CÔNG THỨC: Khi người dùng hỏi cách làm món ăn, pha nước sốt, đồ uống (VD: 'tìm công thức pate gan gà', 'cách nấu sốt tiêu đen') HOẶC yêu cầu chia/quy đổi định lượng từ công thức có sẵn của quán (VD: 'tính định lượng gia vị cho 300g cà chua theo công thức sốt cà chua'), hãy tạo đầy đủ nội dung trong action 'recipe_search' và trả lời ngắn gọn trong 'reply'.",
           "- NGHIÊN CỨU KINH DOANH SỔ TAY: Khi người dùng yêu cầu nghiên cứu, phân tích chiến lược, ý tưởng kinh doanh/marketing F&B (VD: 'nghiên cứu cách tăng doanh thu giờ vắng khách', 'nghiên cứu hiệu ứng thị giác trong quán ăn'), hãy soạn bài phân tích thực chiến trong action 'notebook_research' (khoảng 350-600 từ, chia mục rõ ràng) để hiển thị thẻ bài viết kèm nút lưu vào Sổ Tay.",
+          "- ƯU TIÊN YÊU CẦU CHÍNH: Xử lý đúng ý định mới nhất của người dùng. Không chuyển câu hỏi nghiệp vụ, tìm công thức, truy vấn dữ liệu hoặc lệnh quản lý thành trò chuyện phiếm. Không để lời chào/đùa vui thay thế câu trả lời. Nếu đã tạo action hoặc thẻ kết quả, reply phải nói rõ kết quả cụ thể và bước tiếp theo.",
+          "- Khi tìm công thức: nếu đã có dữ liệu công thức, nêu tên món, thông báo thẻ công thức đã hiển thị và tóm tắt định lượng/bước chính; nếu không tìm thấy, nói rõ chưa có trong sổ và hỏi có muốn tạo công thức mới không. Không nói người dùng xem thẻ bên dưới nếu app không tạo thẻ.",
+          "- Với mọi thao tác ghi/sửa/xóa/nhập/xuất/chuyển tiền: phải nói rõ dữ liệu chuẩn bị thay đổi và chờ xác nhận. Không tuyên bố đã hoàn tất khi mới chỉ tạo thẻ chờ xác nhận.",
           "- Số tiền là SỐ NGUYÊN đồng (240k = 240000, 1 triệu = 1000000). Ngày dạng YYYY-MM-DD, quy đổi 'hôm qua', 'thứ 2'... theo hôm nay.",
           "- Số lượng kho luôn tính theo ĐƠN VỊ của mặt hàng trong danh sách kho (VD kho tính g: 2kg -> qty 2000, unit g). qty luôn dương.",
           "- add_chi có qty > 0 sẽ TỰ động nhập kho: KHÔNG thêm action warehouse 'in' cho cùng lần mua.",
@@ -12319,6 +12372,9 @@
       const chatToggle = document.getElementById("chat-bubble-toggle");
       let chatHistory = [];
       let chatBusy = false;
+      let chatRequestToken = 0;
+      let activeVisualRequestToken = 0;
+      let activeChatAbortController = null;
 
       function chatBubbleEnabled() {
         try { return localStorage.getItem(CHAT_BUBBLE_KEY) !== "0"; } catch (e) { return true; }
@@ -12430,6 +12486,28 @@
         chatImgClearBtn.addEventListener("click", clearPendingChatImage);
       }
 
+      function cancelVisualAssistantRequest() {
+        if (!chatBusy) return;
+        chatRequestToken++;
+        activeVisualRequestToken = 0;
+        if (activeChatAbortController) { try { activeChatAbortController.abort(); } catch (e) {} }
+        activeChatAbortController = null;
+        chatBusy = false;
+        if (speechActions) speechActions.replaceChildren();
+        showCornSpeech("Đã huỷ yêu cầu đang xử lý. Bắp sẽ không áp dụng thay đổi nào từ yêu cầu này.", { tag:"🛑 Đã huỷ", expression:"happy", type:"warn", duration:9000, forceReplace:true });
+        speechBubble.classList.add("visual-reply");
+        if (visualAssistantVoiceStatus) visualAssistantVoiceStatus.textContent = "Đã huỷ. Chạm vào Bắp để nói yêu cầu mới.";
+      }
+
+      function addVisualCancelButton() {
+        if (!(funMascotOn && visualAssistantOn) || !speechActions) return;
+        speechActions.replaceChildren();
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "va-cancel-request"; b.textContent = "✕ Huỷ yêu cầu";
+        b.addEventListener("click", e => { e.stopPropagation(); cancelVisualAssistantRequest(); });
+        speechActions.appendChild(b);
+      }
+
       async function sendChat() {
         const text = chatInput.value.trim();
         const imgPayload = pendingChatImage;
@@ -12440,20 +12518,33 @@
         const userDisplay = text || (imgPayload ? "📷 Kiểm tra hình ảnh này giúp tôi" : "");
         addChatMsg("user", userDisplay, imgPayload ? imgPayload.dataUrl : null);
         chatBusy = true;
+        const requestToken = ++chatRequestToken;
+        activeVisualRequestToken = requestToken;
+        activeChatAbortController = typeof AbortController !== "undefined" ? new AbortController() : null;
+        if (funMascotOn && visualAssistantOn) {
+          showCornSpeech("Bắp đang xử lý yêu cầu của bạn… Bạn có thể huỷ bất cứ lúc nào.", { tag:"⏳ Đang xử lý", expression:"think", duration:120000, persistent:true, forceReplace:true });
+          speechBubble.classList.add("visual-reply"); addVisualCancelButton();
+        }
         const wait = addChatMsg("bot", imgPayload ? "⏳ AI đang phân tích hình ảnh..." : "⏳ Đang xử lý...", null, false);
+        const visualActionStart = chatLog.children.length;
         try {
           const media = imgPayload ? { base64: imgPayload.base64, mimeType: "image/jpeg" } : null;
           let out = await callChatModel(buildChatPrompt(text, Boolean(imgPayload)), media);
           out = await resolveChatDataQueries(out, userDisplay);
+          if (requestToken !== chatRequestToken) return;
           const replyText = executeChatResponse(out, imgPayload ? `[Gửi hình ảnh] ${userDisplay}` : userDisplay);
           wait.innerHTML = formatBotReplyHtml(replyText);
           attachBotManualControls(wait, out && out.suggestions);
+          if (funMascotOn && visualAssistantOn) showVisualAssistantReply(replyText, "normal", collectVisualAssistantActions(visualActionStart, wait));
           showProactiveChatAlerts(false);
         } catch (err) {
-          wait.innerHTML = formatBotReplyHtml("Lỗi: " + (err && err.message ? err.message : "vui lòng thử lại"));
+          if (requestToken !== chatRequestToken) return;
+          const errText = "Lỗi: " + (err && err.message ? err.message : "vui lòng thử lại");
+          wait.innerHTML = formatBotReplyHtml(errText);
+          if (funMascotOn && visualAssistantOn) showVisualAssistantReply(errText, "error");
           attachBotManualControls(wait, []);
         } finally {
-          chatBusy = false;
+          if (requestToken === chatRequestToken) { chatBusy = false; activeVisualRequestToken = 0; activeChatAbortController = null; }
         }
       }
 
@@ -12530,6 +12621,8 @@
       const chatMic = document.getElementById("chat-mic");
       let chatListening = false;
       let chatRecorder = null, chatRecStream = null, chatRecChunks = [];
+      let visualSilenceRaf = null, visualAudioContext = null, visualSpeechStartedAt = 0, visualLastVoiceAt = 0;
+      let visualSilenceStopTimer = null;
 
       function setChatMic(on) {
         if (!chatMic) return;
@@ -12542,6 +12635,54 @@
           try { chatRecStream.getTracks().forEach(t => t.stop()); } catch (e) {}
           chatRecStream = null;
         }
+      }
+
+      function stopVisualSilenceMonitor() {
+        if (visualSilenceRaf) { cancelAnimationFrame(visualSilenceRaf); visualSilenceRaf = null; }
+        if (visualSilenceStopTimer) { clearTimeout(visualSilenceStopTimer); visualSilenceStopTimer = null; }
+        if (visualAudioContext) { try { visualAudioContext.close(); } catch (e) {} visualAudioContext = null; }
+      }
+
+      function startVisualSilenceMonitor(stream) {
+        stopVisualSilenceMonitor();
+        if (!visualAssistantVoiceActive || !stream) return;
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return; // Nút dừng thủ công vẫn hoạt động trên trình duyệt không có WebAudio.
+        try {
+          visualAudioContext = new AudioCtx();
+          const source = visualAudioContext.createMediaStreamSource(stream);
+          const analyser = visualAudioContext.createAnalyser();
+          analyser.fftSize = 1024;
+          source.connect(analyser);
+          const samples = new Uint8Array(analyser.fftSize);
+          visualSpeechStartedAt = 0;
+          visualLastVoiceAt = Date.now();
+          const monitor = () => {
+            if (!chatListening || !visualAssistantVoiceActive || !chatRecorder || chatRecorder.state !== "recording") { stopVisualSilenceMonitor(); return; }
+            analyser.getByteTimeDomainData(samples);
+            let energy = 0;
+            for (let i = 0; i < samples.length; i++) { const v = (samples[i] - 128) / 128; energy += v * v; }
+            const rms = Math.sqrt(energy / samples.length);
+            const now = Date.now();
+            if (rms > 0.028) { visualSpeechStartedAt = visualSpeechStartedAt || now; visualLastVoiceAt = now; }
+            const elapsed = now - (visualSpeechStartedAt || now);
+            const silence = now - visualLastVoiceAt;
+            if (visualSpeechStartedAt && elapsed > 700 && silence > 1450) {
+              if (visualAssistantVoiceStatus) visualAssistantVoiceStatus.textContent = "Bắp đã nghe xong, đang xử lý lời bạn nói…";
+              try { chatRecorder.stop(); } catch (e) {}
+              stopVisualSilenceMonitor();
+              return;
+            }
+            if (now - (visualSpeechStartedAt || now) > 22000 || now - visualLastVoiceAt > 9000) {
+              if (visualAssistantVoiceStatus) visualAssistantVoiceStatus.textContent = "Đã kết thúc lượt nghe. Bắp đang xử lý…";
+              try { chatRecorder.stop(); } catch (e) {}
+              stopVisualSilenceMonitor();
+              return;
+            }
+            visualSilenceRaf = requestAnimationFrame(monitor);
+          };
+          visualSilenceRaf = requestAnimationFrame(monitor);
+        } catch (e) { stopVisualSilenceMonitor(); }
       }
 
       function chatVoiceHelp(code) {
@@ -12560,20 +12701,34 @@
         }
         addChatMsg("user", "🎙️ [Tin nhắn thoại]");
         chatBusy = true;
+        const requestToken = ++chatRequestToken;
+        activeVisualRequestToken = requestToken;
+        activeChatAbortController = typeof AbortController !== "undefined" ? new AbortController() : null;
+        if (funMascotOn && visualAssistantOn) {
+          showCornSpeech("Bắp đang hiểu lời bạn nói… Bạn có thể huỷ nếu chờ quá lâu.", { tag:"⏳ Đang xử lý", expression:"think", duration:120000, persistent:true, forceReplace:true });
+          speechBubble.classList.add("visual-reply"); addVisualCancelButton();
+        }
         const wait = addChatMsg("bot", "⏳ AI đang nghe và xử lý lệnh thoại...", null, false);
+        const visualActionStart = chatLog.children.length;
         try {
           const b64 = await blobToBase64(audioBlob);
           const cleanMime = String(mimeType || "audio/webm").split(";")[0] || "audio/webm";
           let out = await callChatModel(buildChatPrompt(""), { base64: b64, mimeType: cleanMime });
           out = await resolveChatDataQueries(out, "[Lệnh thoại]");
+          if (requestToken !== chatRequestToken) return;
           const replyText = executeChatResponse(out, "[Lệnh thoại]");
           wait.innerHTML = formatBotReplyHtml(replyText);
           attachBotManualControls(wait, out && out.suggestions);
+          if (funMascotOn && visualAssistantOn) showVisualAssistantReply(replyText, "normal", collectVisualAssistantActions(visualActionStart, wait));
         } catch (err) {
-          wait.innerHTML = formatBotReplyHtml("Lỗi xử lý giọng nói: " + (err && err.message ? err.message : "vui lòng thử lại"));
+          if (requestToken !== chatRequestToken) return;
+          const errText = "Lỗi xử lý giọng nói: " + (err && err.message ? err.message : "vui lòng thử lại");
+          wait.innerHTML = formatBotReplyHtml(errText);
+          if (funMascotOn && visualAssistantOn) showVisualAssistantReply(errText, "error");
           attachBotManualControls(wait, []);
         } finally {
-          chatBusy = false;
+          if (requestToken === chatRequestToken) { chatBusy = false; activeVisualRequestToken = 0; activeChatAbortController = null; }
+          if (requestToken === chatRequestToken && visualAssistantVoiceStatus) visualAssistantVoiceStatus.textContent = "Bắp đã trả lời. Chạm vào Bắp hoặc micro để nói tiếp.";
         }
       }
 
@@ -12592,12 +12747,15 @@
         if (chatBusy) return;
         const cfg = getWhAiConfig();
         if (!cfg.apiKey) {
-          addChatMsg("sys", "⚠️ Vui lòng nhập Gemini API Key trong Cài Đặt › Tích hợp AI để gửi giọng nói trực tiếp.");
+          const msg = "Bạn nhập Gemini API Key trong Cài đặt › Tích hợp AI trước nhé!";
+          addChatMsg("sys", "⚠️ " + msg);
+          if (funMascotOn && visualAssistantOn) showVisualAssistantReply(msg, "error");
           return;
         }
 
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === "undefined") {
           chatVoiceHelp("unavailable");
+          if (funMascotOn && visualAssistantOn) showVisualAssistantReply("Trình duyệt hiện tại chưa hỗ trợ ghi âm trực tiếp. Bạn thử mở ứng dụng bằng Safari trên HTTPS nhé.", "error");
           return;
         }
 
@@ -12620,9 +12778,14 @@
 
           chatRecorder.onstop = async () => {
             const mime = (chatRecorder && chatRecorder.mimeType) || chosenMime || "audio/webm";
+            stopVisualSilenceMonitor();
             stopChatRecStream();
             chatListening = false;
             setChatMic(false);
+            if (visualAssistantMic) { visualAssistantMic.classList.remove("recording"); visualAssistantMic.textContent = "🎙️"; }
+            visualAssistantVoiceActive = false;
+            if (visualAssistantVoiceStatus) visualAssistantVoiceStatus.textContent = "Bắp đang hiểu yêu cầu của bạn…";
+            if (funMascotOn && visualAssistantOn) { showCornSpeech("Bắp đã nhận được giọng nói và đang xử lý…", { tag: "⏳ ĐANG XỬ LÝ", expression: "think", duration: 120000, persistent: true, forceReplace:true }); speechBubble.classList.add("visual-reply"); addVisualCancelButton(); }
             const blob = new Blob(chatRecChunks, { type: mime });
             chatRecChunks = [];
             if (!blob || blob.size < 200) {
@@ -12635,10 +12798,17 @@
           chatRecorder.start();
           chatListening = true;
           setChatMic(true);
-          showToast("🎙️ Đang thu âm... Nói xong bấm lại nút đỏ để gửi!");
+          if (visualAssistantVoiceActive) {
+            if (visualAssistantMic) { visualAssistantMic.classList.add("recording"); visualAssistantMic.textContent = "⏹️"; }
+            if (visualAssistantVoiceStatus) visualAssistantVoiceStatus.textContent = "Bắp đang lắng nghe… cứ nói tự nhiên, Bắp sẽ tự dừng khi bạn nói xong.";
+            startVisualSilenceMonitor(chatRecStream);
+          } else {
+            showToast("🎙️ Đang thu âm... Nói xong bấm lại nút đỏ để gửi!");
+          }
         } catch (err) {
           stopChatRecStream();
           chatVoiceHelp("not_granted");
+          if (funMascotOn && visualAssistantOn) showVisualAssistantReply("Bắp chưa được cấp quyền micro. Bạn hãy cho phép truy cập micro trong cài đặt trình duyệt rồi thử lại nhé.", "error");
         }
       }
 
@@ -13440,6 +13610,19 @@
 
       let chatOpenOriginOverride = null;
       function openMascotChat(promptText) {
+        if (funMascotOn && visualAssistantOn) {
+          visualAssistantPanelOpen = true;
+          if (visualAssistantControls) visualAssistantControls.classList.add("open");
+          if (promptText) {
+            visualAssistantInput.value = promptText;
+            submitVisualAssistantText();
+          } else {
+            showCornSpeech("Bắp đang nghe đây! Bạn cứ nói tự nhiên nhé. 🎧", { tag: "🌽 Bắp đang lắng nghe", expression: "surprised", duration: 4500 });
+            if (visualAssistantVoiceStatus) visualAssistantVoiceStatus.textContent = "Chạm micro để bắt đầu nói. Bắp sẽ tự dừng khi bạn ngừng nói.";
+            setTimeout(() => { if (visualAssistantPanelOpen && !chatBusy && !chatListening) startVisualAssistantVoice(); }, 250);
+          }
+          return;
+        }
         if (chatBubbleBtn) {
           if (funMascotOn && mascotWrap) {
             const mr = mascotWrap.getBoundingClientRect();
@@ -13460,7 +13643,18 @@
       }
 
       const FUN_ASSISTANT_KEY = "nha_bap_fun_assistant_v1";
+      const VISUAL_ASSISTANT_KEY = "nha_bap_visual_assistant_v1";
       let funMascotOn = localStorage.getItem(FUN_ASSISTANT_KEY) === "1";
+      let visualAssistantOn = localStorage.getItem(VISUAL_ASSISTANT_KEY) === "1";
+      let visualAssistantPanelOpen = false;
+      let visualAssistantVoiceActive = false;
+      const visualAssistantToggle = document.getElementById("visual-assistant-toggle");
+      const visualAssistantSettingRow = document.getElementById("visual-assistant-setting-row");
+      const visualAssistantControls = document.getElementById("visual-assistant-controls");
+      const visualAssistantMic = document.getElementById("visual-assistant-mic");
+      const visualAssistantVoiceStatus = document.getElementById("visual-assistant-voice-status");
+      const speechActions = document.getElementById("corn-speech-actions");
+      const visualAssistantClose = document.getElementById("visual-assistant-close");
       const mascotWrap = document.getElementById("corn-mascot-wrap");
       const mascotInner = document.getElementById("corn-mascot-inner");
       const speechBubble = document.getElementById("corn-speech-bubble");
@@ -13532,18 +13726,24 @@
 
       function positionSpeechBubble() {
         if (!speechBubble.classList.contains("open")) return;
-        const bw = speechBubble.offsetWidth || 210;
-        const bh = speechBubble.offsetHeight || 72;
+        const bw = Math.min(speechBubble.offsetWidth || 210, window.innerWidth - 20);
+        const bh = Math.min(speechBubble.offsetHeight || 72, Math.floor((window.visualViewport ? window.visualViewport.height : window.innerHeight) * 0.72));
         let bx = mPos.x + 37 - bw / 2;
         bx = Math.min(window.innerWidth - bw - 10, Math.max(10, bx));
 
-        let by = mPos.y - bh - 12;
-        if (by < 12) {
-          by = mPos.y + 92;
+        const vv = window.visualViewport;
+        const topEdge = vv ? Math.max(8, vv.offsetTop + 8) : 8;
+        const bottomEdge = vv ? Math.min(window.innerHeight, vv.offsetTop + vv.height) - 8 : window.innerHeight - 8;
+        const mascotTop = mPos.y;
+        let by = mascotTop - bh - 14;
+        if (by < topEdge) {
+          const below = mascotTop + 92;
+          by = (below + bh <= bottomEdge) ? below : Math.max(topEdge, bottomEdge - bh);
           speechBubble.classList.add("tail-top");
         } else {
           speechBubble.classList.remove("tail-top");
         }
+        by = Math.min(Math.max(topEdge, by), Math.max(topEdge, bottomEdge - Math.min(bh, bottomEdge - topEdge)));
 
         const tail = document.getElementById("corn-speech-tail");
         if (tail) {
@@ -13559,11 +13759,13 @@
         if (speechHideTimer) clearTimeout(speechHideTimer);
         if (speechTypingTimer) clearInterval(speechTypingTimer);
         speechBubble.classList.remove("open");
+        if (speechActions && !speechBubble.classList.contains("visual-reply")) speechActions.replaceChildren();
       }
 
       function showCornSpeech(message, opts) {
         if (!funMascotOn || chatPanel.classList.contains("open")) return;
-        const { type = "normal", tag = "🌽 Quả Bắp nhắn nhẹ", expression = "happy", prompt = "", duration = 7500 } = opts || {};
+        if (speechBubble.classList.contains("visual-reply") && !(opts && opts.forceReplace)) return;
+        const { type = "normal", tag = "🌽 Quả Bắp nhắn nhẹ", expression = "happy", prompt = "", duration = 7500, persistent = false } = opts || {};
 
         if (speechHideTimer) clearTimeout(speechHideTimer);
         if (speechTypingTimer) clearInterval(speechTypingTimer);
@@ -13575,6 +13777,8 @@
         speechBubble.className = "open" + (type === "warn" ? " warn" : (type === "good" ? " good" : ""));
         speechTag.textContent = tag;
         speechText.textContent = "";
+        if (speechActions) speechActions.replaceChildren();
+        speechBubble.classList.remove("visual-reply");
         positionSpeechBubble();
 
         let idx = 0;
@@ -13587,11 +13791,12 @@
           }
         }, 20);
 
-        speechHideTimer = setTimeout(hideSpeechBubble, duration);
+        if (!persistent) speechHideTimer = setTimeout(hideSpeechBubble, duration);
       }
 
       function inspectBusinessDataAndSpeak() {
-        if (!funMascotOn || document.hidden || chatPanel.classList.contains("open")) return;
+        if (!funMascotOn || document.hidden || chatBusy || visualAssistantPanelOpen || chatPanel.classList.contains("open")) return;
+        if (speechBubble.classList.contains("visual-reply")) return;
 
         // 1. Kiểm tra tồn kho thấp
         const lowStock = warehouseItems.filter(it => Number(it.stock) <= Number(it.minStock || 0));
@@ -13750,9 +13955,88 @@
         mascotWrap.classList.remove("active");
       }
 
+      function setVisualAssistantControls(open) {
+        visualAssistantPanelOpen = Boolean(open);
+        if (visualAssistantPanelOpen && speechHideTimer) { clearTimeout(speechHideTimer); speechHideTimer = null; }
+        if (visualAssistantControls) visualAssistantControls.classList.toggle("open", visualAssistantPanelOpen && funMascotOn && visualAssistantOn);
+        if (!visualAssistantPanelOpen) hideSpeechBubble();
+      }
+
+      function collectVisualAssistantActions(startIndex, waitBubble) {
+        const nodes = [];
+        const fresh = Array.from(chatLog.children).slice(Math.max(0, startIndex));
+        fresh.forEach(node => {
+          if (node !== waitBubble && node.querySelector && node.querySelector("button")) {
+            node.classList.add("va-action-card");
+            nodes.push(node);
+          }
+        });
+        if (waitBubble) {
+          waitBubble.querySelectorAll(".chat-suggest-box").forEach(node => {
+            node.classList.add("va-action-card");
+            nodes.push(node);
+          });
+        }
+        return nodes;
+      }
+
+      function showVisualAssistantReply(message, kind, actionNodes) {
+        if (!funMascotOn || !visualAssistantOn) return;
+        const text = String(message || "Bắp chưa có câu trả lời.").replace(/<[^>]*>/g, " ").replace(/\*\*/g, "").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
+        const state = kind === "error" ? "worried" : (/\b(tuyệt|thành công|đã tạo|đã lưu|hoàn tất|tốt)\b/i.test(text) ? "celebrate" : "happy");
+        const actions = Array.isArray(actionNodes) ? actionNodes : [];
+        speechBubble.classList.remove("visual-reply");
+        showCornSpeech(text.slice(0, 1250), { tag: kind === "error" ? "⚠️ Bắp cần kiểm tra" : "🌽 Bắp trả lời", expression: state, type: kind === "error" ? "warn" : "normal", duration: actions.length ? 120000 : 30000, persistent: actions.length > 0 });
+        speechBubble.classList.add("visual-reply");
+        if (speechActions) {
+          speechActions.replaceChildren();
+          actions.forEach(node => speechActions.appendChild(node));
+          if (actions.length) {
+            const change = document.createElement("button");
+            change.type = "button"; change.className = "va-change"; change.textContent = "🎙️ Thay đổi yêu cầu";
+            change.addEventListener("click", () => {
+              actions.forEach(n => n.remove());
+              speechActions.replaceChildren();
+              setVisualAssistantControls(true);
+              startVisualAssistantVoice();
+            });
+            speechActions.appendChild(change);
+          }
+        }
+      }
+
+      async function startVisualAssistantVoice() {
+        if (chatListening) {
+          if (chatRecorder && chatRecorder.state === "recording") {
+            if (visualAssistantVoiceStatus) visualAssistantVoiceStatus.textContent = "Đã dừng nghe, Bắp đang xử lý…";
+            showCornSpeech("Đã dừng nghe. Bắp đang xử lý lời bạn nói…", { tag:"⏳ ĐANG XỬ LÝ", expression:"think", duration:120000, persistent:true, forceReplace:true });
+            speechBubble.classList.add("visual-reply");
+            try { chatRecorder.stop(); } catch (e) {}
+          }
+          return;
+        }
+        if (chatBusy) return;
+        visualAssistantVoiceActive = true;
+        if (visualAssistantMic) { visualAssistantMic.classList.add("recording"); visualAssistantMic.textContent = "⏹️"; }
+        if (visualAssistantVoiceStatus) visualAssistantVoiceStatus.textContent = "Đang nghe… chạm Bắp lần nữa để dừng.";
+        showCornSpeech("Bắp đang lắng nghe… Hãy nói yêu cầu của bạn. Chạm vào Bắp lần nữa để kết thúc.", { tag:"🎙️ ĐANG NGHE", expression:"surprised", duration:120000, persistent:true, forceReplace:true });
+        speechBubble.classList.add("visual-reply");
+        await toggleChatDirectAudio();
+        if (!chatListening) {
+          visualAssistantVoiceActive = false;
+          if (visualAssistantMic) { visualAssistantMic.classList.remove("recording"); visualAssistantMic.textContent = "🎙️"; }
+          if (visualAssistantVoiceStatus) visualAssistantVoiceStatus.textContent = "Không bật được micro. Kiểm tra quyền micro và kết nối HTTPS nhé.";
+        }
+      }
+
       function syncAssistantVisibilityUI() {
         chatToggle.checked = chatBubbleEnabled();
         funMascotToggle.checked = funMascotOn;
+        if (visualAssistantToggle) {
+          visualAssistantToggle.checked = visualAssistantOn;
+          visualAssistantToggle.disabled = !funMascotOn;
+        }
+        if (visualAssistantSettingRow) visualAssistantSettingRow.style.opacity = funMascotOn ? "1" : ".55";
 
         if (funMascotOn) {
           chatBubbleBtn.style.display = "none";
@@ -13760,7 +14044,12 @@
         } else {
           stopFunMascotEngine();
           chatBubbleBtn.style.display = chatBubbleEnabled() ? "flex" : "none";
+          if (visualAssistantControls) visualAssistantControls.classList.remove("open");
+          visualAssistantPanelOpen = false;
+          hideSpeechBubble();
         }
+        if (!(funMascotOn && visualAssistantOn) && visualAssistantControls) visualAssistantControls.classList.remove("open");
+        if (funMascotOn && visualAssistantOn && chatPanel) chatPanel.classList.remove("open");
       }
 
       funMascotToggle.addEventListener("change", () => {
@@ -13769,6 +14058,14 @@
         syncAssistantVisibilityUI();
         showToast(funMascotOn ? "🌽 Đã bật Trợ lý Quả Bắp vui nhộn!" : "Đã tắt Trợ lý vui nhộn, quay về bong bóng cũ");
       });
+      if (visualAssistantToggle) visualAssistantToggle.addEventListener("change", () => {
+        visualAssistantOn = Boolean(visualAssistantToggle.checked && funMascotOn);
+        try { localStorage.setItem(VISUAL_ASSISTANT_KEY, visualAssistantOn ? "1" : "0"); } catch (e) {}
+        syncAssistantVisibilityUI();
+        showToast(visualAssistantOn ? "💬 Đã bật tương tác trực quan với Bắp!" : "Đã tắt tương tác trực quan, trở về cách chat cũ.");
+      });
+      if (visualAssistantClose) visualAssistantClose.addEventListener("click", () => setVisualAssistantControls(false));
+      if (visualAssistantMic) visualAssistantMic.addEventListener("click", startVisualAssistantVoice);
 
       // Kéo thả & chạm vào nhân vật Quả Bắp
       mascotWrap.addEventListener("pointerdown", (e) => {
@@ -13817,8 +14114,11 @@
         e.stopPropagation();
         hideSpeechBubble();
       });
+      if (speechActions) speechActions.addEventListener("click", e => e.stopPropagation());
 
-      speechBubble.addEventListener("click", () => {
+      speechBubble.addEventListener("click", (e) => {
+        if (e.target && e.target.closest("button, input, select, textarea, a")) return;
+        if (funMascotOn && visualAssistantOn) { setVisualAssistantControls(true); return; }
         const promptToRun = activeSpeechPrompt;
         hideSpeechBubble();
         openMascotChat(promptToRun);
