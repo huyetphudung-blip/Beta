@@ -1109,6 +1109,22 @@
 
 
   </style>
+
+  <style id="reconcile-date-overflow-fix">
+    #view-reconcile, #view-reconcile .card, #view-reconcile .form-group { min-width: 0; }
+    #view-reconcile input[type="date"],
+    #view-reconcile .reconcile-date-input {
+      display: block;
+      width: 100% !important;
+      max-width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
+      height: 42px;
+      padding: 7px 10px;
+      font-size: 16px;
+    }
+    #view-reconcile .form-group input[type="date"] { width: 100% !important; }
+  </style>
 </head>
 <body>
 
@@ -1417,7 +1433,7 @@
           <div class="card-title">Quản lý dữ liệu</div>
           <div class="action-row" style="margin-bottom: 8px;">
             <button type="button" class="btn-outline" id="btn-export-csv">Xuất file Excel (.CSV)</button>
-            <button type="button" class="btn-outline" id="btn-reload-t11">Nạp lại dữ liệu T11</button>
+            <button type="button" class="btn-outline" id="btn-data-update-history">Lịch sử cập nhật dữ liệu</button>
           </div>
           <button type="button" class="btn-outline" style="width: 100%; color: var(--red); border-color: #FECACA;" id="btn-clear-all">Xóa sạch dữ liệu</button>
         </div>
@@ -1810,34 +1826,13 @@
 
     <!-- TAB 4: ĐỐI SOÁT CUỐI NGÀY -->
     <section id="view-reconcile" class="view">
-      <div class="card" style="border:1px solid var(--accent);">
-        <div class="card-title"><span>⚙️ Thiết lập sổ quỹ</span><span style="font-size:11px;color:var(--muted);">Không ảnh hưởng doanh thu/lợi nhuận</span></div>
-        <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px;line-height:1.45;">Khai báo số dư tiền mặt và ngân hàng tại ngày bắt đầu theo dõi. Các giao dịch từ ngày này trở đi sẽ được cộng/trừ vào sổ quỹ.</div>
-        <div class="form-group"><label for="fund-start-date">Ngày bắt đầu theo dõi</label><input type="date" id="fund-start-date" /></div>
-        <div class="form-group"><label for="fund-opening-tm">Số dư tiền mặt đầu kỳ (đ)</label><input type="number" id="fund-opening-tm" min="0" step="1000" inputmode="numeric" /></div>
-        <div class="form-group"><label for="fund-opening-tk">Số dư ngân hàng đầu kỳ (đ)</label><input type="number" id="fund-opening-tk" min="0" step="1000" inputmode="numeric" /></div>
-        <button type="button" class="btn-submit" id="btn-fund-save-opening">Lưu số dư đầu kỳ</button>
-      </div>
-      <div class="card">
-        <div class="card-title"><span>🔁 Chuyển tiền nội bộ</span></div>
-        <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Chuyển giữa két tiền mặt và tài khoản ngân hàng. Đây không phải doanh thu hay chi phí.</div>
-        <div class="form-group"><label for="fund-transfer-date">Ngày chuyển</label><input type="date" id="fund-transfer-date" /></div>
-        <div class="form-group"><label for="fund-transfer-direction">Hướng chuyển</label><select id="fund-transfer-direction"><option value="tm_to_tk">Tiền mặt → Ngân hàng</option><option value="tk_to_tm">Ngân hàng → Tiền mặt</option></select></div>
-        <div class="form-group"><label for="fund-transfer-amount">Số tiền (đ)</label><input type="number" id="fund-transfer-amount" min="1" step="1000" inputmode="numeric" placeholder="Nhập số tiền chuyển" /></div>
-        <div class="form-group"><label for="fund-transfer-note">Ghi chú</label><input type="text" id="fund-transfer-note" placeholder="VD: Nộp tiền bán hàng vào ngân hàng" /></div>
-        <button type="button" class="btn-submit" id="btn-fund-transfer">Xác nhận chuyển tiền</button>
-      </div>
-      <div class="card">
-        <div class="card-title"><span>📚 Lịch sử sổ quỹ riêng</span></div>
-        <div id="fund-ledger-history" style="font-size:12.5px;color:var(--muted);">Chưa có phát sinh.</div>
-      </div>
       <div class="card" style="padding: 12px 14px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-          <div>
+        <div style="display:flex; flex-direction:column; align-items:stretch; gap:10px; min-width:0;">
+          <div style="min-width:0;">
             <div style="font-weight:800; font-size:15px;">Đối soát quỹ cuối ngày</div>
             <div style="font-size:12px; color:var(--muted);">So sánh sổ sách với thực tế đếm cuối ngày</div>
           </div>
-          <input type="date" id="rec-date" style="min-height:38px; padding:5px 9px; font-size:16px; width:auto;" />
+          <input type="date" id="rec-date" class="reconcile-date-input" />
         </div>
       </div>
 
@@ -1892,7 +1887,30 @@
           Ghi điều chỉnh vào sổ quỹ riêng
         </button>
       </div>
-    </section>
+    
+      <!-- Thiết lập sổ quỹ và chuyển tiền nội bộ được đặt cuối tab để ưu tiên thao tác đối soát. -->
+      <div class="card" style="border:1px solid var(--accent);">
+        <div class="card-title"><span>⚙️ Thiết lập sổ quỹ</span><span style="font-size:11px;color:var(--muted);">Không ảnh hưởng doanh thu/lợi nhuận</span></div>
+        <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px;line-height:1.45;">Khai báo số dư tiền mặt và ngân hàng tại ngày bắt đầu theo dõi. Các giao dịch từ ngày này trở đi sẽ được cộng/trừ vào sổ quỹ.</div>
+        <div class="form-group"><label for="fund-start-date">Ngày bắt đầu theo dõi</label><input type="date" id="fund-start-date" /></div>
+        <div class="form-group"><label for="fund-opening-tm">Số dư tiền mặt đầu kỳ (đ)</label><input type="number" id="fund-opening-tm" min="0" step="1000" inputmode="numeric" /></div>
+        <div class="form-group"><label for="fund-opening-tk">Số dư ngân hàng đầu kỳ (đ)</label><input type="number" id="fund-opening-tk" min="0" step="1000" inputmode="numeric" /></div>
+        <button type="button" class="btn-submit" id="btn-fund-save-opening">Lưu số dư đầu kỳ</button>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>🔁 Chuyển tiền nội bộ</span></div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Chuyển giữa két tiền mặt và tài khoản ngân hàng. Đây không phải doanh thu hay chi phí.</div>
+        <div class="form-group"><label for="fund-transfer-date">Ngày chuyển</label><input type="date" id="fund-transfer-date" /></div>
+        <div class="form-group"><label for="fund-transfer-direction">Hướng chuyển</label><select id="fund-transfer-direction"><option value="tm_to_tk">Tiền mặt → Ngân hàng</option><option value="tk_to_tm">Ngân hàng → Tiền mặt</option></select></div>
+        <div class="form-group"><label for="fund-transfer-amount">Số tiền (đ)</label><input type="number" id="fund-transfer-amount" min="1" step="1000" inputmode="numeric" placeholder="Nhập số tiền chuyển" /></div>
+        <div class="form-group"><label for="fund-transfer-note">Ghi chú</label><input type="text" id="fund-transfer-note" placeholder="VD: Nộp tiền bán hàng vào ngân hàng" /></div>
+        <button type="button" class="btn-submit" id="btn-fund-transfer">Xác nhận chuyển tiền</button>
+      </div>
+      <div class="card">
+        <div class="card-title"><span>📚 Lịch sử sổ quỹ riêng</span></div>
+        <div id="fund-ledger-history" style="font-size:12.5px;color:var(--muted);">Chưa có phát sinh.</div>
+      </div>
+</section>
 
     <!-- TAB 5: CÀI ĐẶT SAO LƯU & ĐẦU MỤC / MẶT HÀNG -->
     <section id="view-settings" class="view">
@@ -1986,11 +2004,12 @@
             <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
           </span>
           <div style="text-align:left; min-width:0;">
-            <div style="font-weight:700; font-size:14.5px;">Cập nhật phiên bản ứng dụng mới nhất</div>
-            <div style="font-size:12px; color:var(--muted);">Tải lại dữ liệu giao diện & tính năng mới từ máy chủ</div>
+            <div style="font-weight:700; font-size:14.5px;">Cập nhật phiên bản</div>
+            <div style="font-size:12px; color:var(--muted);">Thông tin phiên bản, kiểm tra cập nhật & lịch sử thay đổi</div>
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
+          <span id="app-version-badge" style="background:var(--accent-soft); color:var(--accent); padding:4px 9px; border-radius:999px; font-size:11.5px; font-weight:800;">v8.8</span>
           <span style="color:var(--muted); font-size:18px; font-weight:700;">›</span>
         </div>
       </button>
@@ -2429,6 +2448,77 @@
         if (toastTimer) clearTimeout(toastTimer);
         toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
       }
+      // QUẢN LÝ PHIÊN BẢN VÀ NHẬT KÝ CẬP NHẬT DỮ LIỆU
+      const APP_VERSION = "8.8";
+      const DATA_UPDATE_HISTORY_KEY = "nha_bap_data_update_history_v1";
+      function readDataUpdateHistory() {
+        try { const v = JSON.parse(localStorage.getItem(DATA_UPDATE_HISTORY_KEY) || "[]"); return Array.isArray(v) ? v : []; }
+        catch (e) { return []; }
+      }
+      function logDataUpdate(action, detail, beforeCount, afterCount) {
+        try {
+          const history = readDataUpdateHistory();
+          history.unshift({ id:"du_" + Date.now() + "_" + Math.random().toString(36).slice(2,7), at:new Date().toISOString(), action:String(action || "Cập nhật dữ liệu"), detail:String(detail || ""), beforeCount:Number.isFinite(Number(beforeCount)) ? Number(beforeCount) : null, afterCount:Number.isFinite(Number(afterCount)) ? Number(afterCount) : null });
+          localStorage.setItem(DATA_UPDATE_HISTORY_KEY, JSON.stringify(history.slice(0,200)));
+        } catch (e) {}
+      }
+      function formatHistoryTime(iso) {
+        const d = new Date(iso);
+        return Number.isNaN(d.getTime()) ? "Không rõ thời gian" : d.toLocaleString("vi-VN", { dateStyle:"short", timeStyle:"short" });
+      }
+      function openDataUpdateHistoryModal() {
+        const history = readDataUpdateHistory();
+        const rows = history.length ? history.map(item => `
+          <div style="padding:11px 0; border-bottom:1px solid var(--border);">
+            <div style="display:flex; justify-content:space-between; gap:8px; align-items:flex-start;">
+              <strong style="font-size:13px;">${escapeHtmlStr(item.action || "Cập nhật dữ liệu")}</strong>
+              <small style="color:var(--muted); white-space:nowrap;">${formatHistoryTime(item.at)}</small>
+            </div>
+            <div style="font-size:12.5px; color:var(--muted); margin-top:4px;">${escapeHtmlStr(item.detail || "")}</div>
+            ${item.beforeCount !== null || item.afterCount !== null ? `<small style="display:block; margin-top:4px; color:var(--muted);">Giao dịch: ${item.beforeCount ?? "—"} → ${item.afterCount ?? "—"}</small>` : ""}
+          </div>`).join("") : `<div style="text-align:center; padding:28px 12px; color:var(--muted);">Chưa có lịch sử cập nhật dữ liệu được ghi nhận.<br><small>Lịch sử sẽ xuất hiện khi khôi phục, đồng bộ hoặc xóa dữ liệu.</small></div>`;
+        modalCard.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; gap:10px;"><h3 style="margin:0;">Lịch sử cập nhật dữ liệu</h3><span style="font-size:11px; color:var(--muted);">${history.length} sự kiện</span></div>
+          <p style="font-size:12.5px; color:var(--muted); margin:7px 0 10px;">Theo dõi các lần khôi phục tệp sao lưu, đồng bộ dữ liệu và thao tác xóa dữ liệu. Nhật ký được lưu trên thiết bị này.</p>
+          <div style="max-height:55vh; overflow:auto;">${rows}</div>
+          <button type="button" class="btn-outline" style="width:100%; margin-top:12px;" id="m-close-data-history">Đóng</button>`;
+        modalBg.classList.add("open");
+        document.getElementById("m-close-data-history").addEventListener("click", closeModal);
+      }
+
+      const APP_CHANGELOG = [
+        {v:"8.8", title:"Trung tâm phiên bản & lịch sử dữ liệu", changes:["Thay nút nạp dữ liệu mẫu bằng lịch sử cập nhật dữ liệu.","Bổ sung thông tin phiên bản, kiểm tra cập nhật và nhật ký thay đổi theo phiên bản."]},
+        {v:"8.7", title:"Cải tiến giao diện đối soát", changes:["Sửa bố cục hai khung chọn ngày trên tab Đối soát.","Chuyển thiết lập sổ quỹ và chuyển tiền nội bộ xuống cuối trang."]},
+        {v:"8.6", title:"Icon ứng dụng Bắp", changes:["Đổi tên ứng dụng thành Quản lý kinh doanh - Bắp.","Bổ sung icon và cấu hình thêm vào màn hình chính."]},
+        {v:"8.5", title:"Trợ lý điều hành AI", changes:["Mở rộng phân tích kinh doanh và cảnh báo chủ động.","Bổ sung quy trình AI hỗ trợ nhập hàng có xác nhận."]},
+        {v:"8.4", title:"Kho thông minh", changes:["Cảnh báo tồn thấp và dự báo ngày hết hàng.","Theo dõi lô nhập, giá nhập và cảnh báo xuất kho bất thường."]},
+        {v:"8.3", title:"Chatbox AI và báo cáo", changes:["Chatbox truy vấn dữ liệu báo cáo.","Hỗ trợ yêu cầu chỉnh sửa giao dịch có bước xác nhận."]},
+        {v:"8.2", title:"Sổ quỹ riêng", changes:["Bổ sung số dư đầu kỳ, chuyển tiền nội bộ và đối soát quỹ.","Tách điều chỉnh quỹ khỏi doanh thu và chi phí."]},
+        {v:"8.1", title:"Phân tích kinh doanh", changes:["Chatbox truy vấn dữ liệu phân tích và các chỉ số vận hành."]},
+        {v:"8.0", title:"So sánh giá nhà cung cấp", changes:["Bổ sung công cụ so sánh báo giá nguyên vật liệu."]},
+        {v:"7.9", title:"Quản lý nhà cung cấp", changes:["Mở rộng tùy chỉnh và quản lý thông tin nhà cung cấp."]},
+        {v:"7.8", title:"Đối soát quỹ", changes:["Bổ sung xác nhận khi điều chỉnh số liệu đối soát."]},
+        {v:"7.7", title:"Kiểm tra sổ quỹ", changes:["Bổ sung kiểm tra và hiển thị tình trạng sổ quỹ."]}
+      ];
+      function openAppVersionModal() {
+        const historyHtml = APP_CHANGELOG.map(v => `<div style="padding:10px 0; border-bottom:1px solid var(--border);"><div style="display:flex; gap:8px; align-items:center;"><strong>Phiên bản ${v.v}</strong>${v.v === APP_VERSION ? '<span style="background:var(--green-soft); color:var(--green); border-radius:99px; padding:2px 8px; font-size:10px; font-weight:800;">HIỆN TẠI</span>' : ''}<span style="font-size:12px; color:var(--muted);">${escapeHtmlStr(v.title)}</span></div><ul style="margin:6px 0 0; padding-left:18px; font-size:12.5px; color:var(--muted);">${v.changes.map(c => `<li style="margin:3px 0;">${escapeHtmlStr(c)}</li>`).join("")}</ul></div>`).join("");
+        modalCard.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; gap:10px;"><h3 style="margin:0;">Cập nhật phiên bản</h3><button type="button" class="mini-btn" id="m-close-version">✕</button></div>
+          <div style="margin-top:12px; padding:14px; border-radius:14px; background:var(--subtle);"><div style="font-size:12px; color:var(--muted);">ỨNG DỤNG</div><strong style="display:block; font-size:17px; margin:3px 0;">Quản lý kinh doanh - Bắp</strong><div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:13px; color:var(--muted);">Phiên bản hiện tại</span><strong style="font-size:20px; color:var(--accent);">v${APP_VERSION}</strong></div><div style="font-size:11.5px; color:var(--muted); margin-top:5px;">Mã phiên bản được đóng gói trong ứng dụng.</div></div>
+          <button type="button" class="btn-submit" id="m-check-version" style="width:100%; margin:12px 0 8px;">↻ Kiểm tra phiên bản mới</button>
+          <div id="m-version-check-result" style="font-size:12px; color:var(--muted); margin-bottom:12px;">Chưa kiểm tra trong lần mở này.</div>
+          <div style="font-weight:800; margin:8px 0 4px;">Lịch sử cập nhật & nội dung thay đổi</div>
+          <div style="max-height:34vh; overflow:auto;">${historyHtml}</div>
+          <button type="button" class="btn-outline" id="m-close-version-bottom" style="width:100%; margin-top:12px;">Đóng</button>`;
+        modalBg.classList.add("open");
+        const closeTop = document.getElementById("m-close-version");
+        const closeBottom = document.getElementById("m-close-version-bottom");
+        closeTop.addEventListener("click", closeModal); closeBottom.addEventListener("click", closeModal);
+        document.getElementById("m-check-version").addEventListener("click", () => {
+          const result = document.getElementById("m-version-check-result");
+          if (!navigator.onLine) { result.textContent = "Thiết bị đang ngoại tuyến. Không thể kiểm tra nguồn phát hành trực tuyến."; return; }
+          result.textContent = `Ứng dụng đang ở phiên bản v${APP_VERSION}. Chưa cấu hình máy chủ/địa chỉ manifest phát hành nên chưa thể xác minh có phiên bản mới trên Internet. Hãy dùng tệp cập nhật chính thức khi có bản phát hành.`;
+        });
+      }
+
       function offerDownload(filename, blob) {
         const fallback = () => {
           const url = URL.createObjectURL(blob);
@@ -5520,12 +5610,7 @@
         showToast("Đã xuất file CSV!");
       });
 
-      document.getElementById("btn-reload-t11").addEventListener("click", () => {
-        records = JSON.parse(JSON.stringify(INITIAL_RECORDS));
-        saveRecords();
-        renderAll();
-        showToast("Đã nạp lại dữ liệu Tháng 11!");
-      });
+      document.getElementById("btn-data-update-history").addEventListener("click", openDataUpdateHistoryModal);
 
       document.getElementById("btn-clear-all").addEventListener("click", () => {
         modalCard.innerHTML = `
@@ -5539,8 +5624,10 @@
         modalBg.classList.add("open");
         document.getElementById("m-cancel-clear").addEventListener("click", closeModal);
         document.getElementById("m-confirm-clear").addEventListener("click", () => {
+          const oldCount = records.length;
           records = [];
           saveRecords();
+          logDataUpdate("Xóa sạch dữ liệu thu – chi", "Người dùng xác nhận xóa toàn bộ giao dịch thu – chi.", oldCount, 0);
           closeModal();
           renderAll();
           showToast("Đã xóa sạch dữ liệu");
@@ -9598,12 +9685,7 @@
       document.getElementById("btn-open-backup-settings").addEventListener("click", openBackupSettingsModal);
       document.getElementById("btn-open-ai-settings").addEventListener("click", openAiSettingsModal);
 
-      document.getElementById("btn-check-app-update").addEventListener("click", () => {
-        showToast("Đang kiểm tra và tải phiên bản mới nhất từ máy chủ...");
-        setTimeout(() => {
-          window.location.reload();
-        }, 800);
-      });
+      document.getElementById("btn-check-app-update").addEventListener("click", openAppVersionModal);
 
       function openDonateDeveloperModal() {
         const tiers = [
@@ -9891,6 +9973,7 @@
           saveNotebookTags(true);
           renderAll();
           lastBackupInfoText = `Đã đồng bộ từ Google Drive lúc ${new Date().toLocaleTimeString("vi-VN")}.`;
+          logDataUpdate("Đồng bộ dữ liệu từ Google Drive", "Đã tải và áp dụng bản sao lưu từ Google Drive.", null, records.length);
           const infoEl = document.getElementById("last-backup-info");
           if (infoEl) infoEl.textContent = lastBackupInfoText;
           showToast("Đã tải xuống và tự động đồng bộ ứng dụng thành công!");
@@ -9912,6 +9995,7 @@
                 showToast("Tệp sao lưu không hợp lệ!");
                 return;
               }
+              const oldRecordCount = records.length;
               records = parsed.records;
               if (Array.isArray(parsed.categories) && parsed.categories.length > 0) expenseCategories = parsed.categories;
               if (Array.isArray(parsed.posGroups) && parsed.posGroups.length > 0) posGroupsList = parsed.posGroups;
@@ -9953,6 +10037,7 @@
               saveNotebookNotes(true);
               saveNotebookTags(true);
               renderAll();
+              logDataUpdate("Khôi phục dữ liệu từ tệp sao lưu", `Tệp: ${file.name || "JSON"}.`, oldRecordCount, records.length);
               closeModal();
               showToast("Đã khôi phục dữ liệu thành công từ tệp!");
             } catch (err) {
