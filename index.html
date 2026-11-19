@@ -10363,6 +10363,15 @@
           : "(Chưa có công thức)";
         const recipeCatsStr = (recipeCategories.length > 0 ? recipeCategories : DEFAULT_RECIPE_CATEGORIES).join(" | ");
         const notebookTagsStr = (notebookTags.length > 0 ? notebookTags : DEFAULT_NOTEBOOK_TAGS).join(" | ");
+        const compactRows = (arr, limit, mapper) => (Array.isArray(arr) ? arr.slice(0, limit) : []).map(mapper).join("\n") || "(Chưa có dữ liệu)";
+        const detailedRecords = compactRows(records, 120, r => JSON.stringify({ id:r.id, type:r.type, date:r.date, category:r.category, amount:r.amount, tk:r.tk, tm:r.tm, qty:r.qty, unit:r.unit, note:r.note, orderTime:r.orderTime }));
+        const detailedDebts = compactRows(debtEntries, 100, d => JSON.stringify({ id:d.id, ledgerType:d.ledgerType, partyName:d.partyName, itemName:d.itemName, date:d.date, qty:d.qty, unit:d.unit, amount:d.amount, status:d.status, paidDate:d.paidDate, paidMethod:d.paidMethod, note:d.note }));
+        const detailedWarehouseTx = compactRows(warehouseTxList, 100, t => JSON.stringify(t));
+        const detailedSuppliers = compactRows(suppliersList, 80, x => JSON.stringify(x));
+        const detailedMaterials = compactRows(manualMaterialHistory, 100, x => JSON.stringify(x));
+        const detailedNotebook = compactRows(notebookNotes, 60, n => JSON.stringify({ id:n.id, title:n.title, tag:n.tag, summary:n.summary, content:String(n.content || "").slice(0,1200), date:n.date }));
+        const detailedRecipes = compactRows(recipesList, 80, r => JSON.stringify({ id:r.id, title:r.title, category:r.category, prepTime:r.prepTime, yieldText:r.yieldText, ingredients:r.ingredients, steps:r.steps, tips:r.tips }));
+        const detailedOrders = compactRows(savedOrders, 80, o => JSON.stringify({ id:o.id, orderTime:o.orderTime, items:o.items, total:o.total, note:o.note }));
         const weekLine = "7 ngày gần nhất (thu/chi): " + Array.from({ length: 7 }, (_, i) => {
           const d = new Date(); d.setDate(d.getDate() - i);
           const iso = d.toLocaleDateString("sv-SE");
@@ -10386,6 +10395,15 @@
           "Kho:\n" + (stock || "(trống)"),
           "Sắp hết hàng: " + (low || "không có"),
           "Danh mục chi: " + cats,
+          "DỮ LIỆU CHI TIẾT GẦN ĐÂY (JSON từng dòng; dữ liệu mới nhất đứng trước, một số danh sách giới hạn để tránh prompt quá dài):",
+          "Giao dịch thu chi (tối đa 120):\n" + detailedRecords,
+          "Toàn bộ công nợ (tối đa 100):\n" + detailedDebts,
+          "Lịch sử kho (tối đa 100):\n" + detailedWarehouseTx,
+          "Nhà cung cấp (tối đa 80):\n" + detailedSuppliers,
+          "Lịch sử nguyên liệu (tối đa 100):\n" + detailedMaterials,
+          "Sổ Tay đã lưu (tối đa 60; nội dung mỗi bài tối đa 1200 ký tự):\n" + detailedNotebook,
+          "Công thức chi tiết (tối đa 80):\n" + detailedRecipes,
+          "Đơn đang lưu (tối đa 80):\n" + detailedOrders,
           hist ? "Hội thoại trước:\n" + hist : "",
           reqLine,
           "Trả về DUY NHẤT JSON (không markdown): {\"reply\":\"câu trả lời được định dạng mạch lạc từng dòng/mục\",\"suggestions\":[...],\"actions\":[...]}.",
@@ -10405,10 +10423,22 @@
           '{"type":"warehouse","action":"in|out|audit","itemId":"","itemName":"","qty":0,"unit":"","reason":"","note":""} (nhập/xuất/kiểm kê kho)',
           '{"type":"add_chi","category":"","amount":0,"qty":0,"unit":"","note":"","date":"YYYY-MM-DD"} (ghi khoản chi)',
           '{"type":"add_thu","tk":0,"tm":0,"note":"","date":"YYYY-MM-DD"} (ghi doanh thu: tk chuyển khoản, tm tiền mặt)',
+          '{"type":"data_query","dataset":"all|records|debt|warehouse|warehouse_history|suppliers|recipes|notebook|materials|orders","query":"từ khóa hoặc ngày cần tìm"} (truy vấn dữ liệu thật trong ứng dụng; dùng khi cần chi tiết, lịch sử hoặc danh sách vượt quá phần dữ liệu tóm tắt)',
+          '{"type":"record_update|record_delete","id":"id giao dịch","fields":{"date":"YYYY-MM-DD","type":"thu|chi","category":"","amount":0,"tk":0,"tm":0,"qty":0,"unit":"","note":""}} (đề nghị sửa/xóa giao dịch thu chi; ứng dụng luôn yêu cầu người dùng xác nhận)',
+          '{"type":"debt_update|debt_delete","id":"id công nợ","fields":{"partyName":"","itemName":"","amount":0,"status":"unpaid|paid","date":"YYYY-MM-DD","note":""}} (đề nghị sửa/xóa công nợ; luôn yêu cầu xác nhận)',
+          '{"type":"warehouse_update|warehouse_delete","id":"id mặt hàng kho","fields":{"name":"","stock":0,"minStock":0,"unit":"","category":""}} (đề nghị sửa/xóa mặt hàng kho; luôn yêu cầu xác nhận)',
+          '{"type":"recipe_update|recipe_delete","id":"id công thức","fields":{"title":"","category":"","prepTime":"","yieldText":"","ingredients":[],"steps":"","tips":""}} (đề nghị sửa/xóa công thức; luôn yêu cầu xác nhận)',
+          '{"type":"notebook_update|notebook_delete","id":"id bài viết","fields":{"title":"","tag":"","summary":"","content":""}} (đề nghị sửa/xóa bài Sổ Tay; luôn yêu cầu xác nhận)',
+          '{"type":"supplier_update|supplier_delete","id":"id nhà cung cấp","fields":{"name":"","phone":"","items":[],"note":""}} (đề nghị sửa/xóa nhà cung cấp; luôn yêu cầu xác nhận)',
+          '{"type":"material_update|material_delete","id":"id lịch sử nguyên liệu","fields":{"category":"","date":"YYYY-MM-DD","unitPrice":0,"stdUnit":"","supplier":"","note":""}} (đề nghị sửa/xóa lịch sử giá nguyên liệu; luôn yêu cầu xác nhận)',
           `{"type":"recipe_search","title":"Tên công thức","category":"Chọn 1 trong: ${recipeCatsStr}","prepTime":"VD: 20 phút","yieldText":"VD: 1 mẻ 2kg hoặc 20 suất","ratioNote":"Giải thích tỷ lệ quy đổi nếu chia định lượng từ công thức gốc trong sổ, để rỗng nếu tìm món mới","ingredients":["Nguyên liệu 1: định lượng rõ ràng","Nguyên liệu 2: ..."],"steps":"1. Bước một...\\n2. Bước hai...","tips":"Mẹo chế biến/bảo quản"} (tìm kiếm công thức món ăn/nước sốt/đồ uống mới HOẶC chia/quy đổi định lượng từ Sổ Công Thức hiện có của quán)`,
           `{"type":"notebook_research","title":"Tiêu đề bài nghiên cứu","tag":"Chọn 1 trong: ${notebookTagsStr}","summary":"Tóm tắt 1-2 câu giá trị cốt lõi","content":"Nội dung bài phân tích thực chiến đầy đủ, chia mục rõ ràng bằng văn bản thuần có xuống dòng (không dùng ** hay ###)"} (nghiên cứu chuyên sâu một chủ đề kinh doanh, marketing F&B, vận hành quán ăn để hiển thị thẻ bài viết và cho phép lưu vào Sổ Tay)`,
           '{"type":"navigate","tab":"pos|entry|reconcile|hub|warehouse|settings"}',
           "QUY TẮC BẮT BUỘC:",
+          "- Khi người dùng hỏi chi tiết giao dịch, công nợ đã thanh toán, lịch sử kho, nhà cung cấp, nguyên liệu, nội dung Sổ Tay hoặc dữ liệu cũ: hãy dùng action data_query với dataset và từ khóa phù hợp; không được đoán nếu dữ liệu chưa có trong prompt.",
+          "- Với mọi thao tác sửa/xóa dữ liệu cũ, chỉ tạo action *_update hoặc *_delete kèm ID chính xác và fields cần thay đổi; ứng dụng sẽ hiển thị nút xác nhận trước khi ghi thật.",
+          "- Không tự bịa ID. Chỉ dùng ID có trong dữ liệu được cung cấp hoặc kết quả truy vấn.",
+          "- Không được dùng action sửa/xóa nếu chưa xác định duy nhất bản ghi mục tiêu; hãy hỏi lại người dùng.",
           "- KHI NGƯỜI DÙNG GỬI HÌNH ẢNH ĐỂ CHECK: Hãy phân tích chi tiết từng dòng, số tiền, ngày tháng, nội dung chuyển khoản hoặc đối chiếu với Đơn đang lưu / Sổ Công Nợ / Kho trong 'reply'. Nếu người dùng chỉ gửi ảnh để kiểm tra (không ra lệnh lưu/nhập ngay), hãy báo cáo kết quả kiểm tra rõ ràng trong 'reply' (actions=[]) và hỏi xem họ có muốn ghi vào sổ Thu/Chi hay cập nhật Kho không. Nếu người dùng kèm lệnh rõ ràng (VD: 'nhập hóa đơn này vào chi', 'ghi thu chuyển khoản này'), hãy thực hiện action 'add_chi' hoặc 'add_thu' tương ứng.",
           "- QUY TRÌNH LÊN ĐƠN POS: Khi người dùng gọi món (VD: 'lên 2 chảo 1, 1 coca'), CHỈ dùng action 'pos_order' (KHÔNG tự động gọi 'pos_save_order' ngay). Trong 'reply', hãy báo cáo chi tiết từng món vừa chọn, ghi chú, tổng tiền của đơn hiện tại và hỏi xác nhận: 'Bạn có muốn lưu đơn này vào Đơn đang lưu không, hay cần thay đổi/thêm bớt gì nữa?'",
           "- KHI NGƯỜI DÙNG XÁC NHẬN LƯU ĐƠN (VD: 'ok lưu đơn', 'lưu vào đơn đang lưu', 'đúng rồi lưu đi'): dùng action 'pos_save_order'. Nếu người dùng yêu cầu sửa/thêm/bớt món khi đang soạn đơn, dùng 'pos_order' (với mode='add' hoặc 'replace') rồi tiếp tục báo cáo chi tiết đơn mới và hỏi xác nhận lưu.",
@@ -10844,9 +10874,135 @@
         chatLog.scrollTop = chatLog.scrollHeight;
       }
 
+      function chatQueryData(dataset, query) {
+        const q = String(query || "").trim().toLocaleLowerCase("vi");
+        const pools = {
+          records: ["Giao dịch thu chi", records], debt: ["Công nợ", debtEntries],
+          warehouse: ["Mặt hàng kho", warehouseItems], warehouse_history: ["Lịch sử kho", warehouseTxList],
+          suppliers: ["Nhà cung cấp", suppliersList], recipes: ["Công thức", recipesList],
+          notebook: ["Sổ Tay", notebookNotes], materials: ["Lịch sử nguyên liệu", manualMaterialHistory],
+          orders: ["Đơn đang lưu", savedOrders]
+        };
+        const selected = dataset && dataset !== "all" && pools[dataset] ? [dataset] : Object.keys(pools);
+        const out = [];
+        selected.forEach(key => {
+          const [label, arr] = pools[key];
+          const matches = (Array.isArray(arr) ? arr : []).filter(item => {
+            if (!q) return true;
+            let hay = "";
+            try { hay = JSON.stringify(item).toLocaleLowerCase("vi"); } catch (e) {}
+            return hay.includes(q);
+          }).slice(0, 35);
+          if (matches.length) out.push(label + " (" + matches.length + "):\\n" + matches.map(x => {
+            try { return JSON.stringify(x); } catch (e) { return String(x); }
+          }).join("\\n"));
+        });
+        return out.length ? "🔎 Kết quả truy vấn dữ liệu thực tế:\\n" + out.join("\\n\\n") : "Không tìm thấy bản ghi phù hợp trong dữ liệu hiện có.";
+      }
+
+      function applyConfirmedChatMutation(kind, data) {
+        const id = String(data.id || "");
+        const fields = data.fields && typeof data.fields === "object" ? data.fields : {};
+        const config = {
+          record: { arr: records, save: saveRecords, render: renderAll, allowed: ["date","type","category","amount","tk","tm","qty","unit","note"] },
+          debt: { arr: debtEntries, save: saveDebtEntries, render: renderDebtLedgerView, allowed: ["ledgerType","partyName","itemName","date","qty","unit","unitPrice","amount","note","status","paidDate","paidMethod"] },
+          warehouse: { arr: warehouseItems, save: saveWarehouseItems, render: renderWarehouseView, allowed: ["name","stock","minStock","unit","category"] },
+          recipe: { arr: recipesList, save: saveRecipes, render: renderRecipesView, allowed: ["title","category","prepTime","yieldText","ratioNote","ingredients","steps","tips"] },
+          notebook: { arr: notebookNotes, save: saveNotebookNotes, render: renderNotebookView, allowed: ["title","tag","summary","content","date"] },
+          supplier: { arr: suppliersList, save: saveSuppliers, render: renderMaterialsView, allowed: ["name","phone","items","note"] },
+          material: { arr: manualMaterialHistory, save: saveMaterialHistory, render: renderMaterialsView, allowed: ["category","date","unitPrice","stdUnit","supplier","note"] }
+        };
+        const cfg = config[kind];
+        if (!cfg || !id) return "⚠️ Không đủ thông tin để thực hiện thay đổi.";
+        const index = cfg.arr.findIndex(x => String(x.id) === id);
+        if (index < 0) return "⚠️ Không tìm thấy bản ghi cần thay đổi (ID: " + id + ").";
+        const deleting = data.operation === "delete";
+        if (deleting) {
+          cfg.arr.splice(index, 1);
+        } else {
+          const clean = {};
+          cfg.allowed.forEach(k => {
+            if (Object.prototype.hasOwnProperty.call(fields, k)) clean[k] = fields[k];
+          });
+          if (!Object.keys(clean).length) return "⚠️ Không có trường hợp lệ để cập nhật.";
+          if (kind === "record") {
+            ["amount","tk","tm","qty"].forEach(k => { if (k in clean) clean[k] = Number(clean[k]) || 0; });
+            if (clean.type && !["thu","chi"].includes(clean.type)) return "⚠️ Loại giao dịch không hợp lệ.";
+            if (clean.date) clean.date = chatDate(clean.date);
+            if (("tk" in clean || "tm" in clean) && (cfg.arr[index].type === "thu" || clean.type === "thu")) {
+              clean.amount = ("tk" in clean ? clean.tk : Number(cfg.arr[index].tk) || 0) + ("tm" in clean ? clean.tm : Number(cfg.arr[index].tm) || 0);
+            }
+          }
+          if (kind === "debt") {
+            ["amount","qty","unitPrice"].forEach(k => { if (k in clean) clean[k] = Number(clean[k]) || 0; });
+            if (clean.status && !["paid","unpaid"].includes(clean.status)) return "⚠️ Trạng thái công nợ không hợp lệ.";
+            if (clean.date) clean.date = chatDate(clean.date);
+          }
+          if (kind === "warehouse") {
+            ["stock","minStock"].forEach(k => { if (k in clean) clean[k] = Number(clean[k]) || 0; });
+          }
+          if (kind === "recipe" && "ingredients" in clean && !Array.isArray(clean.ingredients)) return "⚠️ Thành phần công thức phải là danh sách.";
+          if (kind === "supplier" && "items" in clean && !Array.isArray(clean.items)) return "⚠️ Danh sách mặt hàng nhà cung cấp phải là mảng.";
+          if (kind === "material" && "unitPrice" in clean) clean.unitPrice = Number(clean.unitPrice) || 0;
+          Object.assign(cfg.arr[index], clean);
+        }
+        cfg.save();
+        if (typeof cfg.render === "function") cfg.render();
+        if (kind === "warehouse") renderAll();
+        return (deleting ? "🗑️ Đã xóa " : "✅ Đã cập nhật ") + ({record:"giao dịch thu chi",debt:"khoản công nợ",warehouse:"mặt hàng kho",recipe:"công thức",notebook:"bài Sổ Tay",supplier:"nhà cung cấp",material:"lịch sử nguyên liệu"}[kind]) + " (ID: " + id + ").";
+      }
+
+      function requestChatMutation(kind, operation, data) {
+        const id = String(data && data.id || "");
+        if (!id) return "⚠️ AI chưa cung cấp ID bản ghi nên không thể tạo yêu cầu.";
+        const labels = {record:"giao dịch thu chi",debt:"khoản công nợ",warehouse:"mặt hàng kho",recipe:"công thức",notebook:"bài Sổ Tay",supplier:"nhà cung cấp",material:"lịch sử nguyên liệu"};
+        const target = ({record:records,debt:debtEntries,warehouse:warehouseItems,recipe:recipesList,notebook:notebookNotes,supplier:suppliersList,material:manualMaterialHistory}[kind] || []).find(x => String(x.id) === id);
+        if (!target) return "⚠️ Không tìm thấy " + labels[kind] + " có ID " + id + ".";
+        const card = document.createElement("div");
+        card.className = "chat-msg sys";
+        card.style.cssText = "max-width:95%;background:#FFF7ED;border:1px solid #FDBA74;color:var(--ink);";
+        const title = document.createElement("div");
+        title.style.cssText = "font-weight:800;margin-bottom:5px;";
+        title.textContent = (operation === "delete" ? "⚠️ Xác nhận xóa " : "📝 Xác nhận sửa ") + labels[kind];
+        const detail = document.createElement("div");
+        detail.style.cssText = "font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere;margin-bottom:9px;";
+        detail.textContent = "ID: " + id + "\n" + JSON.stringify(operation === "delete" ? target : (data.fields || {}), null, 2);
+        const confirm = document.createElement("button");
+        confirm.type = "button"; confirm.className = "chat-qbtn acc";
+        confirm.textContent = operation === "delete" ? "Xác nhận xóa" : "Xác nhận cập nhật";
+        const cancel = document.createElement("button");
+        cancel.type = "button"; cancel.className = "chat-qbtn"; cancel.textContent = "Hủy";
+        confirm.addEventListener("click", () => {
+          const msg = applyConfirmedChatMutation(kind, { id, fields: data.fields || {}, operation });
+          detail.textContent = msg; confirm.disabled = true; cancel.disabled = true;
+          confirm.textContent = "Đã xử lý";
+          addChatMsg("sys", msg);
+        });
+        cancel.addEventListener("click", () => { card.remove(); });
+        card.append(title, detail, confirm, cancel);
+        chatLog.appendChild(card); chatLog.scrollTop = chatLog.scrollHeight;
+        return "Đã tạo yêu cầu " + (operation === "delete" ? "xóa" : "cập nhật") + " " + labels[kind] + ". Vui lòng kiểm tra và bấm xác nhận trong thẻ bên dưới.";
+      }
+
       function runChatAction(a) {
         try {
           switch (a && a.type) {
+            case "data_query":
+              return chatQueryData(String(a.dataset || "all"), String(a.query || ""));
+            case "record_update": return requestChatMutation("record", "update", a);
+            case "record_delete": return requestChatMutation("record", "delete", a);
+            case "debt_update": return requestChatMutation("debt", "update", a);
+            case "debt_delete": return requestChatMutation("debt", "delete", a);
+            case "warehouse_update": return requestChatMutation("warehouse", "update", a);
+            case "warehouse_delete": return requestChatMutation("warehouse", "delete", a);
+            case "recipe_update": return requestChatMutation("recipe", "update", a);
+            case "recipe_delete": return requestChatMutation("recipe", "delete", a);
+            case "notebook_update": return requestChatMutation("notebook", "update", a);
+            case "notebook_delete": return requestChatMutation("notebook", "delete", a);
+            case "supplier_update": return requestChatMutation("supplier", "update", a);
+            case "supplier_delete": return requestChatMutation("supplier", "delete", a);
+            case "material_update": return requestChatMutation("material", "update", a);
+            case "material_delete": return requestChatMutation("material", "delete", a);
             case "pos_order": {
               if (a.mode === "replace") {
                 posCart = {};
