@@ -1139,19 +1139,39 @@
     @media (max-width:420px) { #visual-assistant-controls { width:calc(100vw - 20px); } #corn-speech-bubble.visual-reply { max-width:78vw; } }
   </style>
   <style id="reconcile-date-overflow-fix">
-    #view-reconcile, #view-reconcile .card, #view-reconcile .form-group { min-width: 0; }
+    /* iOS Safari: native date input có intrinsic min-width, cần khóa cả input và các ô cha. */
+    #view-reconcile,
+    #view-reconcile .card,
+    #view-reconcile .form-group,
+    #view-reconcile .row-2,
+    #view-reconcile [style*="display:flex"],
+    #view-reconcile [style*="display: grid"] { min-width: 0; max-width: 100%; }
+
     #view-reconcile input[type="date"],
     #view-reconcile .reconcile-date-input {
-      display: block;
+      display: block !important;
       width: 100% !important;
-      max-width: 100%;
-      min-width: 0;
-      box-sizing: border-box;
-      height: 42px;
-      padding: 7px 10px;
-      font-size: 16px;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      box-sizing: border-box !important;
+      height: 44px;
+      padding: 7px 8px;
+      margin: 0;
+      font-size: 16px !important;
+      font-family: inherit;
+      flex: 1 1 0%;
     }
+    #view-reconcile .form-group { width: 100%; }
     #view-reconcile .form-group input[type="date"] { width: 100% !important; }
+    #view-reconcile input[type="date"]::-webkit-date-and-time-value {
+      min-width: 0;
+      text-align: left;
+    }
+    #view-reconcile input[type="date"]::-webkit-calendar-picker-indicator {
+      margin: 0;
+      padding: 0;
+      flex: 0 0 auto;
+    }
   </style>
 </head>
 <body>
@@ -2040,11 +2060,11 @@
           </span>
           <div style="text-align:left; min-width:0;">
             <div style="font-weight:700; font-size:14.5px;">Cập nhật phiên bản</div>
-            <div style="font-size:12px; color:var(--muted);">Thông tin phiên bản, kiểm tra cập nhật & lịch sử thay đổi</div>
+            <div style="font-size:12px; color:var(--muted);">Xem thông tin phiên bản và lịch sử cập nhật</div>
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-          <span id="app-version-badge" style="background:var(--accent-soft); color:var(--accent); padding:4px 9px; border-radius:999px; font-size:11.5px; font-weight:800;">v8.11</span>
+          <span id="app-version-badge" style="background:var(--accent-soft); color:var(--accent); padding:4px 9px; border-radius:999px; font-size:11.5px; font-weight:800;">v8.14</span>
           <span style="color:var(--muted); font-size:18px; font-weight:700;">›</span>
         </div>
       </button>
@@ -2494,7 +2514,7 @@
         toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
       }
       // QUẢN LÝ PHIÊN BẢN VÀ NHẬT KÝ CẬP NHẬT DỮ LIỆU
-      const APP_VERSION = "8.11";
+      const APP_VERSION = "8.14";
       const DATA_UPDATE_HISTORY_KEY = "nha_bap_data_update_history_v1";
       function readDataUpdateHistory() {
         try { const v = JSON.parse(localStorage.getItem(DATA_UPDATE_HISTORY_KEY) || "[]"); return Array.isArray(v) ? v : []; }
@@ -2531,6 +2551,9 @@
       }
 
       const APP_CHANGELOG = [
+        {v:"8.14", title:"Điều chỉnh đúng cơ chế nút cập nhật trong cửa sổ phiên bản", changes:["Nút Cập nhật phiên bản ở màn hình chính mở cửa sổ thông tin phiên bản và lịch sử thay đổi.","Nút Cập nhật ngay bên trong cửa sổ sẽ tải lại trang tương tự thao tác F5."]},
+        {v:"8.13", title:"Bản thử nghiệm tải lại trang", changes:["Điều chỉnh cơ chế tải lại trang; phiên bản 8.14 hoàn thiện lại vị trí thao tác theo yêu cầu."]},
+        {v:"8.12", title:"Sửa lỗi tràn ô ngày tháng trên iPhone", changes:["Khống chế chiều rộng và min-width của các ô ngày trong tab Đối soát, bao gồm ngày đối soát, ngày bắt đầu sổ quỹ và ngày chuyển tiền.","Điều chỉnh các phần tử cha và bộ chọn ngày của Safari iOS để tránh tràn khỏi thẻ giao diện.","Giữ nguyên bộ chọn ngày mặc định và toàn bộ chức năng nghiệp vụ hiện có."]},
         {v:"8.11", title:"Tương tác giọng nói và xác nhận trực quan", changes:["Loại bỏ ô nhập chữ và nút gửi khỏi chế độ Tương tác trực quan; thao tác bằng giọng nói.","Tự nhận biết khoảng lặng để kết thúc ghi âm và gửi yêu cầu, vẫn có nút dừng thủ công.","Đưa thẻ xác nhận, hủy và thay đổi vào khung thoại của Bắp.","Tinh chỉnh câu trả lời tự nhiên, rõ ý; ngăn lời nhắc vui nhộn chen ngang khi AI đang xử lý hoặc trả lời."]},
         {v:"8.9", title:"Tương tác trực quan", changes:["Bổ sung chế độ trò chuyện trực tiếp với Bắp bằng bong bóng thoại truyện tranh.","Kết nối chế độ tương tác với chatbox AI hiện có."]},
         {v:"8.8", title:"Trung tâm phiên bản & lịch sử dữ liệu", changes:["Thay nút nạp dữ liệu mẫu bằng lịch sử cập nhật dữ liệu.","Bổ sung thông tin phiên bản, kiểm tra cập nhật và nhật ký thay đổi theo phiên bản."]},
@@ -2550,8 +2573,8 @@
         const historyHtml = APP_CHANGELOG.map(v => `<div style="padding:10px 0; border-bottom:1px solid var(--border);"><div style="display:flex; gap:8px; align-items:center;"><strong>Phiên bản ${v.v}</strong>${v.v === APP_VERSION ? '<span style="background:var(--green-soft); color:var(--green); border-radius:99px; padding:2px 8px; font-size:10px; font-weight:800;">HIỆN TẠI</span>' : ''}<span style="font-size:12px; color:var(--muted);">${escapeHtmlStr(v.title)}</span></div><ul style="margin:6px 0 0; padding-left:18px; font-size:12.5px; color:var(--muted);">${v.changes.map(c => `<li style="margin:3px 0;">${escapeHtmlStr(c)}</li>`).join("")}</ul></div>`).join("");
         modalCard.innerHTML = `<div style="display:flex; justify-content:space-between; align-items:center; gap:10px;"><h3 style="margin:0;">Cập nhật phiên bản</h3><button type="button" class="mini-btn" id="m-close-version">✕</button></div>
           <div style="margin-top:12px; padding:14px; border-radius:14px; background:var(--subtle);"><div style="font-size:12px; color:var(--muted);">ỨNG DỤNG</div><strong style="display:block; font-size:17px; margin:3px 0;">Quản lý kinh doanh - Bắp</strong><div style="display:flex; justify-content:space-between; align-items:center;"><span style="font-size:13px; color:var(--muted);">Phiên bản hiện tại</span><strong style="font-size:20px; color:var(--accent);">v${APP_VERSION}</strong></div><div style="font-size:11.5px; color:var(--muted); margin-top:5px;">Mã phiên bản được đóng gói trong ứng dụng.</div></div>
-          <button type="button" class="btn-submit" id="m-check-version" style="width:100%; margin:12px 0 8px;">↻ Kiểm tra phiên bản mới</button>
-          <div id="m-version-check-result" style="font-size:12px; color:var(--muted); margin-bottom:12px;">Chưa kiểm tra trong lần mở này.</div>
+          <button type="button" class="btn-submit" id="m-check-version" style="width:100%; margin:12px 0 8px;">↻ Cập nhật ngay</button>
+          <div id="m-version-check-result" style="font-size:12px; color:var(--muted); margin-bottom:12px;">Nhấn “Cập nhật ngay” để tải lại ứng dụng như thao tác F5.</div>
           <div style="font-weight:800; margin:8px 0 4px;">Lịch sử cập nhật & nội dung thay đổi</div>
           <div style="max-height:34vh; overflow:auto;">${historyHtml}</div>
           <button type="button" class="btn-outline" id="m-close-version-bottom" style="width:100%; margin-top:12px;">Đóng</button>`;
@@ -2560,9 +2583,8 @@
         const closeBottom = document.getElementById("m-close-version-bottom");
         closeTop.addEventListener("click", closeModal); closeBottom.addEventListener("click", closeModal);
         document.getElementById("m-check-version").addEventListener("click", () => {
-          const result = document.getElementById("m-version-check-result");
-          if (!navigator.onLine) { result.textContent = "Thiết bị đang ngoại tuyến. Không thể kiểm tra nguồn phát hành trực tuyến."; return; }
-          result.textContent = `Ứng dụng đang ở phiên bản v${APP_VERSION}. Chưa cấu hình máy chủ/địa chỉ manifest phát hành nên chưa thể xác minh có phiên bản mới trên Internet. Hãy dùng tệp cập nhật chính thức khi có bản phát hành.`;
+          // Giữ cửa sổ thông tin phiên bản; chỉ nút bên trong thực hiện tải lại trang như F5.
+          window.location.reload();
         });
       }
 
