@@ -2223,6 +2223,7 @@ body:has(.modal-bg.open) {
             <div style="font-size:12px; color:var(--muted);">Theo dõi tồn kho, dự báo hết hàng, lô nhập & kiểm soát thất thoát</div>
           </div>
           <div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;">
+            <button type="button" class="btn-outline" id="btn-wh-categories-top" style="min-height:36px;padding:0 9px;font-size:11.5px;font-weight:700;">🏷️ Thẻ kho</button>
             <button type="button" class="btn-outline" id="btn-wh-usage-rules" style="min-height:36px;padding:0 9px;font-size:11.5px;font-weight:700;border-color:var(--accent);color:var(--accent);">⚙️ Định mức</button>
             <button type="button" class="btn-outline" id="btn-wh-add-item" style="min-height:36px; padding:0 11px; font-size:12px; font-weight:700; border-color:var(--accent); color:var(--accent); white-space:nowrap;">+ Mặt hàng</button>
           </div>
@@ -2277,11 +2278,17 @@ body:has(.modal-bg.open) {
         </div>
       </div>
 
-      <div class="chips" id="wh-filter-chips" style="margin-bottom:12px;">
-        <button type="button" class="chip active" data-wh-filter="all">Tất cả tồn kho</button>
+      <div class="grid-2" id="wh-shortcuts" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:10px;">
         <button type="button" class="chip" data-wh-filter="low">⚠️ Sắp hết hàng</button>
-        <button type="button" class="chip" data-wh-filter="history">📋 Lịch sử xuất nhập</button>
+        <button type="button" class="chip" data-wh-filter="history">📋 Lịch sử</button>
         <button type="button" class="chip" data-wh-filter="lots">🏷️ Lô nhập</button>
+      </div>
+      <div class="card" style="padding:10px 12px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;">
+          <strong style="font-size:13px;">Danh mục kho</strong>
+          <button type="button" class="mini-btn" id="btn-wh-categories">+ Sửa thẻ</button>
+        </div>
+        <div class="chips" id="wh-category-chips" style="margin:0;"></div>
       </div>
 
       <div id="wh-list-container"></div>
@@ -2713,6 +2720,7 @@ body:has(.modal-bg.open) {
       const WAREHOUSE_TX_KEY = "nha_bap_warehouse_tx_v1";
       const WAREHOUSE_LOTS_KEY = "nha_bap_warehouse_lots_v1";
       const WAREHOUSE_USAGE_RULES_KEY = "nha_bap_warehouse_usage_rules_v1";
+      const WAREHOUSE_CATS_KEY = "nha_bap_warehouse_categories_v1";
       const AUTO_BACKUP_KEY = "nha_bap_auto_backup_v1";
       const LAST_BACKUP_AT_KEY = "nha_bap_last_backup_at_v1";
       const BACKUP_REMINDER_DAYS_KEY = "nha_bap_backup_reminder_days_v1";
@@ -2899,8 +2907,13 @@ body:has(.modal-bg.open) {
       let warehouseTxList = loadJSON(WAREHOUSE_TX_KEY, []);
       let warehouseLots = loadJSON(WAREHOUSE_LOTS_KEY, null);
       let warehouseUsageRules = loadJSON(WAREHOUSE_USAGE_RULES_KEY, []);
+      let warehouseCategories = loadJSON(WAREHOUSE_CATS_KEY, ["Nguyên liệu chính", "Gia vị", "Đồ uống", "Vật dụng", "Khác"]);
       let currentWarehouseFilter = "all";
       let currentWarehouseSearch = "";
+      // Mặt hàng cũ sinh tự động từ đầu mục chi phí không được tự động nhập/xuất nữa.
+      warehouseItems.forEach(it => { if (it.manualManaged === undefined) it.manualManaged = !String(it.id || "").startsWith("wh_cat_"); });
+      warehouseItems.forEach(it => { if (!it.warehouseCategory) it.warehouseCategory = warehouseCategories.includes(it.category) ? it.category : "Nguyên liệu chính"; if (it.expenseCategory === undefined) it.expenseCategory = String(it.id || "").startsWith("wh_cat_") ? "" : (it.category || ""); if (!it.materialCategory) it.materialCategory = it.name || it.category || ""; });
+      try { localStorage.setItem(WAREHOUSE_ITEMS_KEY, JSON.stringify(warehouseItems)); localStorage.setItem(WAREHOUSE_CATS_KEY, JSON.stringify(warehouseCategories)); } catch(e) {}
       let currentNotebookFilter = "all";
       let currentNotebookSearch = "";
       let currentDebtFilter = "unpaid_all";
@@ -2962,7 +2975,7 @@ body:has(.modal-bg.open) {
         toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
       }
       // QUẢN LÝ PHIÊN BẢN VÀ NHẬT KÝ CẬP NHẬT DỮ LIỆU
-      const APP_VERSION = "8.29";
+      const APP_VERSION = "8.30";
       const versionBadge = document.getElementById("app-version-badge");
       if (versionBadge) versionBadge.textContent = `v${APP_VERSION}`;
       const DATA_UPDATE_HISTORY_KEY = "nha_bap_data_update_history_v1";
@@ -3001,6 +3014,7 @@ body:has(.modal-bg.open) {
       }
 
       const APP_CHANGELOG = [
+        {v:"8.30", title:"Tổ chức lại kho và hoàn thiện sao lưu", changes:["Kho không còn tự tạo mặt hàng từ đầu mục chi phí hoặc phiếu nhập AI; chỉ mặt hàng thêm thủ công mới tham gia tự động xuất/nhập, định mức, dự báo và AI.","Bổ sung thẻ danh mục kho có thể thêm, sửa, xóa; đưa Sắp hết hàng, Lịch sử và Lô nhập thành nhóm truy cập riêng phía trên.","Mặt hàng có thể liên kết dữ liệu Nguyên VL để xem nhà cung cấp, giá và lịch sử giá; bổ sung lịch sử xuất nhập riêng từng mặt hàng.","Bổ sung thẻ kho và lịch sử cập nhật dữ liệu vào bản sao lưu JSON/Google Drive; khôi phục tương thích dữ liệu cũ. Không sao lưu API key/OAuth token để tránh lộ thông tin truy cập."]},
         {v:"8.29", title:"Đối soát điều chỉnh trực tiếp doanh thu", changes:["Chênh lệch dương khi đối soát được cộng vào doanh thu; chênh lệch âm được ghi thành khoản điều chỉnh âm của doanh thu, không chuyển sang chi phí.","Lợi nhuận ngày tiếp tục được tính bằng doanh thu sau điều chỉnh trừ chi phí; tổng quỹ TK + TM vẫn được cập nhật độc lập theo số thực tế.","Đồng bộ nội dung xác nhận, lịch sử phiên bản và hướng dẫn cho Bắp AI để tránh diễn giải chênh lệch âm thành chi phí."]},
         {v:"8.28", title:"Tách lợi nhuận ngày khỏi số dư quỹ", changes:["Lợi nhuận ngày được tính đúng bằng doanh thu ngày trừ chi phí ngày, không còn lấy chênh lệch số dư TK + TM.","Tổng quỹ TK + TM tiếp tục được tính lũy kế riêng và hiển thị như số tiền hiện có trong tiền mặt và ngân hàng.","Các điều chỉnh chênh lệch đối soát dương/âm vẫn được tính vào doanh thu/chi phí báo cáo; snapshot đối soát vẫn ghi đè số dư quỹ thực tế, không tạo dòng tiền trùng.","Đồng bộ nhãn và nội dung báo cáo để phân biệt kết quả kinh doanh với số dư tiền đang nắm giữ."]},
         {v:"8.27", title:"Sửa xung đột snapshot khi đặt lại mốc sổ quỹ", changes:["Khi đặt lại mốc sổ quỹ, snapshot đối soát cũ đúng ngày mốc được loại khỏi phép tính để không ghi đè số dư đầu kỳ mới.","Các dòng doanh thu/chi phí điều chỉnh đối soát của đúng ngày mốc được loại bỏ vì đã được thay thế bằng số dư đầu ngày mới.","Giữ nguyên giao dịch bán hàng, chi phí, chuyển quỹ và snapshot đối soát ở những ngày sau; tính lại TK, TM và báo cáo."]},
@@ -3213,6 +3227,10 @@ body:has(.modal-bg.open) {
         return null;
       }
 
+      function loadDataUpdateHistoryForBackup() {
+        try { const h=JSON.parse(localStorage.getItem(DATA_UPDATE_HISTORY_KEY)||"[]"); return Array.isArray(h)?h:[]; } catch(e) { return []; }
+      }
+
       async function performBackup(isSilent) {
         const payload = JSON.stringify({
           app: "Quan_Ly_Kinh_Doanh_Nha_Bap",
@@ -3232,6 +3250,11 @@ body:has(.modal-bg.open) {
           warehouseTxList,
           warehouseLots,
           warehouseUsageRules,
+          warehouseCategories,
+          dataUpdateHistory: loadDataUpdateHistoryForBackup(),
+          schemaVersion: 2,
+          appVersion: APP_VERSION,
+          aiPreferences: { geminiModel: String((ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.8-flash") },
           fundSettings,
           fundTransfers,
           fundAdjustments,
@@ -3596,6 +3619,19 @@ body:has(.modal-bg.open) {
         try { localStorage.setItem(WAREHOUSE_USAGE_RULES_KEY, JSON.stringify(warehouseUsageRules)); } catch (e) {}
         if (!skipAutoBackup && autoBackupEnabled) performBackup(true);
       }
+      function saveWarehouseCategories(skipAutoBackup) {
+        try { localStorage.setItem(WAREHOUSE_CATS_KEY, JSON.stringify(warehouseCategories)); } catch (e) {}
+        if (!skipAutoBackup && autoBackupEnabled) performBackup(true);
+      }
+      function isWarehouseManaged(item) { return Boolean(item && item.manualManaged !== false); }
+      function normalizeWarehouseItemsForCurrentRules() {
+        warehouseItems.forEach(it => {
+          if (it.manualManaged === undefined) it.manualManaged = !String(it.id || "").startsWith("wh_cat_");
+          if (!it.warehouseCategory) it.warehouseCategory = warehouseCategories.includes(it.category) ? it.category : "Nguyên liệu chính";
+          if (it.expenseCategory === undefined) it.expenseCategory = String(it.id || "").startsWith("wh_cat_") ? "" : (it.category || "");
+          if (!it.materialCategory) it.materialCategory = it.name || it.category || "";
+        });
+      }
       // Di trú tồn kho cũ thành lô mở đầu; không gán nhà cung cấp/giá nếu dữ liệu lịch sử không có.
       if (!Array.isArray(warehouseLots)) {
         warehouseLots = warehouseItems.filter(it => Number(it.stock) > 0).map(it => ({
@@ -3607,40 +3643,9 @@ body:has(.modal-bg.open) {
         saveWarehouseLots(true);
       }
 
-      // Đồng bộ tự động các đầu mục chi phí sang danh sách mặt hàng trong Kho
-      function syncWarehouseWithExpenseCategories() {
-        let changed = false;
-        const unitGuesses = {
-          "Bò": "g", "Thịt xay": "g", "Pate": "g",
-          "Trứng": "quả", "Bánh mỳ": "ổ",
-          "Xúc xích": "bịch", "Phô mai": "bịch", "Đá bi, đá cục": "bịch",
-          "Nước ngọt": "lon", "Dầu ăn": "chai", "Nước tương": "chai", "Tương ớt": "chai", "Tương cà": "chai",
-          "Cà chua": "kg", "Hành tây": "kg", "Tỏi": "kg", "Hành": "kg", "Đường": "kg", "Dưa leo": "kg",
-          "Rau ngò": "bó", "Gas": "bình"
-        };
-
-        expenseCategories.forEach(cat => {
-          const cleanCat = String(cat || "").trim();
-          if (!cleanCat) return;
-          const exists = warehouseItems.some(it =>
-            String(it.category || it.name || "").trim().toLowerCase() === cleanCat.toLowerCase()
-          );
-          if (!exists) {
-            warehouseItems.push({
-              id: "wh_cat_" + Date.now() + "_" + Math.random().toString(36).slice(2, 6),
-              category: cleanCat,
-              name: cleanCat,
-              unit: unitGuesses[cleanCat] || "kg",
-              stock: 0,
-              minStock: 0,
-              updatedAt: TODAY
-            });
-            changed = true;
-          }
-        });
-
-        if (changed) saveWarehouseItems(true);
-      }
+      // Không tự tạo mặt hàng kho từ đầu mục chi phí. Chỉ mặt hàng do người dùng thêm
+      // trong Kho mới được phép tham gia các luồng nhập/xuất, định mức và dự báo.
+      function syncWarehouseWithExpenseCategories() { return false; }
 
       function convertWarehouseUnitQty(qty, fromUnit, toUnit) {
         const q = Number(qty) || 0;
@@ -3652,14 +3657,12 @@ body:has(.modal-bg.open) {
         return q;
       }
 
-      // Tự động cập nhật nhập kho khi phát sinh / sửa / xóa khoản CHI có số lượng
+      // Chỉ tự nhập kho từ khoản CHI khi người dùng đã chủ động liên kết
+      // mặt hàng kho với đúng đầu mục chi phí.
       function syncExpenseRecordToWarehouse(rec) {
         if (!rec || rec.type !== "chi") return false;
         const rawQty = Number(rec.qty) || 0;
         const catName = String(rec.category || "").trim();
-        if (!catName) return false;
-
-        // Gỡ phiếu nhập tự động cũ gắn với khoản chi này (nếu đang sửa hoặc xóa)
         const existingTxIdx = warehouseTxList.findIndex(tx => tx.linkedExpenseId === rec.id);
         if (existingTxIdx !== -1) {
           const oldTx = warehouseTxList[existingTxIdx];
@@ -3670,51 +3673,21 @@ body:has(.modal-bg.open) {
           warehouseTxList.splice(existingTxIdx, 1);
           warehouseLots = warehouseLots.filter(lot => lot.linkedExpenseId !== rec.id);
         }
-
-        if (rawQty <= 0) {
-          saveWarehouseItems(true);
-          saveWarehouseTxList(true);
+        const targetItem = warehouseItems.find(it => isWarehouseManaged(it) &&
+          String(it.expenseCategory || "").trim().toLowerCase() === catName.toLowerCase());
+        if (!targetItem || rawQty <= 0) {
+          saveWarehouseLots(true); saveWarehouseItems(true); saveWarehouseTxList(true);
           return false;
         }
-
-        syncWarehouseWithExpenseCategories();
-        let targetItem = warehouseItems.find(it =>
-          String(it.category || it.name || "").trim().toLowerCase() === catName.toLowerCase()
-        );
-
-        if (!targetItem) {
-          targetItem = {
-            id: "wh_cat_" + Date.now(),
-            category: catName,
-            name: catName,
-            unit: rec.unit || "đơn vị",
-            stock: 0,
-            minStock: 0,
-            updatedAt: rec.date || TODAY
-          };
-          warehouseItems.unshift(targetItem);
-        } else if ((Number(targetItem.stock) || 0) === 0 && rec.unit && targetItem.unit !== rec.unit) {
-          targetItem.unit = rec.unit;
-        }
-
         const addQty = convertWarehouseUnitQty(rawQty, rec.unit, targetItem.unit);
         const beforeStock = Number(targetItem.stock) || 0;
         const afterStock = beforeStock + addQty;
-        targetItem.stock = afterStock;
-        targetItem.updatedAt = rec.date || TODAY;
-
+        targetItem.stock = afterStock; targetItem.updatedAt = rec.date || TODAY;
         warehouseTxList.unshift({
-          id: "whtx_exp_" + Date.now() + "_" + Math.random().toString(36).slice(2, 5),
-          linkedExpenseId: rec.id,
-          itemId: targetItem.id,
-          itemName: targetItem.name,
-          unit: targetItem.unit,
-          type: "in",
-          qty: addQty,
-          beforeStock,
-          afterStock,
-          date: rec.date || TODAY,
-          reason: "Tự động nhập từ Chi–Thu",
+          id: "whtx_exp_" + Date.now() + "_" + Math.random().toString(36).slice(2,5),
+          linkedExpenseId: rec.id, itemId: targetItem.id, itemName: targetItem.name, unit: targetItem.unit,
+          type: "in", qty: addQty, beforeStock, afterStock, date: rec.date || TODAY,
+          reason: "Tự động nhập từ khoản chi đã liên kết",
           note: rec.note || `Nhập ${formatQty(rawQty, rec.unit)} (${formatMoney(rec.amount)})`,
           createdAt: new Date().toISOString()
         });
@@ -3728,9 +3701,7 @@ body:has(.modal-bg.open) {
           unitPrice: unitPrice > 0 ? unitPrice : null, qtyReceived: addQty, qtyRemaining: addQty,
           source: "expense", linkedExpenseId: rec.id
         });
-        saveWarehouseLots(true);
-        saveWarehouseItems(true);
-        saveWarehouseTxList(true);
+        saveWarehouseLots(true); saveWarehouseItems(true); saveWarehouseTxList(true);
         return true;
       }
 
@@ -3769,7 +3740,7 @@ body:has(.modal-bg.open) {
       function getWarehouseUsageByDate(dateStr) {
         const dayMap = {};
         const rulesByMenu = {};
-        warehouseUsageRules.forEach(rule => {
+        warehouseUsageRules.filter(rule => warehouseItems.some(it => it.id === rule.itemId && isWarehouseManaged(it))).forEach(rule => {
           if (!rulesByMenu[rule.menuId]) rulesByMenu[rule.menuId] = [];
           rulesByMenu[rule.menuId].push(rule);
         });
@@ -3855,7 +3826,7 @@ body:has(.modal-bg.open) {
         resetModalLayout();
         const rows = warehouseUsageRules.length ? warehouseUsageRules : [{menuId:"",itemId:"",qtyPerSale:""}];
         const menuOpts = posItemsList.map(x=>`<option value="${escapeHtmlStr(x.id)}">${escapeHtmlStr(x.name)}</option>`).join("");
-        const itemOpts = warehouseItems.map(x=>`<option value="${escapeHtmlStr(x.id)}">${escapeHtmlStr(x.name)} (${escapeHtmlStr(x.unit)})</option>`).join("");
+        const itemOpts = warehouseItems.filter(isWarehouseManaged).map(x=>`<option value="${escapeHtmlStr(x.id)}">${escapeHtmlStr(x.name)} (${escapeHtmlStr(x.unit)})</option>`).join("");
         modalCard.innerHTML = `<h3>⚙️ Định mức nguyên liệu theo món bán</h3>
           <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Nhập lượng nguyên liệu tiêu hao cho 1 món. Ví dụ: Chảo 2 dùng 55g thịt bò. Định mức này dùng để dự báo và tự trừ kho khi xác nhận thu đơn POS.</div>
           <div id="wh-usage-rule-rows"></div>
@@ -3894,19 +3865,23 @@ body:has(.modal-bg.open) {
       function renderWarehouseView() {
         renderWarehouseForecast();
         const totalEl = document.getElementById("wh-total-items");
-        if (totalEl) totalEl.textContent = `${warehouseItems.length} mặt hàng`;
+        const activeWarehouseItems = warehouseItems.filter(isWarehouseManaged);
+        if (totalEl) totalEl.textContent = `${activeWarehouseItems.length} mặt hàng`;
 
         const todayTxCount = warehouseTxList.filter(tx => tx.date === TODAY).length;
         const txTodaySub = document.getElementById("wh-tx-today-sub");
         if (txTodaySub) txTodaySub.textContent = `${todayTxCount} phiếu xuất/nhập hôm nay`;
 
-        const lowItems = warehouseItems.filter(it => Number(it.stock) <= Number(it.minStock || 0));
+        const lowItems = activeWarehouseItems.filter(it => Number(it.stock) <= Number(it.minStock || 0));
         const lowCountEl = document.getElementById("wh-low-count");
         if (lowCountEl) lowCountEl.textContent = `${lowItems.length} mặt hàng`;
 
-        document.querySelectorAll("#wh-filter-chips .chip").forEach(c => {
-          c.classList.toggle("active", c.dataset.whFilter === currentWarehouseFilter);
-        });
+        document.querySelectorAll("#wh-shortcuts .chip").forEach(c => c.classList.toggle("active", c.dataset.whFilter === currentWarehouseFilter));
+        const categoryChips = document.getElementById("wh-category-chips");
+        if (categoryChips) {
+          categoryChips.innerHTML = [`<button type="button" class="chip ${currentWarehouseFilter === "all" ? "active" : ""}" data-wh-filter="all">Tất cả</button>`]
+            .concat(warehouseCategories.map(cat => `<button type="button" class="chip ${currentWarehouseFilter === "cat:" + cat ? "active" : ""}" data-wh-filter="cat:${escapeHtmlStr(cat)}">${escapeHtmlStr(cat)}</button>`)).join("");
+        }
 
         const container = document.getElementById("wh-list-container");
         if (!container) return;
@@ -3959,7 +3934,8 @@ body:has(.modal-bg.open) {
           return;
         }
 
-        const filteredItems = warehouseItems.filter(it => {
+        const filteredItems = warehouseItems.filter(isWarehouseManaged).filter(it => {
+          if (currentWarehouseFilter.startsWith("cat:") && String(it.warehouseCategory || "Khác") !== currentWarehouseFilter.slice(4)) return false;
           if (currentWarehouseFilter === "low" && Number(it.stock) > Number(it.minStock || 0)) return false;
           if (q && !String(it.name || "").toLowerCase().includes(q)) return false;
           return true;
@@ -3972,6 +3948,9 @@ body:has(.modal-bg.open) {
 
         container.innerHTML = filteredItems.map(it => {
           const isLow = Number(it.stock) <= Number(it.minStock || 0);
+          const linkedMat = String(it.materialCategory || it.name || "").trim().toLowerCase();
+          const matRows = buildMaterialPriceData().allEntries.filter(h => String(h.category || "").trim().toLowerCase() === linkedMat).sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")));
+          const latestMat = matRows[0];
           return `
             <div class="card" style="padding:13px 14px; border-left:4px solid ${isLow ? "var(--red)" : "var(--green)"};">
               <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px; margin-bottom:10px;">
@@ -3981,8 +3960,11 @@ body:has(.modal-bg.open) {
                     ${isLow ? `<span style="background:var(--red-soft); color:var(--red); font-size:11px; font-weight:800; padding:2px 8px; border-radius:999px;">⚠️ Sắp hết</span>` : ""}
                   </div>
                   <div style="font-size:12px; color:var(--muted); margin-top:2px;">
-                    Ngưỡng báo tối thiểu: <strong>${Number(it.minStock || 0).toLocaleString("vi-VN")} ${escapeHtmlStr(it.unit)}</strong>
+                    <span>${escapeHtmlStr(it.warehouseCategory || "Khác")}</span> • Ngưỡng tối thiểu: <strong>${Number(it.minStock || 0).toLocaleString("vi-VN")} ${escapeHtmlStr(it.unit)}</strong>
                     ${it.updatedAt ? ` • Cập nhật: ${formatShortDate(it.updatedAt)}` : ""}
+                  </div>
+                  <div style="font-size:11.5px;color:var(--muted);margin-top:4px;">
+                    ${latestMat ? `NCC: <strong>${escapeHtmlStr(latestMat.supplier || "Chưa rõ")}</strong> • Giá gần nhất: <strong>${formatMoney(latestMat.unitPrice)}/${escapeHtmlStr(latestMat.stdUnit)}</strong>` : `Nguyên VL: ${escapeHtmlStr(it.materialCategory || "Chưa liên kết")}`}
                   </div>
                 </div>
                 <div style="text-align:right; flex-shrink:0;">
@@ -3993,9 +3975,12 @@ body:has(.modal-bg.open) {
                 </div>
               </div>
 
+              <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin-bottom:6px;">
+                <button type="button" class="mini-btn" data-wh-detail="${it.id}">Thông tin & lịch sử</button>
+                <button type="button" class="mini-btn" data-wh-quick-in="${it.id}" style="background:var(--green-soft);color:var(--green);">+ Nhập</button>
+                <button type="button" class="mini-btn" data-wh-quick-out="${it.id}" style="background:var(--red-soft);color:var(--red);">− Xuất</button>
+              </div>
               <div style="display:grid; grid-template-columns:1fr 1fr 1fr auto auto; gap:5px;">
-                <button type="button" class="mini-btn" data-wh-quick-in="${it.id}" style="background:var(--green-soft); color:var(--green); border-color:#BBF7D0; font-weight:700; min-height:34px;">+ Nhập</button>
-                <button type="button" class="mini-btn" data-wh-quick-out="${it.id}" style="background:var(--red-soft); color:var(--red); border-color:#FECACA; font-weight:700; min-height:34px;">− Xuất</button>
                 <button type="button" class="mini-btn" data-wh-audit="${it.id}" style="background:var(--accent-soft); color:var(--accent); border-color:#FDE68A; font-weight:700; min-height:34px;">Kiểm kê</button>
                 <button type="button" class="mini-btn" data-wh-edit="${it.id}" style="min-height:34px;">Sửa</button>
                 <button type="button" class="mini-btn del" data-wh-del="${it.id}" style="min-height:34px;">Xóa</button>
@@ -4006,16 +3991,17 @@ body:has(.modal-bg.open) {
       }
 
       function openWarehouseTxModal(txType, preselectedItemId) {
-        if (warehouseItems.length === 0) {
+        if (!warehouseItems.some(isWarehouseManaged)) {
           showToast("Kho chưa có mặt hàng nào. Hãy bấm + Mặt hàng trước!");
           return;
         }
         resetModalLayout();
         const isIn = txType === "in";
         const isAudit = txType === "audit";
-        const defaultItem = warehouseItems.find(x => x.id === preselectedItemId) || warehouseItems[0];
+        const activeItems = warehouseItems.filter(isWarehouseManaged);
+        const defaultItem = activeItems.find(x => x.id === preselectedItemId) || activeItems[0];
 
-        const itemOptsHtml = warehouseItems.map(it =>
+        const itemOptsHtml = activeItems.map(it =>
           `<option value="${it.id}" ${it.id === defaultItem.id ? "selected" : ""}>${escapeHtmlStr(it.name)} (Tồn: ${Number(it.stock).toLocaleString("vi-VN")} ${escapeHtmlStr(it.unit)})</option>`
         ).join("");
 
@@ -4166,128 +4152,118 @@ body:has(.modal-bg.open) {
         });
       }
 
+      function openWarehouseCategoriesModal() {
+        const render = () => {
+          modalCard.innerHTML = `<h3>🏷️ Quản lý thẻ kho</h3>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:10px;">Thêm, đổi tên hoặc xóa các nhóm phân loại mặt hàng trong kho.</div>
+            ${warehouseCategories.map((c,i)=>`<div class="cat-item-row"><strong style="flex:1">${escapeHtmlStr(c)}</strong><button type="button" class="mini-btn" data-wh-cat-edit="${i}">Sửa</button><button type="button" class="mini-btn del" data-wh-cat-del="${i}">Xóa</button></div>`).join("")}
+            <div class="form-group" style="margin-top:12px"><label>Thêm thẻ mới</label><input id="wh-cat-new" placeholder="VD: Bao bì, Vật dụng..." /></div>
+            <button type="button" class="btn-submit" id="wh-cat-add">+ Thêm thẻ</button>
+            <button type="button" class="btn-outline" id="wh-cat-close" style="width:100%;margin-top:8px">Đóng</button>`;
+          modalBg.classList.add("open");
+          document.getElementById("wh-cat-close").onclick=closeModal;
+          document.getElementById("wh-cat-add").onclick=()=>{
+            const v=document.getElementById("wh-cat-new").value.trim();
+            if(!v)return showToast("Nhập tên thẻ kho.");
+            if(warehouseCategories.some(x=>x.toLowerCase()===v.toLowerCase()))return showToast("Thẻ đã tồn tại.");
+            warehouseCategories.push(v);saveWarehouseCategories();renderWarehouseView();render();
+          };
+          modalCard.querySelectorAll("[data-wh-cat-edit]").forEach(b=>b.onclick=()=>{
+            const i=Number(b.dataset.whCatEdit), old=warehouseCategories[i], v=prompt("Tên thẻ mới:",old);
+            if(v===null)return;const next=v.trim();if(!next)return showToast("Tên thẻ không hợp lệ.");
+            if(warehouseCategories.some((x,j)=>j!==i&&x.toLowerCase()===next.toLowerCase()))return showToast("Thẻ đã tồn tại.");
+            warehouseCategories[i]=next;warehouseItems.forEach(it=>{if(it.warehouseCategory===old){it.warehouseCategory=next;it.category=next;}});
+            saveWarehouseCategories();saveWarehouseItems();renderWarehouseView();render();
+          });
+          modalCard.querySelectorAll("[data-wh-cat-del]").forEach(b=>b.onclick=()=>{
+            const i=Number(b.dataset.whCatDel), old=warehouseCategories[i];
+            if(!confirm(`Xóa thẻ "${old}"? Mặt hàng đang dùng thẻ này sẽ chuyển sang "Khác".`))return;
+            warehouseCategories.splice(i,1);if(!warehouseCategories.includes("Khác"))warehouseCategories.push("Khác");
+            warehouseItems.forEach(it=>{if(it.warehouseCategory===old){it.warehouseCategory="Khác";it.category="Khác";}});
+            saveWarehouseCategories();saveWarehouseItems();renderWarehouseView();render();
+          });
+        };render();
+      }
+
+      function openWarehouseItemDetails(itemId) {
+        const item=warehouseItems.find(x=>x.id===itemId&&isWarehouseManaged(x));if(!item)return;
+        const matCat=String(item.materialCategory||item.name||"").trim().toLowerCase();
+        const prices=buildMaterialPriceData().allEntries.filter(x=>String(x.category||"").trim().toLowerCase()===matCat).sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")));
+        const txs=warehouseTxList.filter(x=>x.itemId===itemId).sort((a,b)=>String(b.date||"").localeCompare(String(a.date||"")));
+        const supplierNames=Array.from(new Set(prices.map(x=>x.supplier).filter(Boolean)));
+        const supplierCandidates=suppliersList.filter(sp=>{
+          const supplied=Array.isArray(sp.items)?sp.items.join(", "):String(sp.items||"");
+          return supplied.toLowerCase().includes(String(item.materialCategory||item.name).toLowerCase()) ||
+            supplierNames.includes(sp.name);
+        });
+        modalCard.innerHTML=`<h3>📦 ${escapeHtmlStr(item.name)}</h3>
+          <div class="card" style="padding:10px;margin-bottom:8px"><strong>${escapeHtmlStr(item.warehouseCategory||"Khác")}</strong><div style="font-size:12px;color:var(--muted)">Tồn: ${Number(item.stock||0).toLocaleString("vi-VN")} ${escapeHtmlStr(item.unit)} • Ngưỡng: ${Number(item.minStock||0).toLocaleString("vi-VN")} ${escapeHtmlStr(item.unit)}</div>
+          <div style="font-size:12px;margin-top:5px">Liên kết Nguyên VL: <strong>${escapeHtmlStr(item.materialCategory||"Chưa liên kết")}</strong></div>
+          <div style="font-size:12px;margin-top:5px">Nhà cung cấp trong lịch sử giá: ${supplierNames.length?supplierNames.map(escapeHtmlStr).join(", "):"Chưa có dữ liệu"}</div>
+          <div style="font-size:12px;margin-top:5px">Danh sách NCC có thể cung cấp: ${supplierCandidates.length?supplierCandidates.map(sp=>`${escapeHtmlStr(sp.name)}${sp.phone?" ("+escapeHtmlStr(sp.phone)+")":""}`).join(", "):"Chưa liên kết nhà cung cấp trong dữ liệu Nguyên VL"}</div>
+          ${prices[0]?`<div style="font-size:12px;margin-top:5px">Giá mới nhất: <strong>${formatMoney(prices[0].unitPrice)}/${escapeHtmlStr(prices[0].stdUnit)}</strong> • ${formatVNDate(prices[0].date)}</div>`:"<div style='font-size:12px;color:var(--muted);margin-top:5px'>Chưa có lịch sử giá cho nguyên liệu liên kết.</div>"}</div>
+          <h4>Lịch sử giá & nhà cung cấp (${prices.length})</h4>
+          ${prices.slice(0,30).map(x=>`<div class="tx-row"><div class="tx-info"><div class="tx-name">${formatMoney(x.unitPrice)} / ${escapeHtmlStr(x.stdUnit)}</div><div class="tx-sub">${formatVNDate(x.date)} • ${escapeHtmlStr(x.supplier||"Chưa rõ NCC")} • ${escapeHtmlStr(x.note||"")}</div></div></div>`).join("")||"<div class='tx-sub'>Chưa có dữ liệu.</div>"}
+          <h4 style="margin-top:12px">Lịch sử xuất nhập riêng (${txs.length})</h4>
+          ${txs.slice(0,40).map(x=>`<div class="tx-row"><div class="tx-info"><div class="tx-name">${formatVNDate(x.date)} • ${escapeHtmlStr(x.reason||x.type||"Giao dịch")}</div><div class="tx-sub">${x.type==="in"?"+":x.type==="out"?"−":"="}${Number(x.qty||0).toLocaleString("vi-VN")} ${escapeHtmlStr(x.unit||item.unit)} • Tồn sau ${Number(x.afterStock||0).toLocaleString("vi-VN")}</div></div></div>`).join("")||"<div class='tx-sub'>Chưa có lịch sử xuất nhập.</div>"}
+          <button type="button" class="btn-outline" id="wh-detail-close" style="width:100%;margin-top:12px">Đóng</button>`;
+        modalBg.classList.add("open");document.getElementById("wh-detail-close").onclick=closeModal;
+      }
+
       function openWarehouseItemFormModal(editItemId) {
         resetModalLayout();
-        const existing = editItemId ? warehouseItems.find(x => x.id === editItemId) : null;
-        const unitOpts = ["g", "kg", "quả", "ổ", "bịch", "hộp", "lon", "chai", "cây", "bình", "bó", "phần", "cái"];
+        const existing = editItemId ? warehouseItems.find(x => x.id === editItemId && isWarehouseManaged(x)) : null;
+        const unitOpts = ["g","kg","quả","ổ","bịch","hộp","lon","chai","cây","bình","bó","phần","cái"];
         const curUnit = existing ? existing.unit : "g";
-        const uOptsHtml = (unitOpts.includes(curUnit) ? unitOpts : [curUnit, ...unitOpts])
-          .map(u => `<option value="${u}" ${u === curUnit ? "selected" : ""}>${u}</option>`)
-          .join("");
-
-        const linkedCatVal = existing ? (existing.category || existing.name) : "";
-        const catLinkOpts = [`<option value="">(Tự thêm vào Đầu mục chi phí mới)</option>`]
-          .concat(expenseCategories.map(c => `<option value="${escapeHtmlStr(c)}" ${c === linkedCatVal ? "selected" : ""}>${escapeHtmlStr(c)}</option>`))
-          .join("");
-
+        const uOptsHtml = (unitOpts.includes(curUnit) ? unitOpts : [curUnit,...unitOpts]).map(u=>`<option value="${escapeHtmlStr(u)}" ${u===curUnit?"selected":""}>${escapeHtmlStr(u)}</option>`).join("");
+        const categoryOpts = warehouseCategories.map(c=>`<option value="${escapeHtmlStr(c)}" ${(existing?.warehouseCategory||"Nguyên liệu chính")===c?"selected":""}>${escapeHtmlStr(c)}</option>`).join("");
+        const expenseOpts = `<option value="">Không liên kết</option>` + expenseCategories.map(c=>`<option value="${escapeHtmlStr(c)}" ${(existing?.expenseCategory||"")===c?"selected":""}>${escapeHtmlStr(c)}</option>`).join("");
+        const materialCats = Array.from(new Set(buildMaterialPriceData().allEntries.map(x=>String(x.category||"").trim()).filter(Boolean)));
+        const materialOpts = `<option value="">Không liên kết</option>` + materialCats.map(c=>`<option value="${escapeHtmlStr(c)}" ${(existing?.materialCategory||"")===c?"selected":""}>${escapeHtmlStr(c)}</option>`).join("");
         modalCard.innerHTML = `
           <h3>${existing ? "✏️ Sửa mặt hàng trong kho" : "📦 Thêm mặt hàng vào kho"}</h3>
-
-          <div class="form-group">
-            <label>Tên mặt hàng / Nguyên liệu</label>
-            <input type="text" id="wh-f-name" value="${existing ? escapeHtmlStr(existing.name) : ""}" placeholder="VD: Thịt bò, Bánh mỳ, Trứng gà, Tương ớt..." />
-          </div>
-
-          <div class="form-group">
-            <label>Liên kết Đầu mục chi phí (tự cộng kho khi nhập chi)</label>
-            <select id="wh-f-cat-link">${catLinkOpts}</select>
-          </div>
-
-          <div class="row-2">
-            <div class="form-group">
-              <label>Đơn vị tính</label>
-              <select id="wh-f-unit">${uOptsHtml}</select>
-            </div>
-            <div class="form-group">
-              <label>${existing ? "Tồn kho hiện tại" : "Tồn kho ban đầu"}</label>
-              <input type="number" id="wh-f-stock" inputmode="decimal" step="any" min="0" value="${existing ? existing.stock : 0}" />
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label>Ngưỡng cảnh báo sắp hết (tồn tối thiểu)</label>
-            <input type="number" id="wh-f-min" inputmode="decimal" step="any" min="0" value="${existing ? existing.minStock : 10}" placeholder="VD: 1000" />
-          </div>
-
-          <div class="modal-btns">
-            <button type="button" class="btn-outline" id="wh-f-cancel">Hủy</button>
-            <button type="button" class="btn-submit" id="wh-f-save" style="margin:0;">Lưu mặt hàng</button>
-          </div>
-        `;
+          <div class="form-group"><label>Tên mặt hàng / Nguyên liệu</label><input type="text" id="wh-f-name" value="${existing?escapeHtmlStr(existing.name):""}" placeholder="VD: Thịt bò, Bánh mì, Trứng gà..." /></div>
+          <div class="form-group"><label>Thẻ phân loại kho</label><select id="wh-f-category">${categoryOpts}</select></div>
+          <div class="form-group"><label>Liên kết dữ liệu Nguyên VL (giá & nhà cung cấp)</label><select id="wh-f-material">${materialOpts}</select><div style="font-size:11px;color:var(--muted);margin-top:4px;">Danh sách lấy từ mục Nguyên VL. Nếu chưa có dữ liệu, hãy thêm mốc giá trong mục này trước.</div></div>
+          <div class="form-group"><label>Liên kết đầu mục chi phí (không bắt buộc – chỉ tự nhập kho khi đã chọn)</label><select id="wh-f-expense">${expenseOpts}</select></div>
+          <div class="row-2"><div class="form-group"><label>Đơn vị tính</label><select id="wh-f-unit">${uOptsHtml}</select></div><div class="form-group"><label>${existing?"Tồn kho hiện tại":"Tồn kho ban đầu"}</label><input type="number" id="wh-f-stock" inputmode="decimal" step="any" min="0" value="${existing?existing.stock:0}" /></div></div>
+          <div class="form-group"><label>Ngưỡng cảnh báo sắp hết</label><input type="number" id="wh-f-min" inputmode="decimal" step="any" min="0" value="${existing?existing.minStock:10}" /></div>
+          <div class="modal-btns"><button type="button" class="btn-outline" id="wh-f-cancel">Hủy</button><button type="button" class="btn-submit" id="wh-f-save" style="margin:0;">Lưu mặt hàng</button></div>`;
         modalBg.classList.add("open");
-
-        document.getElementById("wh-f-cancel").addEventListener("click", closeModal);
-        document.getElementById("wh-f-save").addEventListener("click", () => {
-          const nameVal = document.getElementById("wh-f-name").value.trim();
-          const chosenCatLink = document.getElementById("wh-f-cat-link").value.trim();
-          const unitVal = document.getElementById("wh-f-unit").value;
-          const stockVal = Math.max(0, Number(document.getElementById("wh-f-stock").value) || 0);
-          const minVal = Math.max(0, Number(document.getElementById("wh-f-min").value) || 0);
-
-          if (!nameVal) {
-            showToast("Vui lòng nhập tên mặt hàng!");
-            return;
-          }
-
-          const finalCategory = chosenCatLink || nameVal;
-          if (!expenseCategories.includes(finalCategory)) {
-            expenseCategories.push(finalCategory);
-            saveCategories(true);
-            renderCategorySelects();
-          }
-
-          if (existing) {
-            const oldStockRaw = Number(existing.stock) || 0;
-            const oldUnit = existing.unit || unitVal;
-            const oldStock = convertWarehouseUnitQty(oldStockRaw, oldUnit, unitVal);
-            if (oldUnit !== unitVal) {
-              warehouseLots.filter(l=>l.itemId===existing.id).forEach(l=>{
-                l.qtyReceived = convertWarehouseUnitQty(l.qtyReceived, oldUnit, unitVal);
-                l.qtyRemaining = convertWarehouseUnitQty(l.qtyRemaining, oldUnit, unitVal);
-              });
-            }
-            if (stockVal < oldStock) consumeWarehouseLotsFIFO(existing.id, oldStock - stockVal);
-            else if (stockVal > oldStock) {
-              const added = stockVal - oldStock;
-              warehouseLots.unshift({id:"lot_edit_"+Date.now(),itemId:existing.id,itemName:nameVal,receivedDate:TODAY,
-                supplier:"Điều chỉnh tồn kho",unitPrice:null,qtyReceived:added,qtyRemaining:added,source:"audit"});
-            }
-            if (stockVal !== oldStock) {
-              warehouseTxList.unshift({id:"whtx_edit_"+Date.now(),itemId:existing.id,itemName:nameVal,unit:unitVal,type:"audit",
-                qty:Math.abs(stockVal-oldStock),beforeStock:oldStock,afterStock:stockVal,date:TODAY,
-                reason:"Điều chỉnh tồn khi sửa mặt hàng",note:"Ghi nhận thay đổi từ màn hình sửa mặt hàng"});
-              saveWarehouseTxList(true); saveWarehouseLots(true);
-            }
-            existing.name = nameVal;
-            existing.category = finalCategory;
-            existing.unit = unitVal;
-            existing.stock = stockVal;
-            existing.minStock = minVal;
-            existing.updatedAt = TODAY;
+        document.getElementById("wh-f-cancel").onclick = closeModal;
+        document.getElementById("wh-f-save").onclick = () => {
+          const nameVal=document.getElementById("wh-f-name").value.trim();
+          const warehouseCategory=document.getElementById("wh-f-category").value;
+          const materialCategory=document.getElementById("wh-f-material").value;
+          const expenseCategory=document.getElementById("wh-f-expense").value;
+          const unitVal=document.getElementById("wh-f-unit").value;
+          const stockVal=Math.max(0,Number(document.getElementById("wh-f-stock").value)||0);
+          const minVal=Math.max(0,Number(document.getElementById("wh-f-min").value)||0);
+          if(!nameVal){showToast("Vui lòng nhập tên mặt hàng!");return;}
+          if(existing){
+            const oldStockRaw=Number(existing.stock)||0, oldUnit=existing.unit||unitVal;
+            const oldStock=convertWarehouseUnitQty(oldStockRaw,oldUnit,unitVal);
+            if(oldUnit!==unitVal) warehouseLots.filter(l=>l.itemId===existing.id).forEach(l=>{l.qtyReceived=convertWarehouseUnitQty(l.qtyReceived,oldUnit,unitVal);l.qtyRemaining=convertWarehouseUnitQty(l.qtyRemaining,oldUnit,unitVal);});
+            if(stockVal<oldStock) consumeWarehouseLotsFIFO(existing.id,oldStock-stockVal);
+            else if(stockVal>oldStock){const added=stockVal-oldStock;warehouseLots.unshift({id:"lot_edit_"+Date.now(),itemId:existing.id,itemName:nameVal,receivedDate:TODAY,supplier:"Điều chỉnh tồn kho",unitPrice:null,qtyReceived:added,qtyRemaining:added,source:"audit"});}
+            if(stockVal!==oldStock){warehouseTxList.unshift({id:"whtx_edit_"+Date.now(),itemId:existing.id,itemName:nameVal,unit:unitVal,type:"audit",qty:Math.abs(stockVal-oldStock),beforeStock:oldStock,afterStock:stockVal,date:TODAY,reason:"Điều chỉnh tồn khi sửa mặt hàng",note:"Ghi nhận thay đổi từ màn hình sửa mặt hàng"});saveWarehouseTxList(true);saveWarehouseLots(true);}
+            Object.assign(existing,{name:nameVal,category:warehouseCategory,warehouseCategory,expenseCategory,materialCategory,unit:unitVal,stock:stockVal,minStock:minVal,manualManaged:true,updatedAt:TODAY});
             warehouseLots.filter(l=>l.itemId===existing.id).forEach(l=>l.itemName=nameVal);
           } else {
-            warehouseItems.unshift({
-              id: "wh_" + Date.now(),
-              category: finalCategory,
-              name: nameVal,
-              unit: unitVal,
-              stock: stockVal,
-              minStock: minVal,
-              updatedAt: TODAY
-            });
+            warehouseItems.unshift({id:"wh_"+Date.now()+"_"+Math.random().toString(36).slice(2,6),category:warehouseCategory,warehouseCategory,expenseCategory,materialCategory,name:nameVal,unit:unitVal,stock:stockVal,minStock:minVal,manualManaged:true,updatedAt:TODAY});
+            if(stockVal>0){warehouseLots.unshift({id:"lot_open_"+Date.now(),itemId:warehouseItems[0].id,itemName:nameVal,receivedDate:TODAY,supplier:"Tồn đầu kỳ",unitPrice:null,qtyReceived:stockVal,qtyRemaining:stockVal,source:"opening"});saveWarehouseLots(true);}
           }
-
-          saveWarehouseItems();
-          closeModal();
-          renderWarehouseView();
-          showToast(existing ? `Đã cập nhật "${nameVal}"` : `Đã thêm "${nameVal}" & đồng bộ đầu mục chi phí!`);
-        });
+          saveWarehouseItems();closeModal();renderWarehouseView();
+          showToast(existing?`Đã cập nhật "${nameVal}"`:`Đã thêm "${nameVal}" vào kho.`);
+        };
       }
 
       document.getElementById("btn-wh-in").addEventListener("click", () => openWarehouseTxModal("in", null));
       document.getElementById("btn-wh-out").addEventListener("click", () => openWarehouseTxModal("out", null));
       document.getElementById("btn-wh-add-item").addEventListener("click", () => openWarehouseItemFormModal(null));
       document.getElementById("btn-wh-usage-rules").addEventListener("click", openWarehouseUsageRulesModal);
+      document.getElementById("btn-wh-categories").addEventListener("click", openWarehouseCategoriesModal);
+      document.getElementById("btn-wh-categories-top").addEventListener("click", openWarehouseCategoriesModal);
 
       // ======================================================================
       // QUẢN LÝ KHO AI & GIỌNG NÓI
@@ -4403,7 +4379,7 @@ body:has(.modal-bg.open) {
       }
 
       function buildWhAiPrompt(instruction) {
-        const inventorySummary = warehouseItems.map(it =>
+        const inventorySummary = warehouseItems.filter(isWarehouseManaged).map(it =>
           `- id: "${it.id}" | tên: "${it.name}" | tồn hiện tại: ${it.stock} ${it.unit} | tối thiểu: ${it.minStock}`
         ).join("\n");
         return [
@@ -4440,21 +4416,8 @@ body:has(.modal-bg.open) {
           targetItem = warehouseItems.find(x =>
             String(x.name || "").toLowerCase() === nameLower || String(x.category || "").toLowerCase() === nameLower);
         }
-        if (!targetItem && parsed.action === "out") {
-          return `⚠️ Không tìm thấy mặt hàng "${String(parsed.itemName || "").trim() || "?"}" trong kho, chưa xuất kho.`;
-        }
-        if (!targetItem) {
-          const newName = String(parsed.itemName || "").trim() || "Mặt hàng mới";
-          targetItem = {
-            id: "wh_" + Date.now(),
-            category: newName,
-            name: newName,
-            unit: parsed.unit || "g",
-            stock: 0,
-            minStock: 10,
-            updatedAt: TODAY
-          };
-          warehouseItems.unshift(targetItem);
+        if (!targetItem || !isWarehouseManaged(targetItem)) {
+          return `⚠️ Không tìm thấy mặt hàng đã được thêm thủ công trong kho: "${String(parsed.itemName || "").trim() || "?"}". Hãy thêm mặt hàng trước, AI không tự tạo mặt hàng mới.`;
         }
 
         const beforeStock = Number(targetItem.stock) || 0;
@@ -4680,14 +4643,18 @@ body:has(.modal-bg.open) {
         renderWarehouseView();
       });
 
-      document.getElementById("wh-filter-chips").addEventListener("click", (e) => {
+      document.getElementById("wh-shortcuts").addEventListener("click", (e) => {
         const chip = e.target.closest(".chip[data-wh-filter]");
         if (!chip) return;
         currentWarehouseFilter = chip.dataset.whFilter;
         renderWarehouseView();
       });
 
+      document.getElementById("wh-category-chips").addEventListener("click", (e) => { const chip=e.target.closest(".chip[data-wh-filter]"); if(!chip)return; currentWarehouseFilter=chip.dataset.whFilter; renderWarehouseView(); });
+
       document.getElementById("wh-list-container").addEventListener("click", (e) => {
+        const detailBtn = e.target.closest("[data-wh-detail]");
+        if (detailBtn) { openWarehouseItemDetails(detailBtn.dataset.whDetail); return; }
         const inBtn = e.target.closest("[data-wh-quick-in]");
         if (inBtn) {
           openWarehouseTxModal("in", inBtn.dataset.whQuickIn);
@@ -10013,6 +9980,8 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
         if (!record || !order || warehouseTxList.some(tx => tx.linkedOrderId === order.id)) return;
         const rulesByMenu = {};
         warehouseUsageRules.forEach(rule => {
+          const managedItem = warehouseItems.find(x => x.id === rule.itemId && isWarehouseManaged(x));
+          if (!managedItem) return;
           if (!rulesByMenu[rule.menuId]) rulesByMenu[rule.menuId]=[];
           rulesByMenu[rule.menuId].push(rule);
         });
@@ -10023,7 +9992,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
           });
         });
         Object.entries(totals).forEach(([itemId,qty]) => {
-          const item=warehouseItems.find(x=>x.id===itemId); if(!item||qty<=0)return;
+          const item=warehouseItems.find(x=>x.id===itemId && isWarehouseManaged(x)); if(!item||qty<=0)return;
           const before=Number(item.stock)||0, used=Math.min(before,qty), after=Math.max(0,before-qty);
           item.stock=after; item.updatedAt=record.date||TODAY;
           consumeWarehouseLotsFIFO(itemId,used);
@@ -10558,6 +10527,11 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
           warehouseTxList,
           warehouseLots,
           warehouseUsageRules,
+          warehouseCategories,
+          dataUpdateHistory: loadDataUpdateHistoryForBackup(),
+          schemaVersion: 2,
+          appVersion: APP_VERSION,
+          aiPreferences: { geminiModel: String((ocrSettings && ocrSettings.settings && ocrSettings.settings.geminiModel) || "gemini-3.8-flash") },
           fundSettings,
           fundTransfers,
           fundAdjustments,
@@ -10636,10 +10610,17 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
           if (Array.isArray(parsed.recipeCategories) && parsed.recipeCategories.length > 0) recipeCategories = parsed.recipeCategories;
           if (Array.isArray(parsed.debtEntries)) debtEntries = parsed.debtEntries;
           if (Array.isArray(parsed.warehouseItems)) warehouseItems = parsed.warehouseItems;
+          normalizeWarehouseItemsForCurrentRules();
           if (Array.isArray(parsed.warehouseTxList)) warehouseTxList = parsed.warehouseTxList;
           if (Array.isArray(parsed.warehouseLots)) warehouseLots = parsed.warehouseLots;
           else warehouseLots = warehouseItems.filter(it => Number(it.stock) > 0).map(it => ({id:"lot_open_"+it.id,itemId:it.id,itemName:it.name,receivedDate:it.updatedAt||TODAY,supplier:"Tồn đầu kỳ (chưa rõ nguồn)",unitPrice:null,qtyReceived:Number(it.stock)||0,qtyRemaining:Number(it.stock)||0,source:"opening"}));
           warehouseUsageRules = Array.isArray(parsed.warehouseUsageRules) ? parsed.warehouseUsageRules : [];
+          warehouseCategories = Array.isArray(parsed.warehouseCategories) && parsed.warehouseCategories.length ? parsed.warehouseCategories : ["Nguyên liệu chính","Gia vị","Đồ uống","Vật dụng","Khác"];
+          if (Array.isArray(parsed.dataUpdateHistory)) { try { localStorage.setItem(DATA_UPDATE_HISTORY_KEY, JSON.stringify(parsed.dataUpdateHistory)); } catch(e) {} }
+          if (parsed.aiPreferences && parsed.aiPreferences.geminiModel) {
+            ocrSettings.settings.geminiModel = String(parsed.aiPreferences.geminiModel);
+            try { localStorage.setItem(OCR_SETTINGS_KEY, JSON.stringify(ocrSettings)); } catch(e) {}
+          }
           fundSettings = (parsed.fundSettings && typeof parsed.fundSettings === "object") ? parsed.fundSettings : { startDate: (parsed.records.map(r => r.date).filter(Boolean).sort()[0]) || TODAY, openingTm: 0, openingTk: 0 };
           fundTransfers = Array.isArray(parsed.fundTransfers) ? parsed.fundTransfers : [];
           fundAdjustments = Array.isArray(parsed.fundAdjustments) ? parsed.fundAdjustments : [];
@@ -10661,6 +10642,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
           saveWarehouseTxList(true);
           saveWarehouseLots(true);
           saveWarehouseUsageRules(true);
+          saveWarehouseCategories(true);
           saveFundSettings(true); saveFundTransfers(true); saveFundAdjustments(true);
           saveNotebookNotes(true);
           saveNotebookTags(true);
@@ -10701,10 +10683,17 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
               if (Array.isArray(parsed.recipeCategories) && parsed.recipeCategories.length > 0) recipeCategories = parsed.recipeCategories;
               if (Array.isArray(parsed.debtEntries)) debtEntries = parsed.debtEntries;
               if (Array.isArray(parsed.warehouseItems)) warehouseItems = parsed.warehouseItems;
+              normalizeWarehouseItemsForCurrentRules();
               if (Array.isArray(parsed.warehouseTxList)) warehouseTxList = parsed.warehouseTxList;
               if (Array.isArray(parsed.warehouseLots)) warehouseLots = parsed.warehouseLots;
               else warehouseLots = warehouseItems.filter(it => Number(it.stock) > 0).map(it => ({id:"lot_open_"+it.id,itemId:it.id,itemName:it.name,receivedDate:it.updatedAt||TODAY,supplier:"Tồn đầu kỳ (chưa rõ nguồn)",unitPrice:null,qtyReceived:Number(it.stock)||0,qtyRemaining:Number(it.stock)||0,source:"opening"}));
               warehouseUsageRules = Array.isArray(parsed.warehouseUsageRules) ? parsed.warehouseUsageRules : [];
+          warehouseCategories = Array.isArray(parsed.warehouseCategories) && parsed.warehouseCategories.length ? parsed.warehouseCategories : ["Nguyên liệu chính","Gia vị","Đồ uống","Vật dụng","Khác"];
+          if (Array.isArray(parsed.dataUpdateHistory)) { try { localStorage.setItem(DATA_UPDATE_HISTORY_KEY, JSON.stringify(parsed.dataUpdateHistory)); } catch(e) {} }
+          if (parsed.aiPreferences && parsed.aiPreferences.geminiModel) {
+            ocrSettings.settings.geminiModel = String(parsed.aiPreferences.geminiModel);
+            try { localStorage.setItem(OCR_SETTINGS_KEY, JSON.stringify(ocrSettings)); } catch(e) {}
+          }
           fundSettings = (parsed.fundSettings && typeof parsed.fundSettings === "object") ? parsed.fundSettings : { startDate: (parsed.records.map(r => r.date).filter(Boolean).sort()[0]) || TODAY, openingTm: 0, openingTk: 0 };
           fundTransfers = Array.isArray(parsed.fundTransfers) ? parsed.fundTransfers : [];
           fundAdjustments = Array.isArray(parsed.fundAdjustments) ? parsed.fundAdjustments : [];
@@ -10726,6 +10715,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
               saveWarehouseTxList(true);
               saveWarehouseLots(true);
               saveWarehouseUsageRules(true);
+          saveWarehouseCategories(true);
           saveFundSettings(true); saveFundTransfers(true); saveFundAdjustments(true);
               saveNotebookNotes(true);
               saveNotebookTags(true);
@@ -10798,7 +10788,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
             renderCategorySelects();
             renderWarehouseView();
             openCategorySettingsModal();
-            showToast(`Đã thêm "${val}" & đồng bộ sang Kho!`);
+            showToast(`Đã thêm đầu mục chi phí "${val}". Kho không tự tạo mặt hàng.`);
           });
         });
 
@@ -11699,8 +11689,8 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
         const todayRecs = records.filter(r => r.date === TODAY);
         const catSel = document.getElementById("chi-cat");
         const cats = catSel ? Array.from(catSel.options).map(o => o.value).join(", ") : "";
-        const low = warehouseItems.filter(i => Number(i.stock) <= Number(i.minStock)).map(i => `${i.name} (${i.stock} ${i.unit})`).join(", ");
-        const stock = warehouseItems.map(i => `- id:"${i.id}" | ${i.name} | tồn ${i.stock} ${i.unit}`).join("\n");
+        const low = warehouseItems.filter(isWarehouseManaged).filter(i => Number(i.stock) <= Number(i.minStock)).map(i => `${i.name} (${i.stock} ${i.unit})`).join(", ");
+        const stock = warehouseItems.filter(isWarehouseManaged).map(i => `- id:"${i.id}" | ${i.name} | tồn ${i.stock} ${i.unit}`).join("\n");
         const menu = posItemsList.map(m => `- id:"${m.id}" | ${m.name} | ${m.price}đ`).join("\n");
         const draftLines = [];
         getAllPosItems().forEach(m => {
@@ -12372,7 +12362,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
           let cost=0, missing=[];
           rules.forEach(rule=>{
             const item=warehouseItems.find(x=>x.id===rule.itemId);
-            const price=prices.summaryList.find(x=>x.category===(item?.category||item?.name));
+            const price=prices.summaryList.find(x=>x.category===(item?.materialCategory||item?.name));
             if(!item||!price||!price.latestPrice){missing.push(rule.itemName||item?.name||"Nguyên liệu");return;}
             const unit=String(item.unit||"").toLowerCase();
             let pricePerUnit=price.latestPrice;
@@ -12396,7 +12386,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
       }
       function getProactiveBusinessAlerts() {
         const alerts=[];
-        warehouseItems.forEach(item=>{
+        warehouseItems.filter(isWarehouseManaged).forEach(item=>{
           const stock=Number(item.stock)||0, min=Number(item.minStock)||0;
           if(min>0&&stock<=min) alerts.push({key:"stock:"+item.id+":"+stock,level:"high",title:"Sắp hết "+item.name,detail:`Còn ${stock.toLocaleString("vi-VN")} ${item.unit}; mức tối thiểu ${min.toLocaleString("vi-VN")} ${item.unit}.`});
         });
@@ -12404,8 +12394,8 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
         price.summaryList.forEach(x=>{
           if(x.prevPrice!==null&&x.prevPrice>0&&x.pct>=5) alerts.push({key:"price:"+x.category+":"+x.latestDate+":"+x.latestPrice,level:x.pct>=15?"high":"medium",title:"Giá "+x.category+" tăng",detail:`${formatMoney(x.prevPrice)}/${x.stdUnit} → ${formatMoney(x.latestPrice)}/${x.stdUnit} (+${x.pct.toFixed(1)}%) so với mốc trước.`});
           if(x.prevPrice!==null&&x.prevPrice>0&&x.diff>0){
-            warehouseUsageRules.filter(rule=>{const it=warehouseItems.find(w=>w.id===rule.itemId);return it&&(it.category||it.name)===x.category;}).forEach(rule=>{
-              const it=warehouseItems.find(w=>w.id===rule.itemId);let deltaPerUnit=x.diff;
+            warehouseUsageRules.filter(rule=>{const it=warehouseItems.find(w=>w.id===rule.itemId);return it&&isWarehouseManaged(it)&&(it.materialCategory||it.name)===x.category;}).forEach(rule=>{
+              const it=warehouseItems.find(w=>w.id===rule.itemId&&isWarehouseManaged(w));if(!it)return;let deltaPerUnit=x.diff;
               if(x.stdUnit==="1 kg"&&(String(it.unit).toLowerCase()==="g"||String(it.unit).toLowerCase()==="gram"))deltaPerUnit/=1000;
               const menu=posItemsList.find(m=>m.id===rule.menuId);const addedCost=deltaPerUnit*(Number(rule.qtyPerSale)||0);
               if(menu&&addedCost>0)alerts.push({key:"menu_cost:"+rule.id+":"+x.latestDate+":"+x.latestPrice,level:"medium",title:"Giá vốn món "+menu.name+" tăng",detail:`Giá ${x.category} tăng làm chi phí nguyên liệu ước tính tăng thêm khoảng ${formatMoney(addedCost)}/món. Giá bán hiện tại ${formatMoney(menu.price)}; nên rà soát biên lợi nhuận.`});
@@ -12452,10 +12442,11 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
         if(!itemName||!supplier||!Number.isFinite(qty)||qty<=0||!Number.isFinite(amount)||amount<=0||!unit) return "⚠️ Phiếu nhập thiếu tên nguyên liệu, nhà cung cấp, số lượng, đơn vị hoặc tổng tiền hợp lệ. Chưa tạo phiếu.";
         const unitPrice=amount/qty;
         const norm=normalizeMaterialUnitPrice(qty,unit,amount);
-        const existing=warehouseItems.find(x=>String(x.name||"").trim().toLowerCase()===itemName.toLowerCase()||String(x.category||"").trim().toLowerCase()===itemName.toLowerCase());
+        const existing=warehouseItems.find(x=>isWarehouseManaged(x) && (String(x.name||"").trim().toLowerCase()===itemName.toLowerCase()||String(x.materialCategory||"").trim().toLowerCase()===itemName.toLowerCase()));
         const prev=buildMaterialPriceData().allEntries.filter(x=>String(x.category||"").toLowerCase()===itemName.toLowerCase()&&(!norm||x.stdUnit===norm.stdUnit)).sort((x,y)=>String(y.date).localeCompare(String(x.date)))[0];
         const diff=prev?unitPrice-(Number(prev.unitPrice)||0):null;
         const pct=prev&&Number(prev.unitPrice)>0?diff/prev.unitPrice*100:null;
+        if(!existing) return `⚠️ "${itemName}" chưa có trong danh sách kho được thêm thủ công. Hãy thêm mặt hàng trong tab Kho trước, sau đó mới tạo phiếu nhập bằng Bắp AI. Chưa có dữ liệu nào được ghi.`;
         const card=document.createElement("div");card.className="chat-msg sys";card.style.cssText="max-width:97%;background:#F0FDF4;border:1px solid #86EFAC;color:var(--ink);";
         const title=document.createElement("div");title.style.cssText="font-weight:800;margin-bottom:7px;";title.textContent="📦 XÁC NHẬN PHIẾU NHẬP HÀNG";
         const detail=document.createElement("div");detail.style.cssText="font-size:13px;line-height:1.55;white-space:pre-wrap;margin-bottom:8px;";
@@ -12472,8 +12463,8 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
           if(!payment){detail.textContent+="\n\n⚠️ Vui lòng chọn tình trạng thanh toán trước khi xác nhận.";return;}
           const paidAmount=payment==="paid"?amount:(payment==="unpaid"?0:Number(paid.value));
           if(!Number.isFinite(paidAmount)||paidAmount<0||paidAmount>amount||(payment==="partial"&&paidAmount>=amount)){detail.textContent+="\n\n⚠️ Số tiền đã thanh toán không hợp lệ. Chưa ghi dữ liệu.";return;}
-          let item=warehouseItems.find(x=>x.id===existing?.id);
-          if(!item){item={id:"wh_ai_"+Date.now(),name:itemName,category:itemName,unit,stock:0,minStock:0,updatedAt:date};warehouseItems.unshift(item);}
+          const item=warehouseItems.find(x=>x.id===existing.id && isWarehouseManaged(x));
+          if(!item){detail.textContent+="\\n\\n⚠️ Mặt hàng không còn trong danh sách kho. Phiếu nhập đã bị hủy.";yes.disabled=true;no.disabled=true;return;}
           const addQty=convertWarehouseUnitQty(qty,unit,item.unit||unit);const before=Number(item.stock)||0;item.stock=before+addQty;item.updatedAt=date;
           const lotId="lot_purchase_"+Date.now()+"_"+Math.random().toString(36).slice(2,6);
           warehouseLots.unshift({id:lotId,itemId:item.id,itemName:item.name,receivedDate:date,supplier,unitPrice:addQty>0?amount/addQty:unitPrice,priceUnit:item.unit||unit,expectedDate:expected.value||"",qtyReceived:addQty,qtyRemaining:addQty,source:"chat_purchase"});
@@ -12482,7 +12473,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
           if(paidAmount>0){records.unshift({id:recId,type:"chi",date,category:item.category||item.name,amount:Math.round(paidAmount),qty:"",unit:"",note:`Thanh toán nhập ${item.name} từ ${supplier} (${payment==="partial"?"một phần":"đủ"})`,supplier});saveRecords();}
           const debtAmount=Math.round(amount-paidAmount);
           if(debtAmount>0){debtEntries.unshift({id:"debt_purchase_"+Date.now(),ledgerType:"supplier",partyName:supplier,itemName:item.name,date,qty,unit,unitPrice:unitPrice,amount:debtAmount,note:`Công nợ từ phiếu nhập AI; tổng hóa đơn ${formatMoney(amount)}, đã trả ${formatMoney(paidAmount)}.`,status:"unpaid",paidDate:"",paidMethod:"",linkedRecordId:paidAmount>0?recId:null});saveDebtEntries();}
-          if(norm){manualMaterialHistory.unshift({id:"mat_purchase_"+Date.now(),date,category:item.category||item.name,unitPrice:norm.unitPrice,stdUnit:norm.stdUnit,supplier,note:`Giá thực tế từ phiếu nhập ${formatMoney(amount)} / ${qty} ${unit}`});saveMaterialHistory(true);}
+          if(norm){manualMaterialHistory.unshift({id:"mat_purchase_"+Date.now(),date,category:item.materialCategory||item.name,unitPrice:norm.unitPrice,stdUnit:norm.stdUnit,supplier,note:`Giá thực tế từ phiếu nhập ${formatMoney(amount)} / ${qty} ${unit}`});saveMaterialHistory(true);}
           saveWarehouseItems();saveWarehouseLots();saveWarehouseTxList();renderAll();renderWarehouseView();renderMaterialsView();renderDebtLedgerView();
           const msg=`✅ Đã ghi phiếu nhập ${item.name}: +${addQty} ${item.unit||unit}. Đơn giá ${formatMoney(unitPrice)}/${unit}. ${paidAmount>0?"Đã ghi chi "+formatMoney(paidAmount)+".":""} ${debtAmount>0?"Đã tạo công nợ nhà cung cấp "+formatMoney(debtAmount)+".":"Không phát sinh công nợ."} Đã lưu lịch sử giá và lô hàng.`;
           detail.textContent=msg;yes.disabled=true;no.disabled=true;pay.disabled=true;paid.disabled=true;addChatMsg("sys",msg);
@@ -14535,7 +14526,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
         if (speechBubble.classList.contains("visual-reply")) return;
 
         // 1. Kiểm tra tồn kho thấp
-        const lowStock = warehouseItems.filter(it => Number(it.stock) <= Number(it.minStock || 0));
+        const lowStock = warehouseItems.filter(isWarehouseManaged).filter(it => Number(it.stock) <= Number(it.minStock || 0));
         if (lowStock.length > 0) {
           const item = lowStock[0];
           const key = `low_${item.id}_${item.stock}`;
