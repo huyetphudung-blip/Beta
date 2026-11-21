@@ -2255,7 +2255,7 @@ button[type="submit"],.nav-btn.active) {
       <!-- Thiết lập sổ quỹ và chuyển tiền nội bộ được đặt cuối tab để ưu tiên thao tác đối soát. -->
       <div class="card" style="border:1px solid var(--accent);">
         <div class="card-title"><span>⚙️ Thiết lập sổ quỹ</span><span style="font-size:11px;color:var(--muted);">Không ảnh hưởng doanh thu/lợi nhuận</span></div>
-        <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px;line-height:1.45;">Khai báo số dư tiền mặt và ngân hàng tại ngày bắt đầu theo dõi. Các giao dịch từ ngày này trở đi sẽ được cộng/trừ vào sổ quỹ.</div>
+        <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px;line-height:1.45;">Khai báo số dư thực tế tiền mặt và ngân hàng tại ngày bắt đầu theo dõi. Hai số dư này sẽ GHI ĐÈ số TK/TM cũ làm mốc đầu kỳ; chỉ các giao dịch từ ngày này trở đi mới được cộng/trừ tiếp. Dữ liệu trước ngày bắt đầu không được cộng chồng vào số dư mới.</div>
         <div class="form-group"><label for="fund-start-date">Ngày bắt đầu theo dõi</label><input type="date" id="fund-start-date" /></div>
         <div class="form-group"><label for="fund-opening-tm">Số dư tiền mặt đầu kỳ (đ)</label><input type="number" id="fund-opening-tm" min="0" step="1000" inputmode="numeric" /></div>
         <div class="form-group"><label for="fund-opening-tk">Số dư ngân hàng đầu kỳ (đ)</label><input type="number" id="fund-opening-tk" min="0" step="1000" inputmode="numeric" /></div>
@@ -6088,9 +6088,9 @@ button[type="submit"],.nav-btn.active) {
         const openingTm = Number(document.getElementById("fund-opening-tm").value);
         const openingTk = Number(document.getElementById("fund-opening-tk").value);
         if (!startDate || !Number.isFinite(openingTm) || !Number.isFinite(openingTk) || openingTm < 0 || openingTk < 0) { showToast("Vui lòng nhập ngày và số dư đầu kỳ hợp lệ."); return; }
-        if (!confirm(`Lưu số dư đầu kỳ từ ${formatVNDate(startDate)}?\nTiền mặt: ${formatMoney(openingTm)}\nNgân hàng: ${formatMoney(openingTk)}\n\nSố dư đầu kỳ mới sẽ tính lại số dư trên sổ từ ngày này.`)) return;
+        if (!confirm(`XÁC NHẬN GHI ĐÈ SỐ DƯ SỔ QUỸ TỪ ${formatVNDate(startDate)}?\n\nTiền mặt (TM): ${formatMoney(openingTm)}\nNgân hàng (TK): ${formatMoney(openingTk)}\n\nHai số tiền trên sẽ thay thế số dư TK/TM cũ tại ngày bắt đầu. Các giao dịch từ ngày này trở đi vẫn được cộng/trừ bình thường. Giao dịch trước ngày này không được tính vào số dư mới. Thao tác này không tạo doanh thu hoặc chi phí.`)) return;
         fundSettings = { startDate, openingTm, openingTk, updatedAt:new Date().toISOString() };
-        saveFundSettings(); renderFundSettings(); renderReconcileBook(); showToast("Đã lưu số dư đầu kỳ.");
+        saveFundSettings(); renderFundSettings(); renderReconcileBook(); renderReport(); renderFundLedgerHistory(); showToast("Đã ghi đè số dư đầu kỳ TK/TM và cập nhật báo cáo.");
       });
       document.getElementById("btn-fund-transfer").addEventListener("click", () => {
         const date = document.getElementById("fund-transfer-date").value || TODAY;
@@ -6158,7 +6158,11 @@ button[type="submit"],.nav-btn.active) {
             });
             fundAdjustments.filter(a => a.date === dIso).forEach(a => {
               const delta = Number(a.delta) || 0;
-              if (a.account === "tm") runningTm += delta; else if (a.account === "tk") runningTk += delta;
+              // Sau đối soát, số thực tế đã xác nhận là số dư chuẩn của tài khoản tại ngày đó.
+              // Dùng actual để thay thế số dư tính toán, không cộng chồng chênh lệch lần nữa.
+              const hasActual = a.actual !== undefined && a.actual !== null && a.actual !== "" && Number.isFinite(Number(a.actual));
+              if (a.account === "tm") runningTm = hasActual ? Number(a.actual) : runningTm + delta;
+              else if (a.account === "tk") runningTk = hasActual ? Number(a.actual) : runningTk + delta;
             });
           }
           cumGrossProfitMap[dIso] = runningProfit;
@@ -6193,10 +6197,16 @@ button[type="submit"],.nav-btn.active) {
           if (t.from === "tm") { bookTm -= amount; bookTk += amount; }
           else { bookTk -= amount; bookTm += amount; }
         });
-        fundAdjustments.filter(a => a.date >= startDate && a.date <= dateIso).forEach(a => {
-          const delta = Number(a.delta) || 0;
-          if (a.account === "tm") bookTm += delta; else if (a.account === "tk") bookTk += delta;
-        });
+        fundAdjustments.filter(a => a.date >= startDate && a.date <= dateIso)
+          .slice().sort((a,b) => String(a.date).localeCompare(String(b.date)) || String(a.createdAt || "").localeCompare(String(b.createdAt || "")))
+          .forEach(a => {
+            const delta = Number(a.delta) || 0;
+            // Số thực tế sau đối soát ghi đè số dư tài khoản tại ngày đối soát.
+            // Các ngày sau đó tiếp tục cộng/trừ giao dịch phát sinh bình thường.
+            const hasActual = a.actual !== undefined && a.actual !== null && a.actual !== "" && Number.isFinite(Number(a.actual));
+            if (a.account === "tm") bookTm = hasActual ? Number(a.actual) : bookTm + delta;
+            else if (a.account === "tk") bookTk = hasActual ? Number(a.actual) : bookTk + delta;
+          });
         return { bookTm, bookTk, bookTotal: bookTm + bookTk, startDate };
       }
 
