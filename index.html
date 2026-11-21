@@ -2962,7 +2962,7 @@ body:has(.modal-bg.open) {
         toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
       }
       // QUẢN LÝ PHIÊN BẢN VÀ NHẬT KÝ CẬP NHẬT DỮ LIỆU
-      const APP_VERSION = "8.28";
+      const APP_VERSION = "8.29";
       const versionBadge = document.getElementById("app-version-badge");
       if (versionBadge) versionBadge.textContent = `v${APP_VERSION}`;
       const DATA_UPDATE_HISTORY_KEY = "nha_bap_data_update_history_v1";
@@ -3001,6 +3001,7 @@ body:has(.modal-bg.open) {
       }
 
       const APP_CHANGELOG = [
+        {v:"8.29", title:"Đối soát điều chỉnh trực tiếp doanh thu", changes:["Chênh lệch dương khi đối soát được cộng vào doanh thu; chênh lệch âm được ghi thành khoản điều chỉnh âm của doanh thu, không chuyển sang chi phí.","Lợi nhuận ngày tiếp tục được tính bằng doanh thu sau điều chỉnh trừ chi phí; tổng quỹ TK + TM vẫn được cập nhật độc lập theo số thực tế.","Đồng bộ nội dung xác nhận, lịch sử phiên bản và hướng dẫn cho Bắp AI để tránh diễn giải chênh lệch âm thành chi phí."]},
         {v:"8.28", title:"Tách lợi nhuận ngày khỏi số dư quỹ", changes:["Lợi nhuận ngày được tính đúng bằng doanh thu ngày trừ chi phí ngày, không còn lấy chênh lệch số dư TK + TM.","Tổng quỹ TK + TM tiếp tục được tính lũy kế riêng và hiển thị như số tiền hiện có trong tiền mặt và ngân hàng.","Các điều chỉnh chênh lệch đối soát dương/âm vẫn được tính vào doanh thu/chi phí báo cáo; snapshot đối soát vẫn ghi đè số dư quỹ thực tế, không tạo dòng tiền trùng.","Đồng bộ nhãn và nội dung báo cáo để phân biệt kết quả kinh doanh với số dư tiền đang nắm giữ."]},
         {v:"8.27", title:"Sửa xung đột snapshot khi đặt lại mốc sổ quỹ", changes:["Khi đặt lại mốc sổ quỹ, snapshot đối soát cũ đúng ngày mốc được loại khỏi phép tính để không ghi đè số dư đầu kỳ mới.","Các dòng doanh thu/chi phí điều chỉnh đối soát của đúng ngày mốc được loại bỏ vì đã được thay thế bằng số dư đầu ngày mới.","Giữ nguyên giao dịch bán hàng, chi phí, chuyển quỹ và snapshot đối soát ở những ngày sau; tính lại TK, TM và báo cáo."]},
         {v:"8.26", title:"Sửa Chatbox bị thanh điều hướng che khuất trên iPhone", changes:["Đưa cửa sổ Chatbox AI lên lớp hiển thị cao hơn thanh điều hướng cố định.","Khi mở Chatbox, khung chat phủ đúng vùng ứng dụng; thanh tab không còn đè lên nội dung hoặc hàng nhập tin nhắn.","Giữ vùng cuộn hội thoại riêng và vùng an toàn phía dưới cho thao tác nhập/gửi trên iPhone."]},
@@ -5768,7 +5769,7 @@ body:has(.modal-bg.open) {
         const rowsHtml = dayItems.length === 0
           ? `<div style="color:var(--muted); text-align:center; padding:16px 0;">Không có ghi chép nào trong ngày này.</div>`
           : dayItems.map(r => {
-              const title = r.type === "thu" ? "Doanh thu bán hàng" : r.category;
+              const title = r.reconcilePnlOnly ? (r.category || "Điều chỉnh doanh thu đối soát") : (r.type === "thu" ? "Doanh thu bán hàng" : r.category);
               const sub = r.type === "thu"
                 ? `TK: ${formatMoney(r.tk)} | TM: ${formatMoney(r.tm)}${r.note ? " • " + r.note : ""}`
                 : `${formatQty(r.qty, r.unit) !== "-" ? "SL: " + formatQty(r.qty, r.unit) + " • " : ""}${r.note || ""}`;
@@ -5779,7 +5780,7 @@ body:has(.modal-bg.open) {
                     <div class="tx-sub">${sub}</div>
                   </div>
                   <div class="tx-right">
-                    <div class="tx-amt ${r.type === "thu" ? "amt-thu" : "amt-chi"}">${r.type === "thu" ? "+" : "−"}${formatMoney(r.amount)}</div>
+                    <div class="tx-amt ${r.type === "thu" && Number(r.amount) >= 0 ? "amt-thu" : "amt-chi"}">${r.type === "thu" ? (Number(r.amount) < 0 ? "−" : "+") : "−"}${formatMoney(Math.abs(Number(r.amount) || 0))}</div>
                     <div class="tx-btns">
                       <button type="button" class="mini-btn" data-day-edit="${r.id}">Sửa</button>
                       <button type="button" class="mini-btn del" data-day-del="${r.id}">Xóa</button>
@@ -6490,22 +6491,31 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
             </table>
           </div>
           <div class="insight-item warn" style="margin-top:10px; margin-bottom:0;">
-            Số dư TK/TM sẽ được ghi đè bằng số thực tế. Chênh lệch dương được ghi vào doanh thu; chênh lệch âm được ghi vào chi phí. Lợi nhuận gộp được tính lại bằng TK + TM.
+            Số dư TK/TM sẽ được cập nhật bằng số thực tế. Chênh lệch dương được cộng vào doanh thu; chênh lệch âm được trừ trực tiếp khỏi doanh thu. Chi phí không thay đổi. Lợi nhuận ngày = doanh thu sau điều chỉnh − chi phí.
           </div>
         `;
       });
 
-      // Chênh lệch đối soát đồng thời ảnh hưởng lợi nhuận: dương = doanh thu, âm = chi phí.
-      // Các bản ghi này chỉ phục vụ báo cáo P&L; sổ quỹ tiền mặt/ngân hàng vẫn được cập nhật
-      // bằng fundAdjustments để tránh ghi nhận cùng một biến động hai lần.
+      // Chênh lệch đối soát tác động trực tiếp vào DOANH THU:
+      // dương = khoản doanh thu cộng thêm; âm = khoản điều chỉnh âm làm giảm doanh thu.
+      // Các bản ghi chỉ phục vụ báo cáo P&L; sổ quỹ được cập nhật riêng bằng fundAdjustments.
       function addReconcileProfitRecords(dateIso, diffTm, diffTk, note, prefix = "rec_pnl_") {
         const stamp = new Date().toISOString();
         const addOne = (account, delta) => {
           if (!delta) return;
           const id = prefix + Date.now() + "_" + account + "_" + Math.random().toString(36).slice(2,7);
-          const common = { id, date:dateIso, amount:Math.abs(delta), note:`${note || "Điều chỉnh sau đối soát"} (${account === "tm" ? "Tiền mặt" : "Ngân hàng"})`, reconcilePnlOnly:true, reconcileAccount:account, createdAt:stamp };
-          if (delta > 0) records.push({ ...common, type:"thu", category:"Điều chỉnh đối soát dương", tm:account === "tm" ? delta : 0, tk:account === "tk" ? delta : 0, method:account });
-          else records.push({ ...common, type:"chi", category:"Chênh lệch đối soát âm", method:account === "tk" ? "tk" : "tm", tm:0, tk:0 });
+          const isPositive = delta > 0;
+          const common = {
+            id, date:dateIso, amount:delta,
+            note:`${note || "Điều chỉnh sau đối soát"} (${account === "tm" ? "Tiền mặt" : "Ngân hàng"})`,
+            reconcilePnlOnly:true, reconcileAccount:account, createdAt:stamp,
+            tm:0, tk:0, method:account
+          };
+          records.push({
+            ...common,
+            type:"thu",
+            category:isPositive ? "Điều chỉnh tăng doanh thu đối soát" : "Điều chỉnh giảm doanh thu đối soát"
+          });
         };
         addOne("tm", diffTm); addOne("tk", diffTk);
         saveRecords(true);
@@ -6581,7 +6591,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
         const latest = getReconcileBookValues(dateIso);
         const diffTm = actualTm - latest.bookTm, diffTk = actualTk - latest.bookTk;
         if (diffTm === 0 && diffTk === 0) { showToast("Sổ quỹ đã khớp, không cần điều chỉnh."); return; }
-        if (!confirm(`Xác nhận điều chỉnh sổ quỹ ngày ${formatVNDate(dateIso)}?\nTiền mặt: ${diffTm >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffTm))}\nNgân hàng: ${diffTk >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffTk))}\n\nChênh lệch dương sẽ cộng vào doanh thu và lợi nhuận; chênh lệch âm sẽ ghi vào chi phí và giảm lợi nhuận.`)) return;
+        if (!confirm(`Xác nhận điều chỉnh sổ quỹ ngày ${formatVNDate(dateIso)}?\nTiền mặt: ${diffTm >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffTm))}\nNgân hàng: ${diffTk >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffTk))}\n\nChênh lệch dương sẽ cộng vào doanh thu; chênh lệch âm sẽ trừ khỏi doanh thu. Cả hai đều tác động trực tiếp đến lợi nhuận ngày; chi phí không thay đổi.`)) return;
         const stamp = new Date().toISOString();
         fundAdjustments.push({ id:"fund_adj_" + Date.now() + "_tm", date:dateIso, account:"tm", delta:diffTm, note:userNote || "Đối soát số dư thực tế", bookBefore:latest.bookTm, actual:actualTm, createdAt:stamp });
         fundAdjustments.push({ id:"fund_adj_" + Date.now() + "_tk", date:dateIso, account:"tk", delta:diffTk, note:userNote || "Đối soát số dư thực tế", bookBefore:latest.bookTk, actual:actualTk, createdAt:stamp });
@@ -6590,7 +6600,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
         document.getElementById("rec-actual-tm").value = actualTm;
         document.getElementById("rec-actual-tk").value = actualTk;
         document.getElementById("btn-rec-check").click();
-        showToast("Đã điều chỉnh sổ quỹ và cập nhật chênh lệch vào doanh thu/chi phí, lợi nhuận.");
+        showToast("Đã điều chỉnh sổ quỹ và cập nhật chênh lệch trực tiếp vào doanh thu, lợi nhuận.");
       });
 
 
@@ -11822,7 +11832,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
           "- Dữ liệu tab Báo Cáo có thể truy xuất và chỉnh sửa thông qua các giao dịch nguồn. Khi người dùng yêu cầu sửa/xóa một khoản thu hoặc chi trong báo cáo, phải truy vấn dataset=report hoặc records để xác định đúng ID; sau đó dùng record_update/record_delete. Ứng dụng sẽ luôn hiển thị thẻ xác nhận, không tự ghi thay đổi. Không sửa số tổng hợp trực tiếp vì số tổng được tính lại từ giao dịch nguồn.",
           "- ĐỐI SOÁT QUỸ: Khi người dùng hỏi số dư quỹ/số tiền trên sổ, dùng fund_status. Khi người dùng cung cấp số tiền mặt thực đếm và số dư ngân hàng thực tế, dùng fund_check. Nếu thiếu một trong hai số thực tế, hãy hỏi lại; không tự giả định bằng 0.",
           "- ĐỐI SOÁT VÀ ĐIỀU CHỈNH: Khi fund_check phát hiện lệch, ứng dụng tự hiển thị thẻ xác nhận điều chỉnh tùy chọn; không ghi sổ cho đến khi người dùng bấm nút. fund_adjust chỉ dùng khi người dùng nói rõ muốn tạo đề nghị điều chỉnh. Không tự suy diễn đồng ý điều chỉnh chỉ từ việc người dùng cung cấp số thực tế.",
-          "- ĐỐI SOÁT: fundAdjustments lưu snapshot số dư thực tế cuối ngày. Chênh lệch dương phải tạo khoản thu điều chỉnh; chênh lệch âm phải tạo khoản chi điều chỉnh để báo cáo khớp với TK + TM. Không tính dòng P&L-only vào luồng tiền lần thứ hai.",
+          "- ĐỐI SOÁT: fundAdjustments lưu snapshot số dư thực tế cuối ngày. Chênh lệch dương tạo khoản doanh thu điều chỉnh dương; chênh lệch âm tạo khoản điều chỉnh doanh thu âm (trừ khỏi doanh thu), tuyệt đối không chuyển sang chi phí. Không tính dòng P&L-only vào luồng tiền lần thứ hai.",
           "- Sổ quỹ có số dư đầu ngày (fundSettings.startDate, openingTm, openingTk), giao dịch thu/chi, chuyển nội bộ (fundTransfers) và snapshot đối soát. Tính cả giao dịch từ chính ngày bắt đầu theo dõi; trong ngày đối soát tính giao dịch trước rồi ghi đè bằng số thực tế cuối ngày. Lợi nhuận gộp = TK + TM. Chi phí method='tk' trừ ngân hàng; chi phí còn lại trừ tiền mặt trước, nếu thiếu mới trừ phần còn thiếu vào ngân hàng.",
           "- Khi người dùng hỏi chi tiết giao dịch, công nợ đã thanh toán, lịch sử kho, nhà cung cấp, nguyên liệu, nội dung Sổ Tay hoặc dữ liệu cũ: hãy dùng action data_query với dataset và từ khóa phù hợp; không được đoán nếu dữ liệu chưa có trong prompt.",
           "- Với mọi thao tác sửa/xóa dữ liệu cũ, chỉ tạo action *_update hoặc *_delete kèm ID chính xác và fields cần thay đổi; ứng dụng sẽ hiển thị nút xác nhận trước khi ghi thật.",
@@ -12851,7 +12861,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
         const card = document.createElement("div"); card.className = "chat-msg sys"; card.style.cssText = "max-width:95%;background:#FFF7ED;border:1px solid #FDBA74;color:var(--ink);";
         const detail = document.createElement("div"); detail.style.cssText = "white-space:pre-wrap;margin-bottom:8px;font-size:13px;";
         const signed = n => (n > 0 ? "+" : "−") + formatMoney(Math.abs(n));
-        detail.textContent = `⚠️ XÁC NHẬN ĐIỀU CHỈNH SỔ QUỸ — ${formatVNDate(dateIso)}\n\nTIỀN MẶT: Sổ ${formatMoney(initial.bookTm)} → Thực tế ${formatMoney(actualTm)}\nChênh lệch: ${signed(diffTm)}\n\nNGÂN HÀNG: Sổ ${formatMoney(initial.bookTk)} → Thực tế ${formatMoney(actualTk)}\nChênh lệch: ${signed(diffTk)}\n\nSau xác nhận: lệch dương cộng vào doanh thu ngày và lợi nhuận gộp; lệch âm ghi vào chi phí ngày và giảm lợi nhuận. Sổ quỹ được cập nhật riêng, không tính trùng dòng tiền.\nGhi chú: ${note || "Không có"}`;
+        detail.textContent = `⚠️ XÁC NHẬN ĐIỀU CHỈNH SỔ QUỸ — ${formatVNDate(dateIso)}\n\nTIỀN MẶT: Sổ ${formatMoney(initial.bookTm)} → Thực tế ${formatMoney(actualTm)}\nChênh lệch: ${signed(diffTm)}\n\nNGÂN HÀNG: Sổ ${formatMoney(initial.bookTk)} → Thực tế ${formatMoney(actualTk)}\nChênh lệch: ${signed(diffTk)}\n\nSau xác nhận: lệch dương cộng vào doanh thu; lệch âm trừ trực tiếp khỏi doanh thu. Chi phí không đổi; lợi nhuận ngày = doanh thu sau điều chỉnh − chi phí. Sổ quỹ được cập nhật riêng, không tính trùng dòng tiền.\nGhi chú: ${note || "Không có"}`;
         const yes = document.createElement("button"); yes.type="button"; yes.className="chat-qbtn acc"; yes.textContent="✓ Xác nhận điều chỉnh";
         const no = document.createElement("button"); no.type="button"; no.className="chat-qbtn"; no.textContent="Không điều chỉnh";
         yes.addEventListener("click", () => {
