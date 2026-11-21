@@ -1173,10 +1173,325 @@
       flex: 0 0 auto;
     }
   </style>
+
+<style id="nha-bap-metro-flat-v815">
+  :root {
+    --bg:#F3F5F8; --card:#FFFFFF; --ink:#182230; --muted:#667085;
+    --border:#DCE2EA; --accent:#2563EB; --accent-soft:#EAF1FF;
+    --green:#16845B; --green-soft:#E6F5EE; --red:#C43D4B; --red-soft:#FCEBED;
+    --subtle:#F1F4F8; --radius:7px;
+    --metro-accent:var(--accent); --metro-accent-rgb:37,99,235;
+  }
+  html { background:var(--bg); }
+  body { background:var(--bg) !important; color:var(--ink); font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+  .container { max-width:760px !important; padding:12px 12px 118px !important; }
+  .card,.journal-bar,.backup-banner,.modal-content,.modal-card,.panel,.section-card {
+    border-radius:6px !important; box-shadow:none !important; border:1px solid var(--border) !important;
+  }
+  .card { background:#fff !important; margin-bottom:12px !important; }
+  .journal-bar { background:#fff !important; }
+  .card-title { color:var(--ink); letter-spacing:.1px; }
+  button,.btn,.btn-submit,.btn-primary,.btn-outline,.mini-btn,.voice-btn,.nav-btn {
+    border-radius:5px !important; box-shadow:none !important; transition:background-color .16s ease,border-color .16s ease,color .16s ease,transform .16s ease !important;
+  }
+  .btn-submit,.btn-primary { background:var(--accent) !important; border-color:var(--accent) !important; color:#fff !important; }
+  .btn-outline { border-color:var(--accent) !important; color:var(--accent) !important; background:#fff !important; }
+  input:not([type=checkbox]):not([type=radio]),select,textarea {
+    border-radius:5px !important; border-color:#CBD5E1 !important; box-shadow:none !important;
+  }
+  input:focus,select:focus,textarea:focus { outline:2px solid color-mix(in srgb,var(--accent) 22%,transparent) !important; border-color:var(--accent) !important; }
+  .chips button,.chip,.tag { border-radius:4px !important; }
+  .bottom-nav {
+    min-height:78px; background:#fff !important; border-top:1px solid var(--border) !important;
+    box-shadow:0 -5px 18px rgba(15,23,42,.08) !important;
+    padding:7px 4px calc(7px + env(safe-area-inset-bottom,0px)) !important;
+    gap:4px !important; grid-template-columns:repeat(6,minmax(0,1fr));
+  }
+  .nav-btn { min-height:62px !important; color:#526071 !important; font-size:10.5px !important; font-weight:700 !important; gap:5px !important; padding:5px 2px !important; border:1px solid transparent !important; }
+  .nav-btn svg { width:23px !important; height:23px !important; stroke-width:1.9 !important; }
+  .nav-btn.active { background:var(--accent-soft) !important; color:var(--accent) !important; border-color:transparent !important; }
+  .nav-alert-dot { border-color:#fff !important; }
+  main.container { padding-top:8px !important; }
+  /* Bộ icon nét mảnh đồng nhất, không can thiệp cấu trúc SVG hay sự kiện */
+  svg { stroke-linecap:round; stroke-linejoin:round; }
+  .journal-bar svg,.btn svg,.btn-submit svg,.btn-outline svg,.mini-btn svg { width:20px; height:20px; flex:0 0 auto; }
+  .metro-ticker { position:sticky; top:0; z-index:35; width:100%; overflow:hidden; display:flex; align-items:center; gap:0; margin:0 0 12px; min-height:42px; background:#fff; border:1px solid var(--border); border-left:4px solid var(--accent); border-radius:5px; }
+  .metro-ticker-label { flex:0 0 auto; align-self:stretch; display:flex; align-items:center; padding:0 11px; color:#fff; background:var(--accent); font-size:10px; font-weight:900; letter-spacing:.7px; }
+  .metro-ticker-window { min-width:0; overflow:hidden; flex:1; }
+  .metro-ticker-track { display:flex; width:max-content; align-items:center; gap:34px; white-space:nowrap; padding-left:18px; animation:metroTickerMove 34s linear infinite; }
+  .metro-ticker:hover .metro-ticker-track { animation-play-state:paused; }
+  .metro-ticker-item { display:inline-flex; align-items:center; gap:7px; color:#344054; font-size:12px; font-weight:650; }
+  .metro-ticker-item b { color:var(--accent); font-variant-numeric:tabular-nums; }
+  .metro-ticker-dot { width:5px; height:5px; background:var(--accent); display:inline-block; }
+  @keyframes metroTickerMove { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+  .metro-theme-panel { background:#fff; border:1px solid var(--border); border-radius:6px; padding:14px; margin:0 0 12px; }
+  .metro-theme-title { font-size:14px; font-weight:800; color:var(--ink); margin-bottom:4px; }
+  .metro-theme-subtitle { font-size:12px; color:var(--muted); margin-bottom:12px; }
+  .metro-theme-controls { display:flex; align-items:center; flex-wrap:wrap; gap:9px; }
+  .metro-color-input { width:48px !important; height:38px !important; padding:3px !important; border:1px solid var(--border) !important; background:#fff; }
+  .metro-preset { width:30px; height:30px; min-height:30px; padding:0; border:2px solid #fff; outline:1px solid #CBD5E1; border-radius:4px !important; cursor:pointer; }
+  .metro-preset[aria-pressed="true"] { outline:2px solid var(--ink); outline-offset:2px; }
+  @media (max-width:420px) {
+    .container { padding-left:9px !important; padding-right:9px !important; }
+    .bottom-nav { padding-left:2px !important; padding-right:2px !important; }
+    .nav-btn { font-size:9.5px !important; }
+    .nav-btn svg { width:22px !important; height:22px !important; }
+    .metro-ticker-item { font-size:11px; }
+  }
+  @media (prefers-reduced-motion:reduce) { .metro-ticker-track { animation:none; transform:none; } *,*::before,*::after { scroll-behavior:auto !important; transition-duration:.01ms !important; } }
+</style>
+
+
+<style id="metro-extra-square-overrides">
+/* Metro Flat refinement: sharper geometry, without touching application logic */
+:root {
+  --radius: 0px !important;
+  --radius-sm: 0px !important;
+  --radius-md: 0px !important;
+  --radius-lg: 0px !important;
+  --radius-xl: 0px !important;
+}
+:where(
+  .card, .panel, .modal, .modal-content, .dialog, .drawer,
+  .tile, .widget, .section, .section-card, .stat-card,
+  button, .btn, input, select, textarea, .form-control,
+  .tab, .tab-btn, .nav-item, .footer, .bottom-nav,
+  .ticker, .ticker-track, .ticker-item, .chip, .tag, .badge,
+  .dropdown, .dropdown-menu, .popover, .toast, .alert,
+  .table-wrap, .table-container, table, th, td,
+  .search-box, .search-input, .settings-item, .setting-card
+) {
+  border-radius: 0 !important;
+}
+:where(.card, .panel, .tile, .widget, .stat-card, .modal-content, .dialog) {
+  box-shadow: none !important;
+}
+:where(button, .btn, .tab, .tab-btn, .nav-item, .footer button, .bottom-nav button) {
+  border-radius: 0 !important;
+}
+:where(input, select, textarea, .form-control) {
+  border-radius: 0 !important;
+}
+</style>
+
+
+<style id="ui-style-presets">
+.ui-style-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:8px}
+.ui-style-option{display:grid;grid-template-columns:42px 1fr;grid-template-rows:auto auto;column-gap:10px;align-items:center;text-align:left;padding:10px!important;min-height:62px;border:1px solid var(--border)!important;background:var(--card)!important;color:var(--ink)!important;border-radius:0!important}
+.ui-style-option b{font-size:13px}.ui-style-option small{font-size:10.5px;color:var(--muted);grid-column:2}
+.ui-style-swatch{grid-row:1/3;width:42px;height:38px;border:1px solid rgba(0,0,0,.12);display:block;background:linear-gradient(90deg,#2563eb 0 35%,#f1f5f9 35% 100%);position:relative}
+.ui-style-swatch:after{content:"";position:absolute;left:6px;right:6px;bottom:6px;height:9px;background:#fff;border:1px solid #d1d5db}
+.ui-swatch-metro{background:linear-gradient(90deg,#2563eb 0 35%,#f1f5f9 35%)}.ui-swatch-fluent{border-radius:9px;background:linear-gradient(90deg,#6366f1 0 35%,#f8fafc 35%)}.ui-swatch-minimal{background:linear-gradient(90deg,#111827 0 25%,#fff 25%)}.ui-swatch-soft{border-radius:12px;background:linear-gradient(90deg,#0f766e 0 35%,#ecfdf5 35%)}.ui-swatch-dark{background:linear-gradient(90deg,#60a5fa 0 35%,#1f2937 35%)}
+.ui-style-option[aria-pressed="true"]{outline:2px solid var(--accent)!important;outline-offset:1px;border-color:var(--accent)!important}
+.ui-style-current{font-size:11px;color:var(--muted);margin-top:9px}
+:root[data-ui-style="fluent"]{--radius:12px!important;--radius-sm:8px!important;--radius-md:12px!important;--radius-lg:16px!important}
+:root[data-ui-style="fluent"] :where(.card,.panel,.modal,.modal-content,.dialog,.drawer,.tile,.widget,.section-card,.stat-card,button,.btn,input,select,textarea,.form-control,.bottom-nav){border-radius:12px!important}
+:root[data-ui-style="fluent"] :where(.card,.panel,.tile,.widget,.stat-card,.modal-content){box-shadow:0 5px 18px rgba(15,23,42,.08)!important}
+:root[data-ui-style="minimal"]{--bg:#ffffff;--card:#ffffff;--border:#e5e7eb;--subtle:#f8fafc;--radius:0px!important}
+:root[data-ui-style="minimal"] :where(.card,.panel,.tile,.widget,.stat-card){box-shadow:none!important;border-color:transparent!important;border-bottom:1px solid var(--border)!important}
+:root[data-ui-style="soft"]{--bg:#f1f5f9;--card:#ffffff;--subtle:#f8fafc;--radius:18px!important;--radius-sm:12px!important;--radius-md:16px!important;--radius-lg:20px!important}
+:root[data-ui-style="soft"] :where(.card,.panel,.modal,.modal-content,.dialog,.drawer,.tile,.widget,.section-card,.stat-card,button,.btn,input,select,textarea,.form-control,.bottom-nav){border-radius:16px!important}
+:root[data-ui-style="soft"] :where(.card,.panel,.tile,.widget,.stat-card){box-shadow:0 4px 16px rgba(15,23,42,.06)!important}
+:root[data-ui-style="dark"]{--bg:#111827;--card:#1f2937;--ink:#f3f4f6;--muted:#9ca3af;--border:#374151;--subtle:#273449;--accent-soft:rgba(96,165,250,.15);--green-soft:#123b2b;--red-soft:#451f28}
+:root[data-ui-style="dark"] body{background:var(--bg)!important;color:var(--ink)!important}
+:root[data-ui-style="dark"] :where(.card,.panel,.modal-content,.dialog,.drawer,.tile,.widget,.section-card,.stat-card,.metro-theme-panel,.bottom-nav,.dropdown-menu,.popover,.toast,.alert,.table-wrap,.table-container){background:var(--card)!important;color:var(--ink)!important;border-color:var(--border)!important;box-shadow:none!important}
+:root[data-ui-style="dark"] :where(input,select,textarea,.form-control,button,.btn){background-color:#263244;color:var(--ink);border-color:var(--border)}
+:root[data-ui-style="dark"] :where(th,td){border-color:var(--border)!important}
+@media(max-width:420px){.ui-style-grid{gap:7px}.ui-style-option{padding:8px!important;grid-template-columns:34px 1fr}.ui-style-swatch{width:34px;height:34px}}
+</style>
+
+
+<style id="nha-bap-metro-square-dark-contrast-fix">
+/* Metro: every interface surface is square, including nested and inline-styled controls */
+:root[data-ui-style="metro"],
+:root[data-ui-style="metro"] * ,
+:root[data-ui-style="metro"] *::before,
+:root[data-ui-style="metro"] *::after {
+  border-radius: 0 !important;
+}
+:root[data-ui-style="metro"] :where(.card,.panel,.modal,.modal-content,.dialog,.drawer,
+.tile,.widget,.section,.section-card,.stat-card,button,.btn,input,select,textarea,
+.form-control,.tab,.tab-btn,.nav-item,.footer,.bottom-nav,.ticker,.metro-ticker,
+.chip,.tag,.badge,.dropdown,.dropdown-menu,.popover,.toast,.alert,.table-wrap,
+.table-container,table,th,td,.search-box,.search-input,.settings-item,.setting-card) {
+  box-shadow: none !important;
+}
+/* Dark: high-contrast text and controls across legacy screens, inline styles and dialogs */
+:root[data-ui-style="dark"] {
+  --bg:#0B1220 !important;
+  --card:#172235 !important;
+  --ink:#F8FAFC !important;
+  --muted:#CBD5E1 !important;
+  --border:#475569 !important;
+  --subtle:#243247 !important;
+  --accent-soft:rgba(96,165,250,.22) !important;
+  --green:#4ADE80 !important;
+  --green-soft:#123D31 !important;
+  --red:#FDA4AF !important;
+  --red-soft:#4A2630 !important;
+  color-scheme:dark;
+}
+:root[data-ui-style="dark"] body,
+:root[data-ui-style="dark"] body :where(p,span,div,label,small,strong,b,em,i,
+h1,h2,h3,h4,h5,h6,li,td,th,caption,legend,summary,a,output) {
+  color:var(--ink) !important;
+}
+:root[data-ui-style="dark"] body :where(.muted,.text-muted,.hint,.help-text,
+.subtitle,.description,.card-subtitle,.form-text,.small-text,.secondary-text,
+.ui-style-current,.metro-theme-subtitle) {
+  color:#CBD5E1 !important;
+}
+:root[data-ui-style="dark"] :where(.card,.panel,.modal,.modal-content,.dialog,.drawer,
+.tile,.widget,.section-card,.stat-card,.metro-theme-panel,.bottom-nav,.dropdown,
+.dropdown-menu,.popover,.toast,.alert,.table-wrap,.table-container,.settings-item,
+.setting-card,.journal-bar,.backup-banner) {
+  background-color:var(--card) !important;
+  color:var(--ink) !important;
+  border-color:var(--border) !important;
+  box-shadow:none !important;
+}
+:root[data-ui-style="dark"] :where(input,select,textarea,.form-control) {
+  background:#0F1B2D !important;
+  color:#F8FAFC !important;
+  border-color:#64748B !important;
+  caret-color:#FFFFFF !important;
+}
+:root[data-ui-style="dark"] input::placeholder,
+:root[data-ui-style="dark"] textarea::placeholder {
+  color:#AEBBCD !important; opacity:1 !important;
+}
+:root[data-ui-style="dark"] select option {
+  background:#172235 !important; color:#F8FAFC !important;
+}
+:root[data-ui-style="dark"] :where(button,.btn,.btn-outline,.mini-btn,
+.nav-btn,.mode-btn,.tab-btn) {
+  color:#F8FAFC !important;
+  border-color:#64748B !important;
+}
+:root[data-ui-style="dark"] :where(.btn-submit,.btn-primary,.btn-success,
+button[type="submit"],.nav-btn.active) {
+  background:var(--accent) !important;
+  color:#FFFFFF !important;
+  border-color:var(--accent) !important;
+}
+:root[data-ui-style="dark"] :where(.btn-outline,.btn-secondary,.mini-btn) {
+  background:#26364D !important;
+  color:#F8FAFC !important;
+}
+:root[data-ui-style="dark"] :where(.bottom-nav,.bottom-nav .nav-btn) {
+  background:#172235 !important;
+}
+:root[data-ui-style="dark"] .nav-btn.active {
+  background:#244A78 !important; color:#FFFFFF !important;
+}
+:root[data-ui-style="dark"] :where(th,td) {
+  border-color:#475569 !important;
+}
+:root[data-ui-style="dark"] :where(.metro-ticker,.metro-theme-panel) {
+  background:#172235 !important; border-color:#64748B !important;
+}
+:root[data-ui-style="dark"] .metro-ticker-item { color:#F8FAFC !important; }
+:root[data-ui-style="dark"] .metro-ticker-item b { color:#93C5FD !important; }
+:root[data-ui-style="dark"] .metro-ticker-label { color:#FFFFFF !important; }
+:root[data-ui-style="dark"] :where(.text-success,.text-green,.positive,.income,
+.status-success,.badge-success) { color:#4ADE80 !important; }
+:root[data-ui-style="dark"] :where(.text-danger,.text-red,.negative,.expense,
+.status-danger,.badge-danger) { color:#FDA4AF !important; }
+:root[data-ui-style="dark"] :where(.text-warning,.warning,.status-warning) {
+  color:#FCD34D !important;
+}
+:root[data-ui-style="dark"] :where(a) { color:#93C5FD !important; }
+:root[data-ui-style="dark"] :where(:focus-visible) {
+  outline:2px solid #93C5FD !important; outline-offset:2px !important;
+}
+</style>
+
+
+<style id="nha-bap-dark-text-visibility-fix">
+/* Correct dark-theme contrast on POS product tiles */
+:root[data-ui-style="dark"] .pos-item {
+  background:#243247 !important;
+  border-color:#64748B !important;
+  color:#F8FAFC !important;
+}
+:root[data-ui-style="dark"] .pos-item :where(.pos-item-name,.pos-price,.pos-item-top,
+.pos-item-bottom,span,div,strong,b) {
+  color:#F8FAFC !important;
+}
+:root[data-ui-style="dark"] .pos-item.selected {
+  background:#173B61 !important;
+  border-color:#60A5FA !important;
+}
+:root[data-ui-style="dark"] .pos-item.selected :where(.pos-item-name,.pos-price,span,div,strong,b) {
+  color:#FFFFFF !important;
+}
+:root[data-ui-style="dark"] .pos-item .qty-stepper,
+:root[data-ui-style="dark"] .pos-item .qty-stepper :where(button,span,b,strong) {
+  background:#172235 !important;
+  color:#FFFFFF !important;
+  border-color:#64748B !important;
+}
+/* Receipt / bank-transfer upload panel: avoid white text on pale-yellow background */
+:root[data-ui-style="dark"] #ocr-entry-bar {
+  background:#243247 !important;
+  border-color:#64748B !important;
+  color:#F8FAFC !important;
+}
+:root[data-ui-style="dark"] #ocr-entry-bar :where(span,div,label,strong,b) {
+  color:#F8FAFC !important;
+}
+:root[data-ui-style="dark"] #ocr-entry-bar #ocr-bar-badge {
+  color:#CBD5E1 !important;
+}
+:root[data-ui-style="dark"] #ocr-entry-bar [data-action="ocr-trigger-gallery"] {
+  background:#26364D !important;
+  color:#FFFFFF !important;
+  border-color:#64748B !important;
+}
+/* Keep the universal dark text rule from washing out content on intentionally light surfaces */
+:root[data-ui-style="dark"] :where(.pos-item,.pos-item *,#ocr-entry-bar,#ocr-entry-bar *) {
+  text-shadow:none !important;
+}
+/* Improve muted text without making it disappear */
+:root[data-ui-style="dark"] :where(.pos-price,.pos-item small,.pos-item .muted) {
+  color:#DCE6F2 !important;
+}
+</style>
+
+
+<style id="nha-bap-settings-compact-layout-fixed">
+#view-settings .settings-compact-group{display:block;margin:0 0 10px;padding:12px;background:var(--card,#fff);border:1px solid var(--border,#d8e0ea);border-radius:var(--radius,12px);box-shadow:none}
+#view-settings .settings-compact-heading{display:flex;align-items:center;gap:8px;margin:0 0 8px;color:var(--ink,#1f2937);font-size:15px;font-weight:800}
+#view-settings #appearance-settings-group .metro-theme-panel{margin:0;padding:9px 0;border:0;border-top:1px solid var(--border,#d8e0ea);border-radius:0;background:transparent;box-shadow:none}
+#view-settings #appearance-settings-group .metro-theme-panel:first-of-type{border-top:0;padding-top:0}
+#view-settings #appearance-settings-group .metro-theme-title{font-size:13.5px;margin-bottom:4px}
+#view-settings #appearance-settings-group .metro-theme-subtitle{font-size:11.5px;line-height:1.4;margin-bottom:8px}
+#view-settings #appearance-settings-group .ui-style-grid{gap:7px;grid-template-columns:repeat(2,minmax(0,1fr))}
+#view-settings #appearance-settings-group .ui-style-option{min-height:54px;padding:7px;gap:7px}
+#view-settings #appearance-settings-group .ui-style-option small{font-size:10.5px}
+#view-settings #appearance-settings-group .ui-style-current{margin-top:7px;font-size:11.5px}
+#view-settings .settings-compact-rows{display:flex;flex-direction:column;gap:0}
+#view-settings #assistant-settings-group .journal-bar{width:100%;min-height:58px;margin:0!important;padding:9px 2px;border:0!important;border-top:1px solid var(--border,#d8e0ea)!important;border-radius:0;background:transparent;box-shadow:none}
+#view-settings #assistant-settings-group .journal-bar:first-child{border-top:0!important}
+#view-settings #assistant-settings-group .journal-bar>div>div:first-child{font-size:13.5px!important}
+#view-settings #assistant-settings-group .journal-bar>div>div:nth-child(2){font-size:11.5px!important;line-height:1.35}
+:root[data-ui-style="metro"] #view-settings .settings-compact-group,:root[data-ui-style="metro"] #view-settings .settings-compact-group *{border-radius:0!important}
+:root[data-ui-style="dark"] #view-settings .settings-compact-group{background:#172235!important;border-color:#475569!important;color:#F8FAFC!important}
+:root[data-ui-style="dark"] #view-settings .settings-compact-heading{color:#F8FAFC!important}
+:root[data-ui-style="dark"] #view-settings .settings-compact-group .metro-theme-subtitle,:root[data-ui-style="dark"] #view-settings .settings-compact-group small{color:#CBD5E1!important}
+</style>
+
 </head>
 <body>
 
   <main class="container" style="padding-top: 14px;">
+      <div id="metro-business-ticker" class="metro-ticker" role="region" aria-label="Tóm tắt hoạt động kinh doanh">
+        <div class="metro-ticker-label">NHÀ BẮP</div>
+        <div class="metro-ticker-window"><div class="metro-ticker-track" id="metro-ticker-track">
+          <span class="metro-ticker-item">Đang tải dữ liệu hoạt động…</span><span class="metro-ticker-item">Đang tải dữ liệu hoạt động…</span>
+        </div></div>
+      </div>
+
 
     <!-- TAB 0: BÁN HÀNG NHANH -->
     <section id="view-pos" class="view active">
@@ -1963,7 +2278,35 @@
     <!-- TAB 5: CÀI ĐẶT SAO LƯU & ĐẦU MỤC / MẶT HÀNG -->
     <section id="view-settings" class="view">
       <div id="backup-banner-settings"></div>
-
+      <div class="settings-compact-group" id="appearance-settings-group">
+        <div class="settings-compact-heading">🎨 Giao diện & Màu sắc</div>
+      <div class="metro-theme-panel" id="metro-theme-settings">
+        <div class="metro-theme-title">Màu chủ đạo ứng dụng</div>
+        <div class="metro-theme-subtitle">Tùy chỉnh màu nhấn cho nút, trạng thái đang chọn và các điểm nổi bật. Lựa chọn được lưu trên thiết bị.</div>
+        <div class="metro-theme-controls">
+          <input class="metro-color-input" type="color" id="metro-accent-picker" value="#2563eb" aria-label="Chọn màu chủ đạo">
+          <button type="button" class="metro-preset" data-metro-color="#2563EB" style="background:#2563EB" aria-label="Xanh dương" aria-pressed="true"></button>
+          <button type="button" class="metro-preset" data-metro-color="#0F766E" style="background:#0F766E" aria-label="Xanh ngọc" aria-pressed="false"></button>
+          <button type="button" class="metro-preset" data-metro-color="#7C3AED" style="background:#7C3AED" aria-label="Tím" aria-pressed="false"></button>
+          <button type="button" class="metro-preset" data-metro-color="#DB5A2B" style="background:#DB5A2B" aria-label="Cam" aria-pressed="false"></button>
+          <button type="button" class="metro-preset" data-metro-color="#BE3455" style="background:#BE3455" aria-label="Đỏ hồng" aria-pressed="false"></button>
+          <button type="button" class="metro-preset" data-metro-color="#374151" style="background:#374151" aria-label="Than chì" aria-pressed="false"></button>
+          <button type="button" class="btn-outline" id="metro-theme-reset" style="min-height:34px;padding:5px 10px;font-size:12px;">Mặc định</button>
+        </div>
+      </div>
+      <div class="metro-theme-panel" id="ui-style-settings">
+        <div class="metro-theme-title">Phong cách giao diện</div>
+        <div class="metro-theme-subtitle">Chọn kiểu hiển thị tổng thể. Phong cách được lưu riêng trên thiết bị và không ảnh hưởng dữ liệu hay nghiệp vụ.</div>
+        <div class="ui-style-grid" role="group" aria-label="Chọn phong cách giao diện">
+          <button type="button" class="ui-style-option" data-ui-style-choice="metro"><span class="ui-style-swatch ui-swatch-metro"></span><b>Metro</b><small>Vuông vức · phẳng</small></button>
+          <button type="button" class="ui-style-option" data-ui-style-choice="fluent"><span class="ui-style-swatch ui-swatch-fluent"></span><b>Fluent</b><small>Hiện đại · mềm mại</small></button>
+          <button type="button" class="ui-style-option" data-ui-style-choice="minimal"><span class="ui-style-swatch ui-swatch-minimal"></span><b>Minimal</b><small>Tối giản · thoáng</small></button>
+          <button type="button" class="ui-style-option" data-ui-style-choice="soft"><span class="ui-style-swatch ui-swatch-soft"></span><b>Soft</b><small>Bo góc · nhẹ nhàng</small></button>
+          <button type="button" class="ui-style-option" data-ui-style-choice="dark"><span class="ui-style-swatch ui-swatch-dark"></span><b>Dark</b><small>Nền tối · dịu mắt</small></button>
+        </div>
+        <div class="ui-style-current" id="ui-style-current" aria-live="polite">Đang sử dụng: Metro</div>
+      </div>
+      </div>
       <button type="button" class="journal-bar" id="btn-open-backup-settings">
         <div style="display:flex; align-items:center; gap:10px; min-width:0;">
           <span style="width:38px; height:38px; flex-shrink:0; border-radius:10px; background:var(--green-soft); color:var(--green); display:inline-flex; align-items:center; justify-content:center;">
@@ -1980,7 +2323,10 @@
         </div>
       </button>
 
-      <label class="journal-bar" style="cursor:pointer; margin-bottom:10px;">
+            <div class="settings-compact-group" id="assistant-settings-group">
+        <div class="settings-compact-heading">✨ Trợ lý & Tương tác</div>
+        <div class="settings-compact-rows">
+<label class="journal-bar" style="cursor:pointer; margin-bottom:10px;">
         <div style="text-align:left; min-width:0;">
           <div style="font-weight:700; font-size:14.5px;">✨ Bong bóng chat AI</div>
           <div style="font-size:12px; color:var(--muted);">Hiện nút nổi để ra lệnh AI cho mọi tác vụ trong app</div>
@@ -2002,6 +2348,8 @@
         </div>
         <span class="switch-wrap"><input type="checkbox" id="visual-assistant-toggle" disabled /><span class="switch-slider"></span></span>
       </label>
+        </div>
+      </div>
 
       <input type="file" id="input-restore-file" accept=".json,application/json" style="display:none;" />
 
@@ -2064,7 +2412,7 @@
           </div>
         </div>
         <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-          <span id="app-version-badge" style="background:var(--accent-soft); color:var(--accent); padding:4px 9px; border-radius:999px; font-size:11.5px; font-weight:800;">v8.14</span>
+          <span id="app-version-badge" style="background:var(--accent-soft); color:var(--accent); padding:4px 9px; border-radius:999px; font-size:11.5px; font-weight:800;">v8.15</span>
           <span style="color:var(--muted); font-size:18px; font-weight:700;">›</span>
         </div>
       </button>
@@ -2514,7 +2862,7 @@
         toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
       }
       // QUẢN LÝ PHIÊN BẢN VÀ NHẬT KÝ CẬP NHẬT DỮ LIỆU
-      const APP_VERSION = "8.14";
+      const APP_VERSION = "8.15";
       const DATA_UPDATE_HISTORY_KEY = "nha_bap_data_update_history_v1";
       function readDataUpdateHistory() {
         try { const v = JSON.parse(localStorage.getItem(DATA_UPDATE_HISTORY_KEY) || "[]"); return Array.isArray(v) ? v : []; }
@@ -2551,6 +2899,7 @@
       }
 
       const APP_CHANGELOG = [
+        {v:"8.15", title:"Metro Flat – tùy biến giao diện và ticker kinh doanh", changes:["Bổ sung 5 phong cách giao diện: Metro, Fluent, Minimal, Soft và Dark; lựa chọn được lưu riêng trên thiết bị.","Làm mới giao diện theo phong cách Metro Flat, phẳng, vuông vức và đồng bộ màu sắc.","Bổ sung tùy chỉnh màu chủ đạo trong Cài đặt; lựa chọn được lưu riêng trên thiết bị.","Thêm ticker marquee phía trên ứng dụng để cập nhật nhanh doanh thu, chi phí, chênh lệch thu – chi và số giao dịch trong ngày.","Tăng kích thước thanh điều hướng dưới, đồng bộ nét vẽ và kích thước icon.","Giữ nguyên các thuật toán, nghiệp vụ, cấu trúc dữ liệu và chức năng hiện có."]},
         {v:"8.14", title:"Điều chỉnh đúng cơ chế nút cập nhật trong cửa sổ phiên bản", changes:["Nút Cập nhật phiên bản ở màn hình chính mở cửa sổ thông tin phiên bản và lịch sử thay đổi.","Nút Cập nhật ngay bên trong cửa sổ sẽ tải lại trang tương tự thao tác F5."]},
         {v:"8.13", title:"Bản thử nghiệm tải lại trang", changes:["Điều chỉnh cơ chế tải lại trang; phiên bản 8.14 hoàn thiện lại vị trí thao tác theo yêu cầu."]},
         {v:"8.12", title:"Sửa lỗi tràn ô ngày tháng trên iPhone", changes:["Khống chế chiều rộng và min-width của các ô ngày trong tab Đối soát, bao gồm ngày đối soát, ngày bắt đầu sổ quỹ và ngày chuyển tiền.","Điều chỉnh các phần tử cha và bộ chọn ngày của Safari iOS để tránh tràn khỏi thẻ giao diện.","Giữ nguyên bộ chọn ngày mặc định và toàn bộ chức năng nghiệp vụ hiện có."]},
@@ -3027,6 +3376,7 @@
 
       function saveRecords(skipAutoBackup) {
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(records)); } catch (e) {}
+        if (typeof updateMetroTicker === "function") updateMetroTicker();
         if (!skipAutoBackup && autoBackupEnabled) performBackup(true);
       }
 
@@ -12840,7 +13190,81 @@
 
       applyChatBubbleSetting();
 
+
+      // ===================== METRO FLAT UI (v8.15) =====================
+      const METRO_THEME_KEY = "nha_bap_metro_accent_v1";
+      const METRO_DEFAULT_ACCENT = "#2563EB";
+      function metroHexToRgb(hex) {
+        const m = /^#?([0-9a-f]{6})$/i.exec(String(hex || ""));
+        if (!m) return "37,99,235";
+        const n = parseInt(m[1], 16);
+        return `${(n >> 16) & 255},${(n >> 8) & 255},${n & 255}`;
+      }
+      function applyMetroAccent(color, persist) {
+        const safe = /^#[0-9a-f]{6}$/i.test(String(color || "")) ? String(color).toUpperCase() : METRO_DEFAULT_ACCENT;
+        const root = document.documentElement;
+        root.style.setProperty("--accent", safe);
+        root.style.setProperty("--metro-accent", safe);
+        root.style.setProperty("--metro-accent-rgb", metroHexToRgb(safe));
+        // Accent-soft is a neutral-tinted blend, not a fixed brand color.
+        root.style.setProperty("--accent-soft", `color-mix(in srgb, ${safe} 11%, white)`);
+        const picker = document.getElementById("metro-accent-picker");
+        if (picker && picker.value.toUpperCase() !== safe) picker.value = safe;
+        document.querySelectorAll(".metro-preset").forEach(btn => btn.setAttribute("aria-pressed", String((btn.dataset.metroColor || "").toUpperCase() === safe)));
+        if (persist) { try { localStorage.setItem(METRO_THEME_KEY, safe); } catch (e) {} }
+      }
+      const UI_STYLE_KEY = "nha_bap_ui_style_v1";
+      const UI_STYLE_NAMES = { metro:"Metro", fluent:"Fluent", minimal:"Minimal", soft:"Soft", dark:"Dark" };
+      function applyUiStyle(style, persist) {
+        const safe = Object.prototype.hasOwnProperty.call(UI_STYLE_NAMES, style) ? style : "metro";
+        document.documentElement.setAttribute("data-ui-style", safe);
+        document.querySelectorAll("[data-ui-style-choice]").forEach(btn => btn.setAttribute("aria-pressed", String(btn.dataset.uiStyleChoice === safe)));
+        const label = document.getElementById("ui-style-current");
+        if (label) label.textContent = "Đang sử dụng: " + UI_STYLE_NAMES[safe];
+        if (persist) { try { localStorage.setItem(UI_STYLE_KEY, safe); } catch (e) {} }
+      }
+      function initUiStyle() {
+        let saved = "metro";
+        try { saved = localStorage.getItem(UI_STYLE_KEY) || "metro"; } catch (e) {}
+        applyUiStyle(saved, false);
+        document.querySelectorAll("[data-ui-style-choice]").forEach(btn => btn.addEventListener("click", () => applyUiStyle(btn.dataset.uiStyleChoice, true)));
+      }
+      function initMetroTheme() {
+        initUiStyle();
+        let saved = METRO_DEFAULT_ACCENT;
+        try { saved = localStorage.getItem(METRO_THEME_KEY) || METRO_DEFAULT_ACCENT; } catch (e) {}
+        applyMetroAccent(saved, false);
+        const picker = document.getElementById("metro-accent-picker");
+        if (picker) picker.addEventListener("input", () => applyMetroAccent(picker.value, true));
+        document.querySelectorAll(".metro-preset").forEach(btn => btn.addEventListener("click", () => applyMetroAccent(btn.dataset.metroColor, true)));
+        const reset = document.getElementById("metro-theme-reset");
+        if (reset) reset.addEventListener("click", () => applyMetroAccent(METRO_DEFAULT_ACCENT, true));
+      }
+      function updateMetroTicker() {
+        const track = document.getElementById("metro-ticker-track");
+        if (!track || !Array.isArray(records)) return;
+        const todayRows = records.filter(r => r && r.date === TODAY);
+        const income = todayRows.filter(r => r.type === "thu").reduce((n,r) => n + (Number(r.amount) || 0), 0);
+        const expense = todayRows.filter(r => r.type === "chi").reduce((n,r) => n + (Number(r.amount) || 0), 0);
+        const profit = income - expense;
+        const incomeCount = todayRows.filter(r => r.type === "thu").length;
+        const expenseCount = todayRows.filter(r => r.type === "chi").length;
+        const days = [...new Set(records.filter(r => r && r.date).map(r => r.date))].length;
+        const money = n => formatMoney(n);
+        const messages = [
+          `<span class="metro-ticker-item"><i class="metro-ticker-dot"></i> Doanh thu hôm nay <b>${money(income)}</b></span>`,
+          `<span class="metro-ticker-item"><i class="metro-ticker-dot"></i> Chi phí hôm nay <b>${money(expense)}</b></span>`,
+          `<span class="metro-ticker-item"><i class="metro-ticker-dot"></i> Chênh lệch thu – chi <b>${money(profit)}</b></span>`,
+          `<span class="metro-ticker-item"><i class="metro-ticker-dot"></i> Giao dịch hôm nay <b>${incomeCount} thu · ${expenseCount} chi</b></span>`,
+          `<span class="metro-ticker-item"><i class="metro-ticker-dot"></i> Dữ liệu đang ghi nhận <b>${records.length} giao dịch · ${days} ngày</b></span>`
+        ];
+        const line = messages.join("");
+        track.innerHTML = line + line;
+      }
+      initMetroTheme();
+
       function renderAll() {
+        updateMetroTicker();
         renderJournalPreview();
         renderReport();
         renderAnalysis();
