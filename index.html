@@ -2255,11 +2255,11 @@ button[type="submit"],.nav-btn.active) {
       <!-- Thiết lập sổ quỹ và chuyển tiền nội bộ được đặt cuối tab để ưu tiên thao tác đối soát. -->
       <div class="card" style="border:1px solid var(--accent);">
         <div class="card-title"><span>⚙️ Thiết lập sổ quỹ</span><span style="font-size:11px;color:var(--muted);">Không ảnh hưởng doanh thu/lợi nhuận</span></div>
-        <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px;line-height:1.45;">Khai báo số dư thực tế tiền mặt và ngân hàng tại ngày bắt đầu theo dõi. Hai số dư này sẽ GHI ĐÈ số TK/TM cũ làm mốc đầu kỳ; chỉ các giao dịch từ ngày này trở đi mới được cộng/trừ tiếp. Dữ liệu trước ngày bắt đầu không được cộng chồng vào số dư mới.</div>
-        <div class="form-group"><label for="fund-start-date">Ngày bắt đầu theo dõi</label><input type="date" id="fund-start-date" /></div>
-        <div class="form-group"><label for="fund-opening-tm">Số dư tiền mặt đầu kỳ (đ)</label><input type="number" id="fund-opening-tm" min="0" step="1000" inputmode="numeric" /></div>
-        <div class="form-group"><label for="fund-opening-tk">Số dư ngân hàng đầu kỳ (đ)</label><input type="number" id="fund-opening-tk" min="0" step="1000" inputmode="numeric" /></div>
-        <button type="button" class="btn-submit" id="btn-fund-save-opening">Lưu số dư đầu kỳ</button>
+        <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px;line-height:1.45;">Khai báo số dư thực tế tiền mặt và ngân hàng CHỐT TẠI ngày đã chọn. Hai số dư này GHI ĐÈ hoàn toàn số TK/TM đang tính tại ngày đó. Giao dịch thu/chi, chuyển tiền và điều chỉnh trong ngày chốt hoặc trước đó không cộng/trừ lại vào số dư; chỉ giao dịch từ ngày tiếp theo mới được tính tiếp. Không tạo doanh thu hoặc chi phí.</div>
+        <div class="form-group"><label for="fund-start-date">Ngày chốt số dư thực tế</label><input type="date" id="fund-start-date" /></div>
+        <div class="form-group"><label for="fund-opening-tm">Số dư tiền mặt tại ngày chốt (đ)</label><input type="number" id="fund-opening-tm" min="0" step="1000" inputmode="numeric" /></div>
+        <div class="form-group"><label for="fund-opening-tk">Số dư ngân hàng tại ngày chốt (đ)</label><input type="number" id="fund-opening-tk" min="0" step="1000" inputmode="numeric" /></div>
+        <button type="button" class="btn-submit" id="btn-fund-save-opening">Ghi đè số dư TK/TM</button>
       </div>
       <div class="card">
         <div class="card-title"><span>🔁 Chuyển tiền nội bộ</span></div>
@@ -2863,7 +2863,7 @@ button[type="submit"],.nav-btn.active) {
         toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
       }
       // QUẢN LÝ PHIÊN BẢN VÀ NHẬT KÝ CẬP NHẬT DỮ LIỆU
-      const APP_VERSION = "8.17";
+      const APP_VERSION = "8.21";
       const DATA_UPDATE_HISTORY_KEY = "nha_bap_data_update_history_v1";
       function readDataUpdateHistory() {
         try { const v = JSON.parse(localStorage.getItem(DATA_UPDATE_HISTORY_KEY) || "[]"); return Array.isArray(v) ? v : []; }
@@ -2900,6 +2900,9 @@ button[type="submit"],.nav-btn.active) {
       }
 
       const APP_CHANGELOG = [
+        {v:"8.21", title:"Sửa ghi đè số dư sổ quỹ theo ngày chốt", changes:["Thiết lập sổ quỹ được xác định là số dư thực tế chốt tại ngày đã chọn, ghi đè TK/TM tại ngày đó.","Không cộng/trừ lại thu chi, chuyển nội bộ hoặc điều chỉnh trong ngày chốt và các ngày trước đó; chỉ tính phát sinh từ ngày kế tiếp.","Giữ nguyên doanh thu, chi phí và lợi nhuận lịch sử; thao tác thiết lập số dư không tạo giao dịch thu/chi."]},
+        {v:"8.20", title:"Thiết lập sổ quỹ ghi đè số dư TK/TM", changes:["Bổ sung cơ chế xác nhận khi lưu số dư đầu kỳ trong Thiết lập sổ quỹ.","Số dư tiền mặt và ngân hàng được dùng làm số dư gốc thay thế số dư TK/TM cũ, không cộng dồn với giá trị trước đó.","Việc khai báo số dư không tạo giao dịch thu/chi và không làm thay đổi doanh thu, chi phí hoặc lợi nhuận."]},
+        {v:"8.19", title:"Đối soát cập nhật số dư thực tế vào TK/TM", changes:["Sau khi xác nhận đối soát, số tiền thực tế của từng tài khoản được ghi nhận làm số dư TK/TM tương ứng.","Số dư thực tế thay thế số dư trên sổ tại mốc đối soát; không cộng chồng khoản chênh lệch vào số dư cũ.","Phân biệt cập nhật số dư quỹ với bút toán điều chỉnh doanh thu/chi phí phục vụ báo cáo lợi nhuận."]},
         {v:"8.18", title:"Chỉnh sửa và xóa lịch sử sổ quỹ", changes:["Bổ sung thao tác chỉnh sửa và xóa cho từng giao dịch chuyển tiền nội bộ và điều chỉnh quỹ trong Lịch sử sổ quỹ riêng.","Mọi thao tác đều yêu cầu xác nhận; sau khi lưu sẽ tính lại số dư quỹ và làm mới màn hình đối soát.","Ghi nhật ký cập nhật dữ liệu; không biến chuyển tiền nội bộ hoặc điều chỉnh quỹ thành doanh thu/chi phí." ]},
         {v:"8.17", title:"Đối soát cập nhật lợi nhuận", changes:["Sau xác nhận đối soát, chênh lệch dương được ghi nhận vào doanh thu ngày và lợi nhuận gộp.","Chênh lệch âm được ghi nhận vào chi phí ngày và làm giảm lợi nhuận gộp.","Sổ quỹ tiền mặt/ngân hàng vẫn được cập nhật riêng; các dòng điều chỉnh báo cáo không làm trùng dòng tiền.","Áp dụng thống nhất cho đối soát tại tab Đối soát và lệnh điều chỉnh qua Chatbox AI."]},
         {v:"8.15", title:"Metro Flat – tùy biến giao diện và ticker kinh doanh", changes:["Bổ sung 5 phong cách giao diện: Metro, Fluent, Minimal, Soft và Dark; lựa chọn được lưu riêng trên thiết bị.","Làm mới giao diện theo phong cách Metro Flat, phẳng, vuông vức và đồng bộ màu sắc.","Bổ sung tùy chỉnh màu chủ đạo trong Cài đặt; lựa chọn được lưu riêng trên thiết bị.","Thêm ticker marquee phía trên ứng dụng để cập nhật nhanh doanh thu, chi phí, chênh lệch thu – chi và số giao dịch trong ngày.","Tăng kích thước thanh điều hướng dưới, đồng bộ nét vẽ và kích thước icon.","Giữ nguyên các thuật toán, nghiệp vụ, cấu trúc dữ liệu và chức năng hiện có."]},
@@ -6088,9 +6091,9 @@ button[type="submit"],.nav-btn.active) {
         const openingTm = Number(document.getElementById("fund-opening-tm").value);
         const openingTk = Number(document.getElementById("fund-opening-tk").value);
         if (!startDate || !Number.isFinite(openingTm) || !Number.isFinite(openingTk) || openingTm < 0 || openingTk < 0) { showToast("Vui lòng nhập ngày và số dư đầu kỳ hợp lệ."); return; }
-        if (!confirm(`XÁC NHẬN GHI ĐÈ SỐ DƯ SỔ QUỸ TỪ ${formatVNDate(startDate)}?\n\nTiền mặt (TM): ${formatMoney(openingTm)}\nNgân hàng (TK): ${formatMoney(openingTk)}\n\nHai số tiền trên sẽ thay thế số dư TK/TM cũ tại ngày bắt đầu. Các giao dịch từ ngày này trở đi vẫn được cộng/trừ bình thường. Giao dịch trước ngày này không được tính vào số dư mới. Thao tác này không tạo doanh thu hoặc chi phí.`)) return;
+        if (!confirm(`XÁC NHẬN GHI ĐÈ SỐ DƯ SỔ QUỸ TẠI NGÀY ${formatVNDate(startDate)}?\n\nTiền mặt (TM): ${formatMoney(openingTm)}\nNgân hàng (TK): ${formatMoney(openingTk)}\n\nHai số tiền trên sẽ là số dư chốt chính xác của TK/TM tại ngày đã chọn. Không cộng/trừ lại giao dịch trong ngày chốt hoặc các ngày trước đó. Chỉ giao dịch từ ngày tiếp theo mới được cộng/trừ. Thao tác này không tạo doanh thu hoặc chi phí.`)) return;
         fundSettings = { startDate, openingTm, openingTk, updatedAt:new Date().toISOString() };
-        saveFundSettings(); renderFundSettings(); renderReconcileBook(); renderReport(); renderFundLedgerHistory(); showToast("Đã ghi đè số dư đầu kỳ TK/TM và cập nhật báo cáo.");
+        saveFundSettings(); renderFundSettings(); renderReconcileBook(); renderReport(); renderFundLedgerHistory(); showToast("Đã ghi đè số dư TK/TM tại ngày chốt và cập nhật báo cáo.");
       });
       document.getElementById("btn-fund-transfer").addEventListener("click", () => {
         const date = document.getElementById("fund-transfer-date").value || TODAY;
@@ -6143,7 +6146,9 @@ button[type="submit"],.nav-btn.active) {
             runningTm = Math.max(0, Number(fundSettings.openingTm) || 0);
             runningTk = Math.max(0, Number(fundSettings.openingTk) || 0);
           }
-          if (dIso >= startDate) {
+          // startDate là ngày CHỐT số dư thực tế (cuối ngày), không phải số dư trước giao dịch.
+          // Vì vậy bỏ qua mọi dòng tiền trong ngày chốt; chỉ tính phát sinh từ ngày kế tiếp.
+          if (dIso > startDate) {
             runningTk += dThuTk - dChiTk;
             runningTm += dThuTm;
             if (dChiTm > 0) {
@@ -6176,7 +6181,7 @@ button[type="submit"],.nav-btn.active) {
         if (dateIso < startDate) return { bookTm: 0, bookTk: 0, bookTotal: 0, startDate };
         let bookTm = Math.max(0, Number(fundSettings.openingTm) || 0);
         let bookTk = Math.max(0, Number(fundSettings.openingTk) || 0);
-        const relevant = sourceRecords.filter(r => r.date && r.date >= startDate && r.date <= dateIso).slice().sort((a,b) => String(a.date).localeCompare(String(b.date)));
+        const relevant = sourceRecords.filter(r => r.date && r.date > startDate && r.date <= dateIso).slice().sort((a,b) => String(a.date).localeCompare(String(b.date)));
         relevant.forEach(r => {
           if (r.reconcilePnlOnly) return;
           const amount = Number(r.amount) || 0;
@@ -6192,12 +6197,12 @@ button[type="submit"],.nav-btn.active) {
             }
           }
         });
-        fundTransfers.filter(t => t.date >= startDate && t.date <= dateIso).forEach(t => {
+        fundTransfers.filter(t => t.date > startDate && t.date <= dateIso).forEach(t => {
           const amount = Number(t.amount) || 0;
           if (t.from === "tm") { bookTm -= amount; bookTk += amount; }
           else { bookTk -= amount; bookTm += amount; }
         });
-        fundAdjustments.filter(a => a.date >= startDate && a.date <= dateIso)
+        fundAdjustments.filter(a => a.date > startDate && a.date <= dateIso)
           .slice().sort((a,b) => String(a.date).localeCompare(String(b.date)) || String(a.createdAt || "").localeCompare(String(b.createdAt || "")))
           .forEach(a => {
             const delta = Number(a.delta) || 0;
