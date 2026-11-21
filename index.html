@@ -1702,6 +1702,7 @@ button[type="submit"],.nav-btn.active) {
           <div class="chips" id="report-period">
             <button type="button" class="chip active" data-p="all">Tất cả thời gian</button>
             <button type="button" class="chip" data-p="month">Tháng này</button>
+            <button type="button" class="chip" data-p="week">Tuần này</button>
             <button type="button" class="chip" data-p="today">Hôm nay</button>
           </div>
           <div class="chips" id="report-day-tabs" style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border);"></div>
@@ -2862,7 +2863,7 @@ button[type="submit"],.nav-btn.active) {
         toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
       }
       // QUẢN LÝ PHIÊN BẢN VÀ NHẬT KÝ CẬP NHẬT DỮ LIỆU
-      const APP_VERSION = "8.15";
+      const APP_VERSION = "8.17";
       const DATA_UPDATE_HISTORY_KEY = "nha_bap_data_update_history_v1";
       function readDataUpdateHistory() {
         try { const v = JSON.parse(localStorage.getItem(DATA_UPDATE_HISTORY_KEY) || "[]"); return Array.isArray(v) ? v : []; }
@@ -2899,6 +2900,8 @@ button[type="submit"],.nav-btn.active) {
       }
 
       const APP_CHANGELOG = [
+        {v:"8.18", title:"Chỉnh sửa và xóa lịch sử sổ quỹ", changes:["Bổ sung thao tác chỉnh sửa và xóa cho từng giao dịch chuyển tiền nội bộ và điều chỉnh quỹ trong Lịch sử sổ quỹ riêng.","Mọi thao tác đều yêu cầu xác nhận; sau khi lưu sẽ tính lại số dư quỹ và làm mới màn hình đối soát.","Ghi nhật ký cập nhật dữ liệu; không biến chuyển tiền nội bộ hoặc điều chỉnh quỹ thành doanh thu/chi phí." ]},
+        {v:"8.17", title:"Đối soát cập nhật lợi nhuận", changes:["Sau xác nhận đối soát, chênh lệch dương được ghi nhận vào doanh thu ngày và lợi nhuận gộp.","Chênh lệch âm được ghi nhận vào chi phí ngày và làm giảm lợi nhuận gộp.","Sổ quỹ tiền mặt/ngân hàng vẫn được cập nhật riêng; các dòng điều chỉnh báo cáo không làm trùng dòng tiền.","Áp dụng thống nhất cho đối soát tại tab Đối soát và lệnh điều chỉnh qua Chatbox AI."]},
         {v:"8.15", title:"Metro Flat – tùy biến giao diện và ticker kinh doanh", changes:["Bổ sung 5 phong cách giao diện: Metro, Fluent, Minimal, Soft và Dark; lựa chọn được lưu riêng trên thiết bị.","Làm mới giao diện theo phong cách Metro Flat, phẳng, vuông vức và đồng bộ màu sắc.","Bổ sung tùy chỉnh màu chủ đạo trong Cài đặt; lựa chọn được lưu riêng trên thiết bị.","Thêm ticker marquee phía trên ứng dụng để cập nhật nhanh doanh thu, chi phí, chênh lệch thu – chi và số giao dịch trong ngày.","Tăng kích thước thanh điều hướng dưới, đồng bộ nét vẽ và kích thước icon.","Giữ nguyên các thuật toán, nghiệp vụ, cấu trúc dữ liệu và chức năng hiện có."]},
         {v:"8.14", title:"Điều chỉnh đúng cơ chế nút cập nhật trong cửa sổ phiên bản", changes:["Nút Cập nhật phiên bản ở màn hình chính mở cửa sổ thông tin phiên bản và lịch sử thay đổi.","Nút Cập nhật ngay bên trong cửa sổ sẽ tải lại trang tương tự thao tác F5."]},
         {v:"8.13", title:"Bản thử nghiệm tải lại trang", changes:["Điều chỉnh cơ chế tải lại trang; phiên bản 8.14 hoàn thiện lại vị trí thao tác theo yêu cầu."]},
@@ -4194,16 +4197,8 @@ button[type="submit"],.nav-btn.active) {
         // Chuỗi dự phòng theo danh sách model Gemini general-use đang được Google công bố.
         // Một số model Gemini 4 có thể yêu cầu gói thanh toán/quyền truy cập phù hợp;
         // nếu API key không có quyền, ứng dụng tiếp tục thử model kế tiếp.
-        return Array.from(new Set([
-          primaryModel,
-          "gemini-3.8-flash",
-          "gemini-4-hydrogen",
-          "gemini-4-carbon",
-          "gemini-4-argon",
-          "gemini-3.6-flash",
-          "gemini-3.5-flash-lite",
-          "gemini-3.1-flash-lite"
-        ].filter(Boolean)));
+        // Ưu tiên tốc độ: chỉ thử model chính và một model Flash dự phòng đã cấu hình.
+        return Array.from(new Set([primaryModel, "gemini-3.8-flash"].filter(Boolean)));
       }
 
       async function callGeminiSmartRequest(parts, options) {
@@ -4257,9 +4252,6 @@ button[type="submit"],.nav-btn.active) {
                  lowerErr.includes("does not have access") || lowerErr.includes("permission"));
               if ([400, 404, 429, 500, 502, 503, 504].includes(res.status) || modelAccessIssue) {
                 lastErr = new Error(`API (${res.status}) trên ${step.model}`);
-                if (res.status === 503 || res.status === 429) {
-                  await new Promise(r => setTimeout(r, 450));
-                }
                 continue;
               }
               throw new Error(`API lỗi (${res.status}): ${errBody.slice(0, 120)}`);
@@ -5607,6 +5599,15 @@ button[type="submit"],.nav-btn.active) {
           const ym = TODAY.slice(0, 7);
           return records.filter(r => r.date.startsWith(ym));
         }
+        if (currentPeriod === "week") {
+          const now = new Date(TODAY + "T12:00:00");
+          const monday = new Date(now);
+          monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+          const start = monday.toLocaleDateString("sv-SE");
+          const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+          const end = sunday.toLocaleDateString("sv-SE");
+          return records.filter(r => r.date >= start && r.date <= end);
+        }
         if (currentPeriod && currentPeriod.startsWith("day:")) {
           const targetDay = currentPeriod.slice(4);
           return records.filter(r => r.date === targetDay);
@@ -5706,6 +5707,18 @@ button[type="submit"],.nav-btn.active) {
         });
       }
 
+      function openExpenseCategoryDetail(category, scopedRecords) {
+        const rows = (scopedRecords || []).filter(r => r.type === "chi" && (r.category || "Khác") === category)
+          .sort((a,b) => String(b.date || "").localeCompare(String(a.date || "")));
+        const total = rows.reduce((sum, r) => sum + (Number(r.amount) || 0), 0);
+        const scopeLabel = currentPeriod === "all" ? "Tất cả thời gian" : currentPeriod === "month" ? "Tháng này" : currentPeriod === "week" ? "Tuần này" : currentPeriod === "today" ? "Hôm nay" : "Ngày đã chọn";
+        const body = rows.length ? rows.map(r => `<div class="tx-row"><div class="tx-info"><div class="tx-name">${escapeHtmlStr(r.note || category)}</div><div class="tx-sub">${formatVNDate(r.date)}${r.qty ? ` • ${formatQty(r.qty,r.unit)}` : ""}</div></div><div class="tx-right"><div class="tx-amt amt-chi">−${formatMoney(r.amount)}</div><div class="tx-btns"><button type="button" class="mini-btn" data-exp-edit="${r.id}">Sửa</button></div></div></div>`).join("") : `<div style="padding:18px;text-align:center;color:var(--muted);">Không có khoản chi</div>`;
+        modalCard.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;"><h3 style="margin:0;">${escapeHtmlStr(category)}</h3><button type="button" class="mini-btn" id="m-close-exp">Đóng</button></div><div style="font-size:12px;color:var(--muted);margin-bottom:10px;">${scopeLabel} • ${rows.length} khoản</div><div style="font-size:20px;font-weight:850;color:var(--red);margin-bottom:12px;">${formatMoney(total)}</div><div style="max-height:55vh;overflow:auto;">${body}</div>`;
+        modalBg.classList.add("open");
+        document.getElementById("m-close-exp").addEventListener("click", closeModal);
+        modalCard.querySelectorAll("[data-exp-edit]").forEach(btn => btn.addEventListener("click", () => openEditModal(btn.dataset.expEdit)));
+      }
+
       function renderReport() {
         renderReportDayTabs();
         syncReportPeriodChips();
@@ -5801,6 +5814,12 @@ button[type="submit"],.nav-btn.active) {
           if (dailyMarginEl) dailyMarginEl.textContent = `Tỷ suất: ${dailyMargin.toFixed(1)}%`;
           document.getElementById("rep-daily-profit-sub").textContent = `Hôm qua (${formatShortDate(prevDayIso)}): ${formatMoney(prevCumProfit)}`;
         } else {
+          if (currentPeriod === "week") {
+            const weekDates = data.map(r => r.date).filter(Boolean).sort();
+            const lastWeekDate = weekDates.length ? weekDates[weekDates.length - 1] : "";
+            grossProfit = lastWeekDate ? (cumGrossProfitMap[lastWeekDate] || 0) : 0;
+            displaySplit = lastWeekDate && cumSplitMap[lastWeekDate] ? { ...cumSplitMap[lastWeekDate] } : { tk: 0, tm: 0 };
+          }
           if (currentPeriod === "month") {
             const ym = TODAY.slice(0, 7);
             const monthDates = allUniqueDates.filter(d => d.startsWith(ym));
@@ -5955,8 +5974,8 @@ button[type="submit"],.nav-btn.active) {
                 ? (c.mixedUnit ? c.qty.toLocaleString("vi-VN") : formatQty(c.qty, c.unit))
                 : "-";
               return `
-                <tr>
-                  <td>${c.name}</td>
+                <tr class="day-row" data-expense-category="${escapeHtmlStr(c.name).replace(/"/g, "&quot;")}" style="cursor:pointer;">
+                  <td>${escapeHtmlStr(c.name)}<div style="font-size:10.5px;color:var(--muted);">Chạm để xem từng khoản</div></td>
                   <td class="num" style="color:var(--muted);">${qtyDisplay}</td>
                   <td class="num" style="font-weight:600;">${formatMoney(c.amount)}</td>
                   <td class="num" style="color:var(--muted);">${pct.toFixed(1)}%</td>
@@ -5965,6 +5984,11 @@ button[type="submit"],.nav-btn.active) {
             }).join("");
           }
         }
+
+        // Chi tiết khoản mục: hoạt động ở cả Tất cả thời gian, Tháng này và Tuần này.
+        catBody.querySelectorAll("tr[data-expense-category]").forEach(tr => {
+          tr.addEventListener("click", () => openExpenseCategoryDetail(tr.dataset.expenseCategory, data));
+        });
 
         const soldMap = {};
         posItemsList.forEach(item => {
@@ -6107,10 +6131,11 @@ button[type="submit"],.nav-btn.active) {
           dayItems.forEach(r => {
             const amt = Number(r.amount) || 0;
             if (r.type === "thu") {
-              dRev += amt; dThuTk += Number(r.tk) || 0; dThuTm += Number(r.tm) || 0;
+              dRev += amt;
+              if (!r.reconcilePnlOnly) { dThuTk += Number(r.tk) || 0; dThuTm += Number(r.tm) || 0; }
             } else {
               dCost += amt;
-              if (r.method === "tk") dChiTk += amt; else dChiTm += amt;
+              if (!r.reconcilePnlOnly) { if (r.method === "tk") dChiTk += amt; else dChiTm += amt; }
             }
           });
           runningProfit += dRev - dCost;
@@ -6149,6 +6174,7 @@ button[type="submit"],.nav-btn.active) {
         let bookTk = Math.max(0, Number(fundSettings.openingTk) || 0);
         const relevant = sourceRecords.filter(r => r.date && r.date >= startDate && r.date <= dateIso).slice().sort((a,b) => String(a.date).localeCompare(String(b.date)));
         relevant.forEach(r => {
+          if (r.reconcilePnlOnly) return;
           const amount = Number(r.amount) || 0;
           if (r.type === "thu") {
             const tk = Number(r.tk) || 0, tm = Number(r.tm) || 0;
@@ -6182,7 +6208,66 @@ button[type="submit"],.nav-btn.active) {
           ...fundAdjustments.map(x => ({...x, kind:"Điều chỉnh quỹ", detail:`${x.account === "tm" ? "Tiền mặt" : "Ngân hàng"} · ${x.note || "Không ghi chú"}`, signed:Number(x.delta)||0}))
         ].sort((a,b) => String(b.createdAt || b.date).localeCompare(String(a.createdAt || a.date)));
         if (!rows.length) { el.innerHTML = `<div style="color:var(--muted);">Chưa có giao dịch chuyển tiền hoặc điều chỉnh quỹ.</div>`; return; }
-        el.innerHTML = `<div class="tbl-wrap"><table><thead><tr><th>Ngày</th><th>Loại</th><th>Chi tiết</th><th class="num">Số tiền</th></tr></thead><tbody>${rows.slice(0,80).map(x => `<tr><td>${formatVNDate(x.date)}</td><td>${x.kind}</td><td>${String(x.detail || "").replace(/[<>]/g, "")}</td><td class="num" style="white-space:nowrap;">${x.kind === "Chuyển nội bộ" ? formatMoney(x.amount) : `${x.signed >= 0 ? "+" : "−"}${formatMoney(Math.abs(x.signed))}`}</td></tr>`).join("")}</tbody></table></div>`;
+        el.innerHTML = `<div class="tbl-wrap"><table><thead><tr><th>Ngày</th><th>Loại</th><th>Chi tiết</th><th class="num">Số tiền</th><th>Thao tác</th></tr></thead><tbody>${rows.slice(0,80).map(x => {
+          const safeId = escapeHtmlStr(String(x.id || ""));
+          const detail = escapeHtmlStr(String(x.detail || ""));
+          const amountText = x.kind === "Chuyển nội bộ" ? formatMoney(x.amount) : `${x.signed >= 0 ? "+" : "−"}${formatMoney(Math.abs(x.signed))}`;
+          return `<tr><td>${formatVNDate(x.date)}</td><td>${escapeHtmlStr(x.kind)}</td><td>${detail}</td><td class="num" style="white-space:nowrap;">${amountText}</td><td style="white-space:nowrap;"><button type="button" class="mini-btn" data-fund-edit="${safeId}" data-fund-kind="${x.kind === "Chuyển nội bộ" ? "transfer" : "adjustment"}">Sửa</button> <button type="button" class="mini-btn" data-fund-delete="${safeId}" data-fund-kind="${x.kind === "Chuyển nội bộ" ? "transfer" : "adjustment"}" style="color:var(--red);">Xóa</button></td></tr>`;
+        }).join("")}</tbody></table></div>`;
+        el.querySelectorAll("[data-fund-edit]").forEach(btn => btn.addEventListener("click", () => openFundLedgerEditModal(btn.dataset.fundKind, btn.dataset.fundEdit)));
+        el.querySelectorAll("[data-fund-delete]").forEach(btn => btn.addEventListener("click", () => deleteFundLedgerEntry(btn.dataset.fundKind, btn.dataset.fundDelete)));
+      }
+
+      function openFundLedgerEditModal(kind, id) {
+        const list = kind === "transfer" ? fundTransfers : fundAdjustments;
+        const item = list.find(x => String(x.id) === String(id));
+        if (!item) { showToast("Không tìm thấy giao dịch sổ quỹ."); return; }
+        const isTransfer = kind === "transfer";
+        modalCard.innerHTML = `<h3>${isTransfer ? "Chỉnh sửa chuyển tiền nội bộ" : "Chỉnh sửa điều chỉnh quỹ"}</h3>
+          <label>Ngày giao dịch</label><input type="date" id="m-fund-date" value="${escapeHtmlStr(item.date || TODAY)}" style="width:100%;margin:5px 0 10px;">
+          ${isTransfer ? `<label>Hướng chuyển</label><select id="m-fund-direction" style="width:100%;margin:5px 0 10px;"><option value="tm_to_tk" ${item.from === "tm" ? "selected" : ""}>Tiền mặt → Ngân hàng</option><option value="tk_to_tm" ${item.from === "tk" ? "selected" : ""}>Ngân hàng → Tiền mặt</option></select>` : `<label>Tài khoản</label><select id="m-fund-account" style="width:100%;margin:5px 0 10px;"><option value="tm" ${item.account === "tm" ? "selected" : ""}>Tiền mặt</option><option value="tk" ${item.account === "tk" ? "selected" : ""}>Ngân hàng</option></select>`}
+          <label>${isTransfer ? "Số tiền chuyển" : "Chênh lệch (+/−)"}</label><input type="number" id="m-fund-amount" value="${Number(isTransfer ? item.amount : item.delta) || 0}" step="1" style="width:100%;margin:5px 0 10px;">
+          <label>Ghi chú</label><input type="text" id="m-fund-note" value="${escapeHtmlStr(item.note || "")}" maxlength="180" style="width:100%;margin:5px 0 12px;">
+          <div class="modal-btns"><button type="button" class="btn-outline" id="m-fund-cancel">Hủy</button><button type="button" class="btn-submit" id="m-fund-save" style="margin:0;">Lưu thay đổi</button></div>`;
+        modalBg.classList.add("open");
+        document.getElementById("m-fund-cancel").addEventListener("click", closeModal);
+        document.getElementById("m-fund-save").addEventListener("click", () => {
+          const date = document.getElementById("m-fund-date").value;
+          const amount = Number(document.getElementById("m-fund-amount").value);
+          const note = document.getElementById("m-fund-note").value.trim();
+          if (!date || date < (fundSettings.startDate || TODAY) || !Number.isFinite(amount) || (isTransfer ? amount <= 0 : amount === 0)) {
+            showToast(isTransfer ? "Ngày hoặc số tiền chuyển không hợp lệ." : "Ngày hoặc mức điều chỉnh không hợp lệ."); return;
+          }
+          const oldSummary = JSON.stringify(item);
+          item.updatedAt = new Date().toISOString();
+          if (isTransfer) {
+            const direction = document.getElementById("m-fund-direction").value;
+            item.date = date; item.from = direction === "tm_to_tk" ? "tm" : "tk"; item.to = item.from === "tm" ? "tk" : "tm"; item.amount = amount; item.note = note;
+            saveFundTransfers();
+          } else {
+            item.date = date; item.account = document.getElementById("m-fund-account").value; item.delta = amount; item.note = note;
+            saveFundAdjustments();
+          }
+          logDataUpdate("Sửa giao dịch sổ quỹ", `${kind === "transfer" ? "Chuyển nội bộ" : "Điều chỉnh quỹ"} ${id}; dữ liệu cũ: ${oldSummary}; dữ liệu mới: ${JSON.stringify(item)}`, 1, 1);
+          closeModal(); renderFundLedgerHistory(); renderReconcileBook(); renderReport();
+          showToast("Đã cập nhật giao dịch sổ quỹ và tính lại số dư.");
+        });
+      }
+
+      function deleteFundLedgerEntry(kind, id) {
+        const isTransfer = kind === "transfer";
+        const list = isTransfer ? fundTransfers : fundAdjustments;
+        const index = list.findIndex(x => String(x.id) === String(id));
+        if (index < 0) { showToast("Không tìm thấy giao dịch sổ quỹ."); return; }
+        const item = list[index];
+        if (!confirm(`Xóa ${isTransfer ? "giao dịch chuyển tiền nội bộ" : "giao dịch điều chỉnh quỹ"} ngày ${formatVNDate(item.date)} với số tiền ${formatMoney(isTransfer ? item.amount : Math.abs(Number(item.delta) || 0))}?
+
+Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch thu/chi.`)) return;
+        list.splice(index, 1);
+        if (isTransfer) saveFundTransfers(); else saveFundAdjustments();
+        logDataUpdate("Xóa giao dịch sổ quỹ", `${isTransfer ? "Chuyển nội bộ" : "Điều chỉnh quỹ"} ${id}; dữ liệu: ${JSON.stringify(item)}`, 1, 0);
+        renderFundLedgerHistory(); renderReconcileBook(); renderReport();
+        showToast("Đã xóa giao dịch sổ quỹ và tính lại số dư.");
       }
 
       function renderFundSettings() {
@@ -6314,6 +6399,22 @@ button[type="submit"],.nav-btn.active) {
         `;
       });
 
+      // Chênh lệch đối soát đồng thời ảnh hưởng lợi nhuận: dương = doanh thu, âm = chi phí.
+      // Các bản ghi này chỉ phục vụ báo cáo P&L; sổ quỹ tiền mặt/ngân hàng vẫn được cập nhật
+      // bằng fundAdjustments để tránh ghi nhận cùng một biến động hai lần.
+      function addReconcileProfitRecords(dateIso, diffTm, diffTk, note, prefix = "rec_pnl_") {
+        const stamp = new Date().toISOString();
+        const addOne = (account, delta) => {
+          if (!delta) return;
+          const id = prefix + Date.now() + "_" + account + "_" + Math.random().toString(36).slice(2,7);
+          const common = { id, date:dateIso, amount:Math.abs(delta), note:`${note || "Điều chỉnh sau đối soát"} (${account === "tm" ? "Tiền mặt" : "Ngân hàng"})`, reconcilePnlOnly:true, reconcileAccount:account, createdAt:stamp };
+          if (delta > 0) records.push({ ...common, type:"thu", category:"Điều chỉnh đối soát dương", tm:account === "tm" ? delta : 0, tk:account === "tk" ? delta : 0, method:account });
+          else records.push({ ...common, type:"chi", category:"Chênh lệch đối soát âm", method:account === "tk" ? "tk" : "tm", tm:0, tk:0 });
+        };
+        addOne("tm", diffTm); addOne("tk", diffTk);
+        saveRecords(true);
+      }
+
       document.getElementById("btn-rec-sync").addEventListener("click", () => {
         if (!lastRecDiffs) return;
         const { dateIso, actualTm, actualTk } = lastRecDiffs;
@@ -6321,15 +6422,16 @@ button[type="submit"],.nav-btn.active) {
         const latest = getReconcileBookValues(dateIso);
         const diffTm = actualTm - latest.bookTm, diffTk = actualTk - latest.bookTk;
         if (diffTm === 0 && diffTk === 0) { showToast("Sổ quỹ đã khớp, không cần điều chỉnh."); return; }
-        if (!confirm(`Xác nhận điều chỉnh sổ quỹ ngày ${formatVNDate(dateIso)}?\nTiền mặt: ${diffTm >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffTm))}\nNgân hàng: ${diffTk >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffTk))}\n\nĐiều chỉnh này KHÔNG ảnh hưởng doanh thu/chi phí.`)) return;
+        if (!confirm(`Xác nhận điều chỉnh sổ quỹ ngày ${formatVNDate(dateIso)}?\nTiền mặt: ${diffTm >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffTm))}\nNgân hàng: ${diffTk >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffTk))}\n\nChênh lệch dương sẽ cộng vào doanh thu và lợi nhuận; chênh lệch âm sẽ ghi vào chi phí và giảm lợi nhuận.`)) return;
         const stamp = new Date().toISOString();
         if (diffTm !== 0) fundAdjustments.push({ id:"fund_adj_" + Date.now() + "_tm", date:dateIso, account:"tm", delta:diffTm, note:userNote || "Điều chỉnh sau đối soát", bookBefore:latest.bookTm, actual:actualTm, createdAt:stamp });
         if (diffTk !== 0) fundAdjustments.push({ id:"fund_adj_" + Date.now() + "_tk", date:dateIso, account:"tk", delta:diffTk, note:userNote || "Điều chỉnh sau đối soát", bookBefore:latest.bookTk, actual:actualTk, createdAt:stamp });
-        saveFundAdjustments(); renderFundLedgerHistory(); renderReconcileBook();
+        addReconcileProfitRecords(dateIso, diffTm, diffTk, userNote || "Điều chỉnh sau đối soát");
+        saveFundAdjustments(); renderFundLedgerHistory(); renderReconcileBook(); renderReport();
         document.getElementById("rec-actual-tm").value = actualTm;
         document.getElementById("rec-actual-tk").value = actualTk;
         document.getElementById("btn-rec-check").click();
-        showToast("Đã điều chỉnh sổ quỹ riêng; báo cáo doanh thu và chi phí được giữ nguyên.");
+        showToast("Đã điều chỉnh sổ quỹ và cập nhật chênh lệch vào doanh thu/chi phí, lợi nhuận.");
       });
 
 
@@ -11453,14 +11555,30 @@ button[type="submit"],.nav-btn.active) {
         const recipeCatsStr = (recipeCategories.length > 0 ? recipeCategories : DEFAULT_RECIPE_CATEGORIES).join(" | ");
         const notebookTagsStr = (notebookTags.length > 0 ? notebookTags : DEFAULT_NOTEBOOK_TAGS).join(" | ");
         const compactRows = (arr, limit, mapper) => (Array.isArray(arr) ? arr.slice(0, limit) : []).map(mapper).join("\n") || "(Chưa có dữ liệu)";
-        const detailedRecords = compactRows(records, 120, r => JSON.stringify({ id:r.id, type:r.type, date:r.date, category:r.category, amount:r.amount, tk:r.tk, tm:r.tm, qty:r.qty, unit:r.unit, note:r.note, orderTime:r.orderTime }));
-        const detailedDebts = compactRows(debtEntries, 100, d => JSON.stringify({ id:d.id, ledgerType:d.ledgerType, partyName:d.partyName, itemName:d.itemName, date:d.date, qty:d.qty, unit:d.unit, amount:d.amount, status:d.status, paidDate:d.paidDate, paidMethod:d.paidMethod, note:d.note }));
-        const detailedWarehouseTx = compactRows(warehouseTxList, 100, t => JSON.stringify(t));
-        const detailedSuppliers = compactRows(suppliersList, 80, x => JSON.stringify(x));
-        const detailedMaterials = compactRows(manualMaterialHistory, 100, x => JSON.stringify(x));
-        const detailedNotebook = compactRows(notebookNotes, 60, n => JSON.stringify({ id:n.id, title:n.title, tag:n.tag, summary:n.summary, content:String(n.content || "").slice(0,1200), date:n.date }));
-        const detailedRecipes = compactRows(recipesList, 80, r => JSON.stringify({ id:r.id, title:r.title, category:r.category, prepTime:r.prepTime, yieldText:r.yieldText, ingredients:r.ingredients, steps:r.steps, tips:r.tips }));
-        const detailedOrders = compactRows(savedOrders, 80, o => JSON.stringify({ id:o.id, orderTime:o.orderTime, items:o.items, total:o.total, note:o.note }));
+        // Chỉ nạp dữ liệu chi tiết phù hợp với ý định câu hỏi; số liệu tóm tắt vẫn luôn có sẵn.
+        const q = String(userText || "").toLowerCase();
+        const wants = (...words) => words.some(w => q.includes(w));
+        const needRecords = wants("thu", "chi", "doanh thu", "lợi nhuận", "chi phí", "báo cáo", "giao dịch", "quỹ", "tiền", "hôm nay", "tháng", "tuần", "ngày");
+        const needDebt = wants("nợ", "công nợ", "thanh toán", "nhà cung cấp", "khách nợ");
+        const needWarehouse = wants("kho", "tồn", "nguyên liệu", "nhập", "xuất", "hao hụt", "lô");
+        const needSupplier = wants("nhà cung cấp", "nhà cc", "báo giá", "giá nhập", "mua hàng");
+        const needNotebook = wants("sổ tay", "ghi chú", "bài viết", "tài liệu");
+        const needRecipe = wants("công thức", "món", "định lượng", "chế biến");
+        const needOrders = wants("đơn", "pos", "đang soạn", "đơn hàng", "bán hàng");
+        const detailedRecords = needRecords ? compactRows(records, 60, r => JSON.stringify({ id:r.id, type:r.type, date:r.date, category:r.category, amount:r.amount, tk:r.tk, tm:r.tm, qty:r.qty, unit:r.unit, note:r.note, orderTime:r.orderTime })) : "(Không nạp chi tiết: câu hỏi không cần sổ thu chi)";
+        const detailedDebts = needDebt ? compactRows(debtEntries, 60, d => JSON.stringify({ id:d.id, ledgerType:d.ledgerType, partyName:d.partyName, itemName:d.itemName, date:d.date, qty:d.qty, unit:d.unit, amount:d.amount, status:d.status, paidDate:d.paidDate, paidMethod:d.paidMethod, note:d.note })) : "(Không nạp chi tiết công nợ)";
+        const detailedWarehouseTx = needWarehouse ? compactRows(warehouseTxList, 60, t => JSON.stringify(t)) : "(Không nạp lịch sử kho)";
+        const detailedSuppliers = needSupplier ? compactRows(suppliersList, 50, x => JSON.stringify(x)) : "(Không nạp danh sách nhà cung cấp)";
+        const detailedMaterials = needWarehouse ? compactRows(manualMaterialHistory, 60, x => JSON.stringify(x)) : "(Không nạp lịch sử nguyên liệu)";
+        const detailedNotebook = needNotebook ? compactRows(notebookNotes, 25, n => JSON.stringify({ id:n.id, title:n.title, tag:n.tag, summary:n.summary, content:String(n.content || "").slice(0,700), date:n.date })) : "(Không nạp Sổ Tay)";
+        const detailedRecipes = needRecipe ? compactRows(recipesList, 50, r => JSON.stringify({ id:r.id, title:r.title, category:r.category, prepTime:r.prepTime, yieldText:r.yieldText, ingredients:r.ingredients, steps:r.steps, tips:r.tips })) : "(Không nạp công thức)";
+        const detailedOrders = needOrders ? compactRows(savedOrders, 40, o => JSON.stringify({ id:o.id, orderTime:o.orderTime, items:o.items, total:o.total, note:o.note })) : "(Không nạp đơn hàng)";
+        const extraAppData = [
+          needWarehouse ? "Lô tồn kho: " + compactRows(warehouseLots || [], 60, x => JSON.stringify(x)) + "\nQuy tắc xuất kho: " + compactRows(warehouseUsageRules, 40, x => JSON.stringify(x)) : "",
+          needSupplier ? "Báo giá nhà cung cấp: " + compactRows(supplierQuotes, 50, x => JSON.stringify(x)) : "",
+          needRecords ? "Chuyển quỹ nội bộ: " + compactRows(fundTransfers, 50, x => JSON.stringify(x)) + "\nĐiều chỉnh quỹ: " + compactRows(fundAdjustments, 50, x => JSON.stringify(x)) : "",
+          needOrders ? "Nhóm món POS: " + compactRows(posGroupsList, 30, x => JSON.stringify(x)) : ""
+        ].filter(Boolean).join("\n");
         const weekLine = "7 ngày gần nhất (thu/chi): " + Array.from({ length: 7 }, (_, i) => {
           const d = new Date(); d.setDate(d.getDate() - i);
           const iso = d.toLocaleDateString("sv-SE");
@@ -11476,14 +11594,14 @@ button[type="submit"],.nav-btn.active) {
         return [
           "Bạn là BẮP AI — trợ lý điều hành kinh doanh của quán Bánh Mỳ Chảo Nhà Bắp. Có 3 năng lực tích hợp: phân tích kinh doanh, chủ động cảnh báo, và thực hiện công việc quản lý. Điều khiển app quản lý thu chi, POS, kho theo lô FIFO, giá nguyên liệu, nhà cung cấp, công nợ, công thức và sổ tay. Trả lời tiếng Việt rõ ràng; luôn phân biệt dữ liệu thực, ước tính và dữ liệu thiếu.",
           `Hôm nay: ${TODAY}. Hôm nay thu ${sum(todayRecs, "thu")}đ, chi ${sum(todayRecs, "chi")}đ. Tổng ${records.length} bản ghi.\n${weekLine}`,
-          "Thực đơn POS:\n" + menu + '\n- id:"custom-item" | món tuỳ chỉnh (kèm customPrice)',
-          "Đơn POS đang soạn hiện tại: " + draftSummary,
-          "Danh sách Đơn đang lưu (chưa thanh toán):\n" + savedSummary,
-          "Danh sách Công nợ chưa thanh toán:\n" + unpaidDebtSummary,
-          "Sổ Công Thức hiện có của quán:\n" + recipesSummary,
-          "Kho:\n" + (stock || "(trống)"),
-          "Sắp hết hàng: " + (low || "không có"),
-          "Danh mục chi: " + cats,
+          needOrders ? ("Thực đơn POS:\n" + menu + '\n- id:"custom-item" | món tuỳ chỉnh (kèm customPrice)') : "Thực đơn POS: (không nạp)",
+          needOrders ? ("Đơn POS đang soạn hiện tại: " + draftSummary) : "Đơn POS đang soạn: (không nạp)",
+          needOrders ? ("Danh sách Đơn đang lưu (chưa thanh toán):\n" + savedSummary) : "Đơn đang lưu: (không nạp)",
+          needDebt ? ("Danh sách Công nợ chưa thanh toán:\n" + unpaidDebtSummary) : "Công nợ: (không nạp)",
+          needRecipe ? ("Sổ Công Thức hiện có của quán:\n" + recipesSummary) : "Sổ Công Thức: (không nạp)",
+          needWarehouse ? ("Kho:\n" + (stock || "(trống)")) : "Kho: (không nạp)",
+          needWarehouse ? ("Sắp hết hàng: " + (low || "không có")) : "Cảnh báo tồn: (không nạp)",
+          needRecords ? ("Danh mục chi: " + cats) : "Danh mục chi: (không nạp)",
           (() => { const f = getReconcileBookValues(TODAY); return `QUỸ DỰ KIẾN HÔM NAY (tính lũy kế từ sổ): TM ${formatMoney(f.bookTm)} | TK ${formatMoney(f.bookTk)} | Tổng ${formatMoney(f.bookTotal)}. Chưa phải số kiểm đếm thực tế.`; })(),
           "DỮ LIỆU CHI TIẾT GẦN ĐÂY (JSON từng dòng; dữ liệu mới nhất đứng trước, một số danh sách giới hạn để tránh prompt quá dài):",
           "Giao dịch thu chi (tối đa 120):\n" + detailedRecords,
@@ -11493,9 +11611,11 @@ button[type="submit"],.nav-btn.active) {
           "Lịch sử nguyên liệu (tối đa 100):\n" + detailedMaterials,
           "Sổ Tay đã lưu (tối đa 60; nội dung mỗi bài tối đa 1200 ký tự):\n" + detailedNotebook,
           "Công thức chi tiết (tối đa 80):\n" + detailedRecipes,
-          "Đơn đang lưu (tối đa 80):\n" + detailedOrders,
+          "Đơn đang lưu (tối đa 40):\n" + detailedOrders,
+          extraAppData,
           hist ? "Hội thoại trước:\n" + hist : "",
           reqLine,
+          "Chỉ sử dụng các tập dữ liệu được nạp ở trên; nếu phần chi tiết ghi không nạp thì hãy dùng data_query để truy xuất dữ liệu đầy đủ, không được suy đoán.",
           "Trả về DUY NHẤT JSON (không markdown): {\"reply\":\"câu trả lời được định dạng mạch lạc từng dòng/mục\",\"suggestions\":[...],\"actions\":[...]}.",
           "Định dạng trường 'reply': Trả lời tự nhiên như đang nói chuyện trực tiếp với chủ quán. Không tự đánh số 1,2 cho lời chào hoặc câu văn thông thường. Chỉ dùng danh sách đánh số khi thực sự có các bước hoặc nhiều mục độc lập. Mỗi đoạn ngắn 1-3 câu, xuống dòng khi đổi ý; dùng **in đậm** có chọn lọc cho kết luận hoặc số liệu quan trọng. Với yêu cầu tìm công thức, nói rõ tên món và thông báo đã tạo thẻ công thức; không viết lời dẫn dài hoặc lặp lại câu hỏi.",
           "Trường 'suggestions' (tùy chọn): Khi phát hiện trong ảnh hoặc tin nhắn có khoản chi, khoản thu hoặc công nợ tiềm năng chưa lưu ngay (actions=[]), hãy đưa vào 'suggestions' để app tự tạo nút nhập nhanh & nút sửa tay cho người dùng:",
@@ -12572,7 +12692,7 @@ button[type="submit"],.nav-btn.active) {
         const card = document.createElement("div"); card.className = "chat-msg sys"; card.style.cssText = "max-width:95%;background:#FFF7ED;border:1px solid #FDBA74;color:var(--ink);";
         const detail = document.createElement("div"); detail.style.cssText = "white-space:pre-wrap;margin-bottom:8px;font-size:13px;";
         const signed = n => (n > 0 ? "+" : "−") + formatMoney(Math.abs(n));
-        detail.textContent = `⚠️ XÁC NHẬN ĐIỀU CHỈNH SỔ QUỸ — ${formatVNDate(dateIso)}\n\nTIỀN MẶT: Sổ ${formatMoney(initial.bookTm)} → Thực tế ${formatMoney(actualTm)}\nChênh lệch: ${signed(diffTm)}\n\nNGÂN HÀNG: Sổ ${formatMoney(initial.bookTk)} → Thực tế ${formatMoney(actualTk)}\nChênh lệch: ${signed(diffTk)}\n\nĐiều chỉnh được lưu trong sổ quỹ riêng và lịch sử kiểm toán. Không tạo giao dịch thu/chi, không làm thay đổi doanh thu hoặc lợi nhuận.\nGhi chú: ${note || "Không có"}`;
+        detail.textContent = `⚠️ XÁC NHẬN ĐIỀU CHỈNH SỔ QUỸ — ${formatVNDate(dateIso)}\n\nTIỀN MẶT: Sổ ${formatMoney(initial.bookTm)} → Thực tế ${formatMoney(actualTm)}\nChênh lệch: ${signed(diffTm)}\n\nNGÂN HÀNG: Sổ ${formatMoney(initial.bookTk)} → Thực tế ${formatMoney(actualTk)}\nChênh lệch: ${signed(diffTk)}\n\nSau xác nhận: lệch dương cộng vào doanh thu ngày và lợi nhuận gộp; lệch âm ghi vào chi phí ngày và giảm lợi nhuận. Sổ quỹ được cập nhật riêng, không tính trùng dòng tiền.\nGhi chú: ${note || "Không có"}`;
         const yes = document.createElement("button"); yes.type="button"; yes.className="chat-qbtn acc"; yes.textContent="✓ Xác nhận điều chỉnh";
         const no = document.createElement("button"); no.type="button"; no.className="chat-qbtn"; no.textContent="Không điều chỉnh";
         yes.addEventListener("click", () => {
@@ -12582,10 +12702,11 @@ button[type="submit"],.nav-btn.active) {
           const stamp = new Date().toISOString();
           if (dTm !== 0) fundAdjustments.push({ id:"fund_adj_chat_"+Date.now()+"_tm", date:dateIso, account:"tm", delta:dTm, note, bookBefore:latest.bookTm, actual:actualTm, createdAt:stamp });
           if (dTk !== 0) fundAdjustments.push({ id:"fund_adj_chat_"+Date.now()+"_tk", date:dateIso, account:"tk", delta:dTk, note, bookBefore:latest.bookTk, actual:actualTk, createdAt:stamp });
-          saveFundAdjustments(); renderFundLedgerHistory(); renderReconcileBook();
+          addReconcileProfitRecords(dateIso, dTm, dTk, note, "rec_pnl_chat_");
+          saveFundAdjustments(); renderFundLedgerHistory(); renderReconcileBook(); renderReport();
           const verified = getReconcileBookValues(dateIso);
-          detail.textContent += `\n\n✅ Đã ghi điều chỉnh riêng. Số dư mới — TM: ${formatMoney(verified.bookTm)}; ngân hàng: ${formatMoney(verified.bookTk)}; tổng: ${formatMoney(verified.bookTotal)}. Doanh thu/chi phí không thay đổi.`;
-          yes.disabled=true; no.disabled=true; showToast("Đã điều chỉnh sổ quỹ riêng.");
+          detail.textContent += `\n\n✅ Đã ghi điều chỉnh riêng. Số dư mới — TM: ${formatMoney(verified.bookTm)}; ngân hàng: ${formatMoney(verified.bookTk)}; tổng: ${formatMoney(verified.bookTotal)}. đã cập nhật chênh lệch vào doanh thu/chi phí và lợi nhuận.`;
+          yes.disabled=true; no.disabled=true; showToast("Đã cập nhật đối soát vào lợi nhuận và sổ quỹ.");
         });
         no.addEventListener("click", () => { yes.disabled=true; no.disabled=true; detail.textContent += "\n\nĐã hủy. Sổ quỹ không thay đổi."; });
         card.append(detail,yes,no); chatLog.appendChild(card); chatLog.scrollTop=chatLog.scrollHeight;
