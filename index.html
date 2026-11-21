@@ -1547,6 +1547,39 @@ body:has(.modal-bg.open) {
 }
 </style>
 
+<style id="ios-chatbox-layer-fix-v826">
+/* Chatbox is a full-screen workspace: keep it above the fixed bottom navigation and popups. */
+#chat-panel,
+#chat-panel.open {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  z-index: 10060 !important;
+  box-sizing: border-box !important;
+  padding-bottom: env(safe-area-inset-bottom, 0px) !important;
+}
+#chat-panel.open {
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+#chat-panel .chat-head { flex: 0 0 auto; }
+#chat-panel #chat-log {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: contain !important;
+}
+#chat-panel .chat-row {
+  flex: 0 0 auto !important;
+  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px)) !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -1776,7 +1809,7 @@ body:has(.modal-bg.open) {
 
         <div id="rep-profit-grid" style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 12px; align-items: stretch;">
           <div class="profit-hero" id="rep-profit-card" style="margin-bottom: 0; padding: 14px;">
-            <div class="lbl" id="rep-profit-lbl">LỢI NHUẬN GỘP</div>
+            <div class="lbl" id="rep-profit-lbl">TỔNG QUỸ (TK + TM)</div>
             <div class="val" id="rep-profit" style="font-size: 21px;">0 đ</div>
             <div class="sub" id="rep-margin">Tỷ suất lợi nhuận: 0,0%</div>
             <div class="sub" id="rep-rev-split" style="font-size: 11.5px; margin-top: 4px; opacity: 0.9;">TK: 0 đ | TM: 0 đ</div>
@@ -1786,7 +1819,7 @@ body:has(.modal-bg.open) {
             <div class="lbl" id="rep-daily-profit-lbl" style="font-size: 13.5px; font-weight: 800; letter-spacing: 0.2px;">LỢI NHUẬN NGÀY</div>
             <div class="val" id="rep-daily-profit" style="font-size: 26px; margin-top: 6px;">0 đ</div>
             <div class="sub" id="rep-daily-profit-margin" style="font-size: 12.5px; font-weight: 700; margin-top: 4px;">Tỷ suất: 0,0%</div>
-            <div class="sub" id="rep-daily-profit-sub" style="font-size: 12px; font-weight: 600; margin-top: 3px; opacity: 0.9;">Hôm nay − Hôm qua</div>
+            <div class="sub" id="rep-daily-profit-sub" style="font-size: 12px; font-weight: 600; margin-top: 3px; opacity: 0.9;">Doanh thu ngày − Chi phí ngày</div>
           </div>
         </div>
 
@@ -2929,7 +2962,7 @@ body:has(.modal-bg.open) {
         toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
       }
       // QUẢN LÝ PHIÊN BẢN VÀ NHẬT KÝ CẬP NHẬT DỮ LIỆU
-      const APP_VERSION = "8.25";
+      const APP_VERSION = "8.28";
       const versionBadge = document.getElementById("app-version-badge");
       if (versionBadge) versionBadge.textContent = `v${APP_VERSION}`;
       const DATA_UPDATE_HISTORY_KEY = "nha_bap_data_update_history_v1";
@@ -2968,6 +3001,9 @@ body:has(.modal-bg.open) {
       }
 
       const APP_CHANGELOG = [
+        {v:"8.28", title:"Tách lợi nhuận ngày khỏi số dư quỹ", changes:["Lợi nhuận ngày được tính đúng bằng doanh thu ngày trừ chi phí ngày, không còn lấy chênh lệch số dư TK + TM.","Tổng quỹ TK + TM tiếp tục được tính lũy kế riêng và hiển thị như số tiền hiện có trong tiền mặt và ngân hàng.","Các điều chỉnh chênh lệch đối soát dương/âm vẫn được tính vào doanh thu/chi phí báo cáo; snapshot đối soát vẫn ghi đè số dư quỹ thực tế, không tạo dòng tiền trùng.","Đồng bộ nhãn và nội dung báo cáo để phân biệt kết quả kinh doanh với số dư tiền đang nắm giữ."]},
+        {v:"8.27", title:"Sửa xung đột snapshot khi đặt lại mốc sổ quỹ", changes:["Khi đặt lại mốc sổ quỹ, snapshot đối soát cũ đúng ngày mốc được loại khỏi phép tính để không ghi đè số dư đầu kỳ mới.","Các dòng doanh thu/chi phí điều chỉnh đối soát của đúng ngày mốc được loại bỏ vì đã được thay thế bằng số dư đầu ngày mới.","Giữ nguyên giao dịch bán hàng, chi phí, chuyển quỹ và snapshot đối soát ở những ngày sau; tính lại TK, TM và báo cáo."]},
+        {v:"8.26", title:"Sửa Chatbox bị thanh điều hướng che khuất trên iPhone", changes:["Đưa cửa sổ Chatbox AI lên lớp hiển thị cao hơn thanh điều hướng cố định.","Khi mở Chatbox, khung chat phủ đúng vùng ứng dụng; thanh tab không còn đè lên nội dung hoặc hàng nhập tin nhắn.","Giữ vùng cuộn hội thoại riêng và vùng an toàn phía dưới cho thao tác nhập/gửi trên iPhone."]},
         {v:"8.25", title:"Sửa popup bị khuất bởi thanh điều hướng trên iPhone", changes:["Đưa lớp popup lên trên thanh điều hướng cố định để nút và nội dung không bị che.","Căn popup trong vùng hiển thị an toàn của iPhone, tính đến safe-area phía trên và dưới.","Giới hạn chiều cao popup theo viewport động; nội dung dài có thể cuộn bên trong popup, không kéo cả trang phía sau.","Giữ nguyên bố cục biểu mẫu và các chức năng xử lý hiện có."]},
         {v:"8.24", title:"Sửa thanh điều hướng bị cuộn theo nội dung trên iPhone", changes:["Cố định thanh điều hướng dưới màn hình bằng quy tắc ưu tiên cao, không để bị cuộn lên cùng nội dung khi vuốt.","Bổ sung vùng đệm an toàn cho thanh điều hướng trên iPhone và khoảng trống cuối trang để không che nội dung.","Giữ nguyên cơ chế chuyển tab và các chức năng nghiệp vụ."]},
         {v:"8.23", title:"Sửa nhãn phiên bản hiển thị trong Cài đặt", changes:["Nhãn phiên bản ở màn hình Cài đặt tự động lấy từ APP_VERSION, không còn ghi cứng v8.15.","Đồng bộ phiên bản hiển thị với phiên bản thực tế trong cửa sổ Cập nhật phiên bản."]},
@@ -5845,34 +5881,17 @@ body:has(.modal-bg.open) {
 
         let grossProfit = runningProfit;
         let displaySplit = { tk: runningTk, tm: runningTm };
-        let prevCumProfit = 0;
-        let prevDayIso = "";
 
         if (isSingleDayView) {
           const targetDayIso = currentPeriod === "today" ? TODAY : currentPeriod.slice(4);
-          const [yy, mm, dd] = targetDayIso.split("-").map(Number);
-          const prevDateObj = new Date(yy, mm - 1, dd - 1);
-          prevDayIso = `${prevDateObj.getFullYear()}-${String(prevDateObj.getMonth() + 1).padStart(2, "0")}-${String(prevDateObj.getDate()).padStart(2, "0")}`;
-
-          const priorDates = allUniqueDates.filter(d => d < targetDayIso);
-          if (priorDates.length > 0) {
-            const latestPrior = priorDates[priorDates.length - 1];
-            prevCumProfit = cumGrossProfitMap[latestPrior] || 0;
-            displaySplit = { ...cumSplitMap[latestPrior] };
-          } else {
-            prevCumProfit = 0;
-            displaySplit = { tk: 0, tm: 0 };
-          }
-
           const targetBalance = cumSplitMap[targetDayIso] || (() => {
             const f = getReconcileBookValues(targetDayIso);
             return { tk:f.bookTk, tm:f.bookTm };
           })();
           displaySplit = { ...targetBalance };
           grossProfit = displaySplit.tk + displaySplit.tm;
-          // Lợi nhuận ngày là phần thay đổi số dư TK+TM trong ngày, bao gồm chênh lệch đối soát.
-          const dailyProfit = grossProfit - prevCumProfit;
-
+          // Lợi nhuận ngày = doanh thu ngày - chi phí ngày; độc lập với biến động số dư quỹ.
+          const dailyProfit = rev - cost;
           const dailyMargin = rev > 0 ? (dailyProfit / rev) * 100 : 0;
 
           profitGridEl.style.gridTemplateColumns = "0.85fr 1.35fr";
@@ -5889,10 +5908,10 @@ body:has(.modal-bg.open) {
           document.getElementById("rep-daily-profit").textContent = formatMoney(dailyProfit);
           const dailyMarginEl = document.getElementById("rep-daily-profit-margin");
           if (dailyMarginEl) dailyMarginEl.textContent = `Tỷ suất: ${dailyMargin.toFixed(1)}%`;
-          document.getElementById("rep-daily-profit-sub").textContent = `Hôm qua (${formatShortDate(prevDayIso)}): ${formatMoney(prevCumProfit)}`;
+          document.getElementById("rep-daily-profit-sub").textContent = `Doanh thu ${formatMoney(rev)} − Chi phí ${formatMoney(cost)}`;
         } else {
-          // Thẻ lợi nhuận gộp luôn hiển thị tổng TK + TM lũy kế đến hiện tại,
-          // còn doanh thu và chi phí vẫn tuân theo bộ lọc thời gian đang chọn.
+          // Tổng quỹ luôn hiển thị tổng TK + TM lũy kế đến hiện tại;
+          // doanh thu và chi phí vẫn tuân theo bộ lọc thời gian đang chọn.
           const latestBalanceDate = allUniqueDates.filter(d => d <= TODAY).slice(-1)[0];
           if (latestBalanceDate && cumSplitMap[latestBalanceDate]) {
             displaySplit = { ...cumSplitMap[latestBalanceDate] };
@@ -5903,7 +5922,6 @@ body:has(.modal-bg.open) {
             grossProfit = displaySplit.tk + displaySplit.tm;
           }
 
-          const margin = rev > 0 ? ((rev - cost) / rev) * 100 : 0;
           profitGridEl.style.gridTemplateColumns = "1fr";
           profitCard.style.padding = "16px";
           if (profitLblEl) profitLblEl.style.fontSize = "13px";
@@ -5911,7 +5929,7 @@ body:has(.modal-bg.open) {
           if (profitSubEl) {
             profitSubEl.style.display = "block";
             profitSubEl.style.fontSize = "12.5px";
-            profitSubEl.textContent = `Tỷ suất: ${margin.toFixed(1)}%`;
+            profitSubEl.textContent = "Số dư tiền mặt + ngân hàng hiện có";
           }
           dailyProfitCardEl.style.display = "none";
         }
@@ -6158,14 +6176,21 @@ body:has(.modal-bg.open) {
         const openingTm = Number(document.getElementById("fund-opening-tm").value);
         const openingTk = Number(document.getElementById("fund-opening-tk").value);
         if (!startDate || !Number.isFinite(openingTm) || !Number.isFinite(openingTk) || openingTm < 0 || openingTk < 0) { showToast("Vui lòng nhập ngày và số dư đầu kỳ hợp lệ."); return; }
-        if (!confirm(`XÁC NHẬN GHI ĐÈ MỐC SỔ QUỸ TẠI NGÀY ${formatVNDate(startDate)}?
-
-Tiền mặt (TM) đầu ngày: ${formatMoney(openingTm)}
-Ngân hàng (TK) đầu ngày: ${formatMoney(openingTk)}
-
-Hai số dư này thay thế hoàn toàn mốc TK/TM cũ. Giao dịch bán hàng, chi phí và chuyển tiền từ chính ngày đã chọn trở đi vẫn được tính bình thường. Lợi nhuận gộp = TK + TM. Thao tác đặt mốc không tự tạo doanh thu hoặc chi phí.`)) return;
+        const sameDaySnapshots = fundAdjustments.filter(a => a.date === startDate).length;
+        const sameDayPnlRows = records.filter(r => r.date === startDate && r.reconcilePnlOnly).length;
+        if (!confirm(`XÁC NHẬN GHI ĐÈ MỐC SỔ QUỸ TẠI NGÀY ${formatVNDate(startDate)}?\n\nTiền mặt (TM) đầu ngày: ${formatMoney(openingTm)}\nNgân hàng (TK) đầu ngày: ${formatMoney(openingTk)}\n\nHai số dư này thay thế hoàn toàn mốc TK/TM cũ. Giao dịch bán hàng, chi phí và chuyển tiền từ chính ngày đã chọn trở đi vẫn được tính bình thường.\n\nỨng dụng sẽ vô hiệu hóa ${sameDaySnapshots} dòng điều chỉnh/snapshot sổ quỹ và loại ${sameDayPnlRows} dòng doanh thu/chi phí đối soát cũ đúng ngày mốc, vì số dư đầu ngày mới thay thế các điều chỉnh đó. Snapshot ở những ngày sau vẫn được giữ nguyên.\n\nLợi nhuận gộp = TK + TM. Thao tác đặt mốc không tự tạo doanh thu hoặc chi phí.`)) return;
+        const removedSnapshots = fundAdjustments.filter(a => a.date === startDate);
+        const removedPnlRows = records.filter(r => r.date === startDate && r.reconcilePnlOnly);
+        fundAdjustments = fundAdjustments.filter(a => a.date !== startDate);
+        records = records.filter(r => !(r.date === startDate && r.reconcilePnlOnly));
         fundSettings = { startDate, openingTm, openingTk, updatedAt:new Date().toISOString() };
-        saveFundSettings(); renderFundSettings(); renderReconcileBook(); renderReport(); renderFundLedgerHistory(); showToast("Đã ghi đè số dư TK/TM tại ngày chốt và cập nhật báo cáo.");
+        saveFundSettings(true);
+        saveFundAdjustments(true);
+        saveRecords(true);
+        logDataUpdate("Đặt lại mốc sổ quỹ", `Mốc mới ${startDate}; TM đầu ngày ${openingTm}; TK đầu ngày ${openingTk}. Đã thay thế ${removedSnapshots.length} snapshot/điều chỉnh và ${removedPnlRows.length} dòng P&L đối soát cùng ngày.`, removedSnapshots.length + removedPnlRows.length, 0);
+        if (autoBackupEnabled) performBackup(true);
+        renderFundSettings(); renderReconcileBook(); renderReport(); renderFundLedgerHistory();
+        showToast("Đã ghi đè mốc TK/TM. Snapshot đối soát cũ cùng ngày không còn ghi đè số dư mới.");
       });
       document.getElementById("btn-fund-transfer").addEventListener("click", () => {
         const date = document.getElementById("fund-transfer-date").value || TODAY;
