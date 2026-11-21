@@ -2254,11 +2254,11 @@ button[type="submit"],.nav-btn.active) {
     
       <!-- Thiết lập sổ quỹ và chuyển tiền nội bộ được đặt cuối tab để ưu tiên thao tác đối soát. -->
       <div class="card" style="border:1px solid var(--accent);">
-        <div class="card-title"><span>⚙️ Thiết lập sổ quỹ</span><span style="font-size:11px;color:var(--muted);">Không ảnh hưởng doanh thu/lợi nhuận</span></div>
-        <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px;line-height:1.45;">Khai báo số dư thực tế tiền mặt và ngân hàng CHỐT TẠI ngày đã chọn. Hai số dư này GHI ĐÈ hoàn toàn số TK/TM đang tính tại ngày đó. Giao dịch thu/chi, chuyển tiền và điều chỉnh trong ngày chốt hoặc trước đó không cộng/trừ lại vào số dư; chỉ giao dịch từ ngày tiếp theo mới được tính tiếp. Không tạo doanh thu hoặc chi phí.</div>
-        <div class="form-group"><label for="fund-start-date">Ngày chốt số dư thực tế</label><input type="date" id="fund-start-date" /></div>
-        <div class="form-group"><label for="fund-opening-tm">Số dư tiền mặt tại ngày chốt (đ)</label><input type="number" id="fund-opening-tm" min="0" step="1000" inputmode="numeric" /></div>
-        <div class="form-group"><label for="fund-opening-tk">Số dư ngân hàng tại ngày chốt (đ)</label><input type="number" id="fund-opening-tk" min="0" step="1000" inputmode="numeric" /></div>
+        <div class="card-title"><span>⚙️ Thiết lập sổ quỹ</span><span style="font-size:11px;color:var(--muted);">Ghi đè mốc TK/TM</span></div>
+        <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px;line-height:1.45;">Khai báo số dư đầu ngày cho tiền mặt và ngân hàng tại ngày bắt đầu theo dõi. Hai số dư này GHI ĐÈ hoàn toàn số TK/TM cũ; giao dịch bán hàng, chi phí và chuyển tiền từ chính ngày đã chọn trở đi vẫn được cộng/trừ bình thường. Lợi nhuận gộp luôn bằng TK + TM. Việc đặt mốc không tự tạo giao dịch doanh thu hoặc chi phí.</div>
+        <div class="form-group"><label for="fund-start-date">Ngày bắt đầu / đặt lại mốc sổ quỹ</label><input type="date" id="fund-start-date" /></div>
+        <div class="form-group"><label for="fund-opening-tm">Số dư tiền mặt đầu ngày (đ)</label><input type="number" id="fund-opening-tm" min="0" step="1000" inputmode="numeric" /></div>
+        <div class="form-group"><label for="fund-opening-tk">Số dư ngân hàng đầu ngày (đ)</label><input type="number" id="fund-opening-tk" min="0" step="1000" inputmode="numeric" /></div>
         <button type="button" class="btn-submit" id="btn-fund-save-opening">Ghi đè số dư TK/TM</button>
       </div>
       <div class="card">
@@ -2863,7 +2863,7 @@ button[type="submit"],.nav-btn.active) {
         toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
       }
       // QUẢN LÝ PHIÊN BẢN VÀ NHẬT KÝ CẬP NHẬT DỮ LIỆU
-      const APP_VERSION = "8.21";
+      const APP_VERSION = "8.22";
       const DATA_UPDATE_HISTORY_KEY = "nha_bap_data_update_history_v1";
       function readDataUpdateHistory() {
         try { const v = JSON.parse(localStorage.getItem(DATA_UPDATE_HISTORY_KEY) || "[]"); return Array.isArray(v) ? v : []; }
@@ -2900,6 +2900,7 @@ button[type="submit"],.nav-btn.active) {
       }
 
       const APP_CHANGELOG = [
+        {v:"8.22", title:"Lợi nhuận gộp = TK + TM; đồng bộ đối soát và mốc sổ quỹ", changes:["Lợi nhuận gộp được tính trực tiếp bằng tổng số dư TK + TM.","Số dư đầu kỳ trong Thiết lập sổ quỹ là mốc đầu ngày; giao dịch bán hàng, chi phí và chuyển quỹ từ chính ngày bắt đầu vẫn được tính.","Khi đối soát, ứng dụng tính đầy đủ giao dịch trong ngày trước, sau đó ghi đè TK/TM bằng số thực tế đã xác nhận tại cuối ngày.","Chênh lệch đối soát dương được phản ánh vào doanh thu; chênh lệch âm được phản ánh vào chi phí để báo cáo khớp với TK + TM.","Mỗi lần xác nhận lưu snapshot cả TK và TM, kể cả tài khoản không lệch; dữ liệu đối soát cũ được khôi phục snapshot còn thiếu để tránh số dư sai sau nâng cấp.","Lợi nhuận ngày được tính bằng chênh lệch tổng TK + TM giữa cuối ngày đang xem và cuối ngày trước đó."]},
         {v:"8.21", title:"Sửa ghi đè số dư sổ quỹ theo ngày chốt", changes:["Thiết lập sổ quỹ được xác định là số dư thực tế chốt tại ngày đã chọn, ghi đè TK/TM tại ngày đó.","Không cộng/trừ lại thu chi, chuyển nội bộ hoặc điều chỉnh trong ngày chốt và các ngày trước đó; chỉ tính phát sinh từ ngày kế tiếp.","Giữ nguyên doanh thu, chi phí và lợi nhuận lịch sử; thao tác thiết lập số dư không tạo giao dịch thu/chi."]},
         {v:"8.20", title:"Thiết lập sổ quỹ ghi đè số dư TK/TM", changes:["Bổ sung cơ chế xác nhận khi lưu số dư đầu kỳ trong Thiết lập sổ quỹ.","Số dư tiền mặt và ngân hàng được dùng làm số dư gốc thay thế số dư TK/TM cũ, không cộng dồn với giá trị trước đó.","Việc khai báo số dư không tạo giao dịch thu/chi và không làm thay đổi doanh thu, chi phí hoặc lợi nhuận."]},
         {v:"8.19", title:"Đối soát cập nhật số dư thực tế vào TK/TM", changes:["Sau khi xác nhận đối soát, số tiền thực tế của từng tài khoản được ghi nhận làm số dư TK/TM tương ứng.","Số dư thực tế thay thế số dư trên sổ tại mốc đối soát; không cộng chồng khoản chênh lệch vào số dư cũ.","Phân biệt cập nhật số dư quỹ với bút toán điều chỉnh doanh thu/chi phí phục vụ báo cáo lợi nhuận."]},
@@ -5792,12 +5793,14 @@ button[type="submit"],.nav-btn.active) {
             displaySplit = { tk: 0, tm: 0 };
           }
 
-          const dailyProfit = rev - cost;
-          grossProfit = prevCumProfit + dailyProfit;
-
-          if (cumSplitMap[targetDayIso]) {
-            displaySplit = { ...cumSplitMap[targetDayIso] };
-          }
+          const targetBalance = cumSplitMap[targetDayIso] || (() => {
+            const f = getReconcileBookValues(targetDayIso);
+            return { tk:f.bookTk, tm:f.bookTm };
+          })();
+          displaySplit = { ...targetBalance };
+          grossProfit = displaySplit.tk + displaySplit.tm;
+          // Lợi nhuận ngày là phần thay đổi số dư TK+TM trong ngày, bao gồm chênh lệch đối soát.
+          const dailyProfit = grossProfit - prevCumProfit;
 
           const dailyMargin = rev > 0 ? (dailyProfit / rev) * 100 : 0;
 
@@ -5817,23 +5820,16 @@ button[type="submit"],.nav-btn.active) {
           if (dailyMarginEl) dailyMarginEl.textContent = `Tỷ suất: ${dailyMargin.toFixed(1)}%`;
           document.getElementById("rep-daily-profit-sub").textContent = `Hôm qua (${formatShortDate(prevDayIso)}): ${formatMoney(prevCumProfit)}`;
         } else {
-          if (currentPeriod === "week") {
-            const weekDates = data.map(r => r.date).filter(Boolean).sort();
-            const lastWeekDate = weekDates.length ? weekDates[weekDates.length - 1] : "";
-            grossProfit = lastWeekDate ? (cumGrossProfitMap[lastWeekDate] || 0) : 0;
-            displaySplit = lastWeekDate && cumSplitMap[lastWeekDate] ? { ...cumSplitMap[lastWeekDate] } : { tk: 0, tm: 0 };
-          }
-          if (currentPeriod === "month") {
-            const ym = TODAY.slice(0, 7);
-            const monthDates = allUniqueDates.filter(d => d.startsWith(ym));
-            if (monthDates.length > 0) {
-              const lastMonthDate = monthDates[monthDates.length - 1];
-              grossProfit = cumGrossProfitMap[lastMonthDate] || 0;
-              displaySplit = { ...cumSplitMap[lastMonthDate] };
-            } else {
-              grossProfit = 0;
-              displaySplit = { tk: 0, tm: 0 };
-            }
+          // Thẻ lợi nhuận gộp luôn hiển thị tổng TK + TM lũy kế đến hiện tại,
+          // còn doanh thu và chi phí vẫn tuân theo bộ lọc thời gian đang chọn.
+          const latestBalanceDate = allUniqueDates.filter(d => d <= TODAY).slice(-1)[0];
+          if (latestBalanceDate && cumSplitMap[latestBalanceDate]) {
+            displaySplit = { ...cumSplitMap[latestBalanceDate] };
+            grossProfit = displaySplit.tk + displaySplit.tm;
+          } else {
+            const f = getReconcileBookValues(TODAY);
+            displaySplit = { tk:f.bookTk, tm:f.bookTm };
+            grossProfit = displaySplit.tk + displaySplit.tm;
           }
 
           const margin = rev > 0 ? ((rev - cost) / rev) * 100 : 0;
@@ -6091,7 +6087,12 @@ button[type="submit"],.nav-btn.active) {
         const openingTm = Number(document.getElementById("fund-opening-tm").value);
         const openingTk = Number(document.getElementById("fund-opening-tk").value);
         if (!startDate || !Number.isFinite(openingTm) || !Number.isFinite(openingTk) || openingTm < 0 || openingTk < 0) { showToast("Vui lòng nhập ngày và số dư đầu kỳ hợp lệ."); return; }
-        if (!confirm(`XÁC NHẬN GHI ĐÈ SỐ DƯ SỔ QUỸ TẠI NGÀY ${formatVNDate(startDate)}?\n\nTiền mặt (TM): ${formatMoney(openingTm)}\nNgân hàng (TK): ${formatMoney(openingTk)}\n\nHai số tiền trên sẽ là số dư chốt chính xác của TK/TM tại ngày đã chọn. Không cộng/trừ lại giao dịch trong ngày chốt hoặc các ngày trước đó. Chỉ giao dịch từ ngày tiếp theo mới được cộng/trừ. Thao tác này không tạo doanh thu hoặc chi phí.`)) return;
+        if (!confirm(`XÁC NHẬN GHI ĐÈ MỐC SỔ QUỸ TẠI NGÀY ${formatVNDate(startDate)}?
+
+Tiền mặt (TM) đầu ngày: ${formatMoney(openingTm)}
+Ngân hàng (TK) đầu ngày: ${formatMoney(openingTk)}
+
+Hai số dư này thay thế hoàn toàn mốc TK/TM cũ. Giao dịch bán hàng, chi phí và chuyển tiền từ chính ngày đã chọn trở đi vẫn được tính bình thường. Lợi nhuận gộp = TK + TM. Thao tác đặt mốc không tự tạo doanh thu hoặc chi phí.`)) return;
         fundSettings = { startDate, openingTm, openingTk, updatedAt:new Date().toISOString() };
         saveFundSettings(); renderFundSettings(); renderReconcileBook(); renderReport(); renderFundLedgerHistory(); showToast("Đã ghi đè số dư TK/TM tại ngày chốt và cập nhật báo cáo.");
       });
@@ -6117,6 +6118,42 @@ button[type="submit"],.nav-btn.active) {
       // ======================================================================
       let lastRecDiffs = null;
 
+      // Áp dụng luồng tiền theo từng ngày: số dư đầu kỳ là mốc đầu ngày;
+      // giao dịch trong ngày được tính trước, sau đó snapshot đối soát (nếu có) ghi đè cuối ngày.
+      function applyFundDayMovements(dateIso, balances, sourceRecords = records, adjustmentSource = fundAdjustments) {
+        let bookTm = balances.tm, bookTk = balances.tk;
+        let thuTk = 0, thuTm = 0, chiTk = 0, chiTm = 0;
+        sourceRecords.filter(r => r.date === dateIso && !r.reconcilePnlOnly).forEach(r => {
+          const amount = Number(r.amount) || 0;
+          if (r.type === "thu") {
+            thuTk += Number(r.tk) || 0;
+            thuTm += Number(r.tm) || 0;
+          } else if (r.method === "tk") chiTk += amount;
+          else chiTm += amount;
+        });
+        bookTk += thuTk - chiTk;
+        bookTm += thuTm;
+        if (chiTm > 0) {
+          const fromCash = Math.min(bookTm, chiTm);
+          bookTm -= fromCash;
+          if (chiTm > fromCash) bookTk -= (chiTm - fromCash);
+        }
+        fundTransfers.filter(t => t.date === dateIso).forEach(t => {
+          const amount = Number(t.amount) || 0;
+          if (t.from === "tm") { bookTm -= amount; bookTk += amount; }
+          else { bookTk -= amount; bookTm += amount; }
+        });
+        adjustmentSource.filter(a => a.date === dateIso)
+          .slice().sort((a,b) => String(a.createdAt || "").localeCompare(String(b.createdAt || "")))
+          .forEach(a => {
+            const delta = Number(a.delta) || 0;
+            const hasActual = a.actual !== undefined && a.actual !== null && a.actual !== "" && Number.isFinite(Number(a.actual));
+            if (a.account === "tm") bookTm = hasActual ? Number(a.actual) : bookTm + delta;
+            else if (a.account === "tk") bookTk = hasActual ? Number(a.actual) : bookTk + delta;
+          });
+        return { tm: bookTm, tk: bookTk };
+      }
+
       function computeCumulativeFundsTimeline(sourceRecords = records) {
         const startDate = fundSettings && fundSettings.startDate ? fundSettings.startDate : ((sourceRecords.map(r => r.date).filter(Boolean).sort()[0]) || TODAY);
         const allUniqueDates = Array.from(new Set([
@@ -6127,49 +6164,19 @@ button[type="submit"],.nav-btn.active) {
         ])).filter(Boolean).sort((a, b) => a.localeCompare(b));
         const cumGrossProfitMap = {};
         const cumSplitMap = {};
-        let runningProfit = 0, runningTk = 0, runningTm = 0;
+        let runningTk = 0, runningTm = 0, runningProfit = 0;
         allUniqueDates.forEach(dIso => {
-          const dayItems = sourceRecords.filter(r => r.date === dIso);
-          let dRev = 0, dCost = 0, dThuTk = 0, dThuTm = 0, dChiTk = 0, dChiTm = 0;
-          dayItems.forEach(r => {
-            const amt = Number(r.amount) || 0;
-            if (r.type === "thu") {
-              dRev += amt;
-              if (!r.reconcilePnlOnly) { dThuTk += Number(r.tk) || 0; dThuTm += Number(r.tm) || 0; }
-            } else {
-              dCost += amt;
-              if (!r.reconcilePnlOnly) { if (r.method === "tk") dChiTk += amt; else dChiTm += amt; }
-            }
-          });
-          runningProfit += dRev - dCost;
           if (dIso === startDate) {
             runningTm = Math.max(0, Number(fundSettings.openingTm) || 0);
             runningTk = Math.max(0, Number(fundSettings.openingTk) || 0);
           }
-          // startDate là ngày CHỐT số dư thực tế (cuối ngày), không phải số dư trước giao dịch.
-          // Vì vậy bỏ qua mọi dòng tiền trong ngày chốt; chỉ tính phát sinh từ ngày kế tiếp.
-          if (dIso > startDate) {
-            runningTk += dThuTk - dChiTk;
-            runningTm += dThuTm;
-            if (dChiTm > 0) {
-              const fromCash = Math.min(runningTm, dChiTm);
-              runningTm -= fromCash;
-              if (dChiTm > fromCash) runningTk -= (dChiTm - fromCash);
-            }
-            fundTransfers.filter(t => t.date === dIso).forEach(t => {
-              const amount = Number(t.amount) || 0;
-              if (t.from === "tm") { runningTm -= amount; runningTk += amount; }
-              else { runningTk -= amount; runningTm += amount; }
-            });
-            fundAdjustments.filter(a => a.date === dIso).forEach(a => {
-              const delta = Number(a.delta) || 0;
-              // Sau đối soát, số thực tế đã xác nhận là số dư chuẩn của tài khoản tại ngày đó.
-              // Dùng actual để thay thế số dư tính toán, không cộng chồng chênh lệch lần nữa.
-              const hasActual = a.actual !== undefined && a.actual !== null && a.actual !== "" && Number.isFinite(Number(a.actual));
-              if (a.account === "tm") runningTm = hasActual ? Number(a.actual) : runningTm + delta;
-              else if (a.account === "tk") runningTk = hasActual ? Number(a.actual) : runningTk + delta;
-            });
+          if (dIso >= startDate) {
+            const next = applyFundDayMovements(dIso, { tm:runningTm, tk:runningTk }, sourceRecords);
+            runningTm = next.tm;
+            runningTk = next.tk;
           }
+          // Lợi nhuận gộp luôn bằng tổng số dư TK + TM.
+          runningProfit = runningTk + runningTm;
           cumGrossProfitMap[dIso] = runningProfit;
           cumSplitMap[dIso] = { tk: runningTk, tm: runningTm };
         });
@@ -6179,40 +6186,18 @@ button[type="submit"],.nav-btn.active) {
       function getReconcileBookValues(dateIso, sourceRecords = records) {
         const startDate = fundSettings && fundSettings.startDate ? fundSettings.startDate : ((sourceRecords.map(r => r.date).filter(Boolean).sort()[0]) || TODAY);
         if (dateIso < startDate) return { bookTm: 0, bookTk: 0, bookTotal: 0, startDate };
-        let bookTm = Math.max(0, Number(fundSettings.openingTm) || 0);
-        let bookTk = Math.max(0, Number(fundSettings.openingTk) || 0);
-        const relevant = sourceRecords.filter(r => r.date && r.date > startDate && r.date <= dateIso).slice().sort((a,b) => String(a.date).localeCompare(String(b.date)));
-        relevant.forEach(r => {
-          if (r.reconcilePnlOnly) return;
-          const amount = Number(r.amount) || 0;
-          if (r.type === "thu") {
-            const tk = Number(r.tk) || 0, tm = Number(r.tm) || 0;
-            bookTk += tk; bookTm += tm;
-          } else {
-            if (r.method === "tk") bookTk -= amount;
-            else {
-              const fromCash = Math.min(bookTm, amount);
-              bookTm -= fromCash;
-              if (amount > fromCash) bookTk -= (amount - fromCash);
-            }
-          }
-        });
-        fundTransfers.filter(t => t.date > startDate && t.date <= dateIso).forEach(t => {
-          const amount = Number(t.amount) || 0;
-          if (t.from === "tm") { bookTm -= amount; bookTk += amount; }
-          else { bookTk -= amount; bookTm += amount; }
-        });
-        fundAdjustments.filter(a => a.date > startDate && a.date <= dateIso)
-          .slice().sort((a,b) => String(a.date).localeCompare(String(b.date)) || String(a.createdAt || "").localeCompare(String(b.createdAt || "")))
-          .forEach(a => {
-            const delta = Number(a.delta) || 0;
-            // Số thực tế sau đối soát ghi đè số dư tài khoản tại ngày đối soát.
-            // Các ngày sau đó tiếp tục cộng/trừ giao dịch phát sinh bình thường.
-            const hasActual = a.actual !== undefined && a.actual !== null && a.actual !== "" && Number.isFinite(Number(a.actual));
-            if (a.account === "tm") bookTm = hasActual ? Number(a.actual) : bookTm + delta;
-            else if (a.account === "tk") bookTk = hasActual ? Number(a.actual) : bookTk + delta;
-          });
-        return { bookTm, bookTk, bookTotal: bookTm + bookTk, startDate };
+        let balances = {
+          tm: Math.max(0, Number(fundSettings.openingTm) || 0),
+          tk: Math.max(0, Number(fundSettings.openingTk) || 0)
+        };
+        const dates = Array.from(new Set([
+          startDate,
+          ...sourceRecords.map(r => r.date).filter(d => d && d >= startDate && d <= dateIso),
+          ...fundTransfers.map(t => t.date).filter(d => d && d >= startDate && d <= dateIso),
+          ...fundAdjustments.map(a => a.date).filter(d => d && d >= startDate && d <= dateIso)
+        ])).sort((a,b) => a.localeCompare(b));
+        dates.forEach(d => { balances = applyFundDayMovements(d, balances, sourceRecords); });
+        return { bookTm: balances.tm, bookTk: balances.tk, bookTotal: balances.tm + balances.tk, startDate };
       }
 
       function renderFundLedgerHistory() {
@@ -6409,7 +6394,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
             </table>
           </div>
           <div class="insight-item warn" style="margin-top:10px; margin-bottom:0;">
-            Điều chỉnh sẽ được ghi riêng trong sổ quỹ và lịch sử kiểm toán, không tạo doanh thu hoặc chi phí.
+            Số dư TK/TM sẽ được ghi đè bằng số thực tế. Chênh lệch dương được ghi vào doanh thu; chênh lệch âm được ghi vào chi phí. Lợi nhuận gộp được tính lại bằng TK + TM.
           </div>
         `;
       });
@@ -6430,6 +6415,69 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
         saveRecords(true);
       }
 
+      // Khôi phục snapshot của tài khoản không lệch ở các lần đối soát cũ.
+      // Bản cũ không lưu tài khoản có chênh lệch bằng 0; khi tính cả giao dịch ngày bắt đầu,
+      // cần giữ lại số thực tế đã được xác nhận và bù đúng chênh lệch P&L phát sinh do thay đổi quy tắc.
+      function migrateLegacyReconcileSnapshotsV822() {
+        const migrationKey = "nha_bap_reconcile_snapshot_migration_v822_v1";
+        try { if (localStorage.getItem(migrationKey) === "1") return; } catch (e) {}
+        const originalAdjustments = fundAdjustments.slice();
+        const originalRecords = records.slice();
+        const reconcileDates = Array.from(new Set(originalAdjustments
+          .filter(a => a.actual !== undefined && a.actual !== null && a.actual !== "")
+          .map(a => a.date).filter(Boolean))).sort((a,b) => a.localeCompare(b));
+        let changed = false;
+        const startDate = fundSettings && fundSettings.startDate ? fundSettings.startDate : ((records.map(r => r.date).filter(Boolean).sort()[0]) || TODAY);
+        for (const dateIso of reconcileDates) {
+          const actualRows = fundAdjustments.filter(a => a.date === dateIso && a.actual !== undefined && a.actual !== null && a.actual !== "");
+          const hasTm = actualRows.some(a => a.account === "tm");
+          const hasTk = actualRows.some(a => a.account === "tk");
+          if (hasTm && hasTk) continue;
+
+          // Tính số trên sổ theo đúng quy tắc cũ để suy ra tài khoản đã khớp (không được lưu snapshot).
+          let legacy = { tm:Math.max(0, Number(fundSettings.openingTm) || 0), tk:Math.max(0, Number(fundSettings.openingTk) || 0) };
+          const legacyDates = Array.from(new Set([
+            ...originalRecords.map(r => r.date).filter(d => d && d > startDate && d <= dateIso),
+            ...fundTransfers.map(t => t.date).filter(d => d && d > startDate && d <= dateIso),
+            ...originalAdjustments.map(a => a.date).filter(d => d && d > startDate && d <= dateIso)
+          ])).sort((a,b) => a.localeCompare(b));
+          legacyDates.forEach(d => { legacy = applyFundDayMovements(d, legacy, originalRecords, originalAdjustments); });
+
+          // Tính số dư mới trước snapshot của ngày đối soát, có tính cả giao dịch trong ngày.
+          let current = { tm:Math.max(0, Number(fundSettings.openingTm) || 0), tk:Math.max(0, Number(fundSettings.openingTk) || 0) };
+          const currentDates = Array.from(new Set([
+            startDate,
+            ...records.map(r => r.date).filter(d => d && d >= startDate && d <= dateIso),
+            ...fundTransfers.map(t => t.date).filter(d => d && d >= startDate && d <= dateIso),
+            ...fundAdjustments.map(a => a.date).filter(d => d && d >= startDate && d <= dateIso)
+          ])).sort((a,b) => a.localeCompare(b));
+          currentDates.forEach(d => {
+            const adjustmentRows = d === dateIso ? fundAdjustments.filter(a => a.date !== dateIso) : fundAdjustments;
+            current = applyFundDayMovements(d, current, records, adjustmentRows);
+          });
+
+          for (const account of ["tm", "tk"]) {
+            if ((account === "tm" && hasTm) || (account === "tk" && hasTk)) continue;
+            const inferredActual = legacy[account];
+            const delta = inferredActual - current[account];
+            fundAdjustments.push({
+              id:"fund_adj_migrate_v822_" + dateIso + "_" + account,
+              date:dateIso, account, delta, actual:inferredActual,
+              note:"Khôi phục snapshot tài khoản đã khớp từ lần đối soát trước",
+              createdAt:new Date().toISOString(), migratedV822:true
+            });
+            if (delta !== 0) addReconcileProfitRecords(dateIso, account === "tm" ? delta : 0, account === "tk" ? delta : 0, "Cân chỉnh dữ liệu khi nâng cấp 8.22", "rec_pnl_migrate_v822_");
+            changed = true;
+          }
+        }
+        if (changed) {
+          saveFundAdjustments();
+          logDataUpdate("Khôi phục snapshot đối soát 8.22", "Bổ sung số dư thực tế cho tài khoản không lệch ở các lần đối soát cũ và cân chỉnh báo cáo theo TK + TM.", 0, reconcileDates.length);
+        }
+        try { localStorage.setItem(migrationKey, "1"); } catch (e) {}
+      }
+      migrateLegacyReconcileSnapshotsV822();
+
       document.getElementById("btn-rec-sync").addEventListener("click", () => {
         if (!lastRecDiffs) return;
         const { dateIso, actualTm, actualTk } = lastRecDiffs;
@@ -6439,8 +6487,8 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
         if (diffTm === 0 && diffTk === 0) { showToast("Sổ quỹ đã khớp, không cần điều chỉnh."); return; }
         if (!confirm(`Xác nhận điều chỉnh sổ quỹ ngày ${formatVNDate(dateIso)}?\nTiền mặt: ${diffTm >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffTm))}\nNgân hàng: ${diffTk >= 0 ? "+" : "−"}${formatMoney(Math.abs(diffTk))}\n\nChênh lệch dương sẽ cộng vào doanh thu và lợi nhuận; chênh lệch âm sẽ ghi vào chi phí và giảm lợi nhuận.`)) return;
         const stamp = new Date().toISOString();
-        if (diffTm !== 0) fundAdjustments.push({ id:"fund_adj_" + Date.now() + "_tm", date:dateIso, account:"tm", delta:diffTm, note:userNote || "Điều chỉnh sau đối soát", bookBefore:latest.bookTm, actual:actualTm, createdAt:stamp });
-        if (diffTk !== 0) fundAdjustments.push({ id:"fund_adj_" + Date.now() + "_tk", date:dateIso, account:"tk", delta:diffTk, note:userNote || "Điều chỉnh sau đối soát", bookBefore:latest.bookTk, actual:actualTk, createdAt:stamp });
+        fundAdjustments.push({ id:"fund_adj_" + Date.now() + "_tm", date:dateIso, account:"tm", delta:diffTm, note:userNote || "Đối soát số dư thực tế", bookBefore:latest.bookTm, actual:actualTm, createdAt:stamp });
+        fundAdjustments.push({ id:"fund_adj_" + Date.now() + "_tk", date:dateIso, account:"tk", delta:diffTk, note:userNote || "Đối soát số dư thực tế", bookBefore:latest.bookTk, actual:actualTk, createdAt:stamp });
         addReconcileProfitRecords(dateIso, diffTm, diffTk, userNote || "Điều chỉnh sau đối soát");
         saveFundAdjustments(); renderFundLedgerHistory(); renderReconcileBook(); renderReport();
         document.getElementById("rec-actual-tm").value = actualTm;
@@ -11678,8 +11726,8 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
           "- Dữ liệu tab Báo Cáo có thể truy xuất và chỉnh sửa thông qua các giao dịch nguồn. Khi người dùng yêu cầu sửa/xóa một khoản thu hoặc chi trong báo cáo, phải truy vấn dataset=report hoặc records để xác định đúng ID; sau đó dùng record_update/record_delete. Ứng dụng sẽ luôn hiển thị thẻ xác nhận, không tự ghi thay đổi. Không sửa số tổng hợp trực tiếp vì số tổng được tính lại từ giao dịch nguồn.",
           "- ĐỐI SOÁT QUỸ: Khi người dùng hỏi số dư quỹ/số tiền trên sổ, dùng fund_status. Khi người dùng cung cấp số tiền mặt thực đếm và số dư ngân hàng thực tế, dùng fund_check. Nếu thiếu một trong hai số thực tế, hãy hỏi lại; không tự giả định bằng 0.",
           "- ĐỐI SOÁT VÀ ĐIỀU CHỈNH: Khi fund_check phát hiện lệch, ứng dụng tự hiển thị thẻ xác nhận điều chỉnh tùy chọn; không ghi sổ cho đến khi người dùng bấm nút. fund_adjust chỉ dùng khi người dùng nói rõ muốn tạo đề nghị điều chỉnh. Không tự suy diễn đồng ý điều chỉnh chỉ từ việc người dùng cung cấp số thực tế.",
-          "- Điều chỉnh quỹ được lưu riêng trong fundAdjustments; tuyệt đối không tạo giao dịch thu/chi và không ảnh hưởng báo cáo doanh thu, chi phí hoặc lợi nhuận.",
-          "- Sổ quỹ có số dư đầu kỳ (fundSettings.startDate, openingTm, openingTk), giao dịch thu/chi, chuyển nội bộ (fundTransfers) và điều chỉnh quỹ riêng. Số dư quỹ chỉ tính giao dịch từ ngày bắt đầu theo dõi trở đi. Chi phí method='tk' trừ ngân hàng; chi phí còn lại trừ tiền mặt trước, nếu thiếu mới trừ phần còn thiếu vào ngân hàng.",
+          "- ĐỐI SOÁT: fundAdjustments lưu snapshot số dư thực tế cuối ngày. Chênh lệch dương phải tạo khoản thu điều chỉnh; chênh lệch âm phải tạo khoản chi điều chỉnh để báo cáo khớp với TK + TM. Không tính dòng P&L-only vào luồng tiền lần thứ hai.",
+          "- Sổ quỹ có số dư đầu ngày (fundSettings.startDate, openingTm, openingTk), giao dịch thu/chi, chuyển nội bộ (fundTransfers) và snapshot đối soát. Tính cả giao dịch từ chính ngày bắt đầu theo dõi; trong ngày đối soát tính giao dịch trước rồi ghi đè bằng số thực tế cuối ngày. Lợi nhuận gộp = TK + TM. Chi phí method='tk' trừ ngân hàng; chi phí còn lại trừ tiền mặt trước, nếu thiếu mới trừ phần còn thiếu vào ngân hàng.",
           "- Khi người dùng hỏi chi tiết giao dịch, công nợ đã thanh toán, lịch sử kho, nhà cung cấp, nguyên liệu, nội dung Sổ Tay hoặc dữ liệu cũ: hãy dùng action data_query với dataset và từ khóa phù hợp; không được đoán nếu dữ liệu chưa có trong prompt.",
           "- Với mọi thao tác sửa/xóa dữ liệu cũ, chỉ tạo action *_update hoặc *_delete kèm ID chính xác và fields cần thay đổi; ứng dụng sẽ hiển thị nút xác nhận trước khi ghi thật.",
           "- Không tự bịa ID. Chỉ dùng ID có trong dữ liệu được cung cấp hoặc kết quả truy vấn.",
@@ -12715,8 +12763,8 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
           const dTm = actualTm - latest.bookTm, dTk = actualTk - latest.bookTk;
           if (dTm === 0 && dTk === 0) { detail.textContent += "\n\n✅ Sổ đã khớp, không cần điều chỉnh."; yes.disabled=true; no.disabled=true; return; }
           const stamp = new Date().toISOString();
-          if (dTm !== 0) fundAdjustments.push({ id:"fund_adj_chat_"+Date.now()+"_tm", date:dateIso, account:"tm", delta:dTm, note, bookBefore:latest.bookTm, actual:actualTm, createdAt:stamp });
-          if (dTk !== 0) fundAdjustments.push({ id:"fund_adj_chat_"+Date.now()+"_tk", date:dateIso, account:"tk", delta:dTk, note, bookBefore:latest.bookTk, actual:actualTk, createdAt:stamp });
+          fundAdjustments.push({ id:"fund_adj_chat_"+Date.now()+"_tm", date:dateIso, account:"tm", delta:dTm, note, bookBefore:latest.bookTm, actual:actualTm, createdAt:stamp });
+          fundAdjustments.push({ id:"fund_adj_chat_"+Date.now()+"_tk", date:dateIso, account:"tk", delta:dTk, note, bookBefore:latest.bookTk, actual:actualTk, createdAt:stamp });
           addReconcileProfitRecords(dateIso, dTm, dTk, note, "rec_pnl_chat_");
           saveFundAdjustments(); renderFundLedgerHistory(); renderReconcileBook(); renderReport();
           const verified = getReconcileBookValues(dateIso);
