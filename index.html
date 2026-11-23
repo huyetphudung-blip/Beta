@@ -3864,8 +3864,10 @@ body.pos-order-fullscreen-active{touch-action:none}
         </div>
       </button>
 
-      <!-- Giữ input ẩn tương thích với mã cài đặt cũ; đã gỡ toàn bộ thẻ Trợ lý & Tương tác. -->
+      <!-- Hidden compatibility controls: retained for legacy JavaScript; no visible settings card. -->
       <input type="checkbox" id="chat-bubble-toggle" hidden aria-hidden="true" style="display:none!important;" />
+      <input type="checkbox" id="fun-assistant-toggle" hidden aria-hidden="true" style="display:none!important;" />
+      <input type="checkbox" id="visual-assistant-toggle" hidden aria-hidden="true" style="display:none!important;" />
 
       <input type="file" id="input-restore-file" accept=".json,application/json" style="display:none;" />
 
@@ -3948,23 +3950,7 @@ body.pos-order-fullscreen-active{touch-action:none}
           <span style="color:var(--muted); font-size:18px; font-weight:700;">›</span>
         </div>
       </button>
-
-      <button type="button" class="journal-bar" id="btn-open-donate-dev" style="border-color:#FBCFE8; background:linear-gradient(135deg, #FFF1F2 0%, #FFFFFF 100%);">
-        <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-          <span style="width:38px; height:38px; flex-shrink:0; border-radius:10px; background:#FCE7F3; color:#DB2777; display:inline-flex; align-items:center; justify-content:center; font-size:19px;">
-            ❤️
-          </span>
-          <div style="text-align:left; min-width:0;">
-            <div style="font-weight:700; font-size:14.5px; color:#9D174D;">Ủng hộ nhà phát triển</div>
-            <div style="font-size:12px; color:var(--muted);">Mời cà phê, tô phở hoặc nồi lẩu tiếp sức tác giả</div>
-          </div>
-        </div>
-        <div style="display:flex; align-items:center; gap:6px; flex-shrink:0;">
-          <span style="background:#FCE7F3; color:#DB2777; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:700;">MoMo / VietQR</span>
-          <span style="color:#DB2777; font-size:18px; font-weight:700;">›</span>
-        </div>
-      </button>
-    </section>
+</section>
 
   </main>
 
@@ -4484,7 +4470,7 @@ body.pos-order-fullscreen-active{touch-action:none}
         toastTimer = setTimeout(() => toastEl.classList.remove("show"), 2600);
       }
       // QUẢN LÝ PHIÊN BẢN VÀ NHẬT KÝ CẬP NHẬT DỮ LIỆU
-      const APP_VERSION = "9.18";
+      const APP_VERSION = "1.0";
       const versionBadge = document.getElementById("app-version-badge");
       if (versionBadge) versionBadge.textContent = `v${APP_VERSION}`;
       const DATA_UPDATE_HISTORY_KEY = "nha_bap_data_update_history_v1";
@@ -4523,7 +4509,7 @@ body.pos-order-fullscreen-active{touch-action:none}
         document.getElementById("m-close-data-history").addEventListener("click", closeModal);
       }
 
-      const APP_CHANGELOG = [{v:"9.18", title:"Xóa thẻ Trợ lý & Tương tác khỏi Cài đặt", changes:["Xóa hoàn toàn thẻ Trợ lý & Tương tác khỏi danh sách Cài đặt, không còn tiêu đề, mô tả hoặc nút mở mục này.","Giữ Chatbox AI tiêu chuẩn và các thiết lập AI khác; giữ input ẩn tương thích để không gây lỗi cho mã cài đặt cũ."]},{v:"9.17", title:"Gỡ Bắp Voice 2.0 và Tương tác trực quan", changes:["Gỡ các tùy chọn Trợ lý vui nhộn và Tương tác trực quan khỏi Cài đặt.","Tắt hoàn toàn trạng thái kích hoạt Bắp Voice và nhân vật quả bắp, kể cả khi thiết bị từng lưu thiết lập bật.","Ẩn khung thoại truyện tranh, bảng điều khiển giọng nói và nhân vật hoạt hình; giữ nguyên Chatbox AI tiêu chuẩn và các chức năng quản lý khác."]},{v:"9.16", title:"Bắp Voice 2.1 – hợp nhất gửi/nhận dữ liệu", changes:["Dùng chung một pipeline hội thoại cho Chatbox chữ, giọng nói nhận diện thành văn bản và audio dự phòng: prompt nghiệp vụ, truy vấn dữ liệu, thực thi action và phản hồi.","Voice nhận diện trực tiếp gửi nguyên văn bản nhận diện vào pipeline Chatbox; không chỉ dừng ở ghi âm/đọc lại nội dung.","Audio dự phòng gửi âm thanh kèm chỉ dẫn nghe tiếng Việt, sau đó đi qua cùng bước truy vấn dữ liệu và thực thi action như Chatbox.","Giữ nguyên cơ chế xác nhận trước khi ghi/sửa/xóa dữ liệu; kết quả và các nút thao tác được hiển thị trong cùng giao diện hội thoại."]},{v:"9.15", title:"Tối ưu tốc độ AI Chatbox", changes:["Tạo lộ trình gọi API nhanh riêng cho Chatbox: tối đa 2 model thay vì lần lượt thử toàn bộ chuỗi dự phòng.","Bỏ retry chờ lâu trong Chatbox; lỗi tạm thời sẽ chuyển nhanh sang model dự phòng, các tác vụ AI chuyên biệt khác vẫn giữ cơ chế retry cũ.","Khi cần tìm kiếm web, ưu tiên một lượt Search trên model chính rồi mới hạ cấp có kiểm soát; loại bỏ cặp model/chế độ gọi trùng.","Giới hạn đầu ra Chatbox ở mức 2.048 token để giảm thời gian sinh câu trả lời dài không cần thiết; giữ nguyên truy vấn dữ liệu nội bộ và bước xác nhận thao tác."]},{v:"9.14", title:"Ổn định hóa Bắp Voice 2.0", changes:["Sửa bộ đếm lỗi nhận dạng để không bị đặt lại sau mỗi lần Web Speech API khởi động lại; chuyển sang ghi âm Gemini khi dịch vụ nhận dạng liên tục lỗi.","Chống xử lý trùng câu nói khi trình duyệt tự kết thúc phiên nhận dạng bằng cách hủy bộ hẹn giờ còn tồn tại.","Tăng khoảng chờ sau câu cuối để hạn chế cắt mất phần tiếp theo khi người dùng ngừng ngắn giữa các món hoặc số lượng.","Đồng bộ lại trạng thái nghe và xử lý khi chuyển giữa nhận dạng trực tiếp và ghi âm dự phòng."]},{v:"9.13", title:"Bắp Voice 2.0 – trợ lý giọng nói liên tục", changes:["Thay tương tác giọng nói của Trợ lý vui nhộn bằng nhận dạng tiếng Việt liên tục qua Web Speech API khi trình duyệt hỗ trợ; tự kết thúc từng lượt theo khoảng lặng và tự nghe lại sau khi trả lời.","Hiển thị và đọc lại bản nhận diện trước khi gửi nội dung văn bản cho Gemini; giữ nguyên câu nói gốc để đối chiếu.","Gemini xử lý câu nói tự nhiên qua cùng luồng Chatbox, tiếp tục dùng cơ chế xác nhận thao tác hiện có; đọc câu trả lời bằng Speech Synthesis khi khả dụng.","Đọc cảnh báo kinh doanh mức cao thành tiếng trong phiên trợ lý giọng nói đang hoạt động; bổ sung dừng/tạm dừng phiên nghe.","Trình duyệt không hỗ trợ Speech Recognition sẽ dùng luồng ghi âm Gemini dự phòng hiện có; không yêu cầu thêm khóa Speech-to-Text riêng."]},{v:"9.12", title:"Nâng cấp tìm kiếm web và truy vấn dữ liệu Bắp AI", changes:["Chatbox chính tự bật Google Search Grounding khi câu hỏi cần thông tin web mới; câu hỏi số liệu nội bộ tiếp tục ưu tiên dữ liệu thật trong ứng dụng.","Hiển thị liên kết nguồn web do Gemini trả về khi có grounding metadata; không tự tạo nguồn khi API không cung cấp.","Tăng giới hạn truy vấn dữ liệu nội bộ từ 3 lên 5 tập dữ liệu trong một lượt; vẫn thông báo khi danh sách bị giới hạn.","Dùng bộ tách JSON theo cân bằng ngoặc để giảm lỗi khi phản hồi AI có dấu ngoặc trong nội dung; thống nhất tầng gọi Gemini của Chatbox.","Chuẩn hóa retry một lần cho lỗi mạng/tạm thời trước khi chuyển mô hình dự phòng."]},
+      const APP_CHANGELOG = [{v:"1.0", title:"Phát hành chính thức Nhà Bắp v1.0", changes:["Đánh dấu phiên bản hiện tại là bản phát hành chính thức v1.0.","Gỡ thẻ Trợ lý & Tương tác khỏi Cài đặt nhưng giữ các phần tử tương thích ẩn để không làm gián đoạn JavaScript.","Gỡ thẻ Ủng hộ nhà phát triển và toàn bộ chức năng mở cửa sổ donate.","Giữ nguyên các chức năng quản lý, bán hàng, kho, báo cáo và dữ liệu hiện có."]},{v:"9.17.1", title:"Gỡ Bắp Voice 2.0 và Tương tác trực quan", changes:["Gỡ các tùy chọn Trợ lý vui nhộn và Tương tác trực quan khỏi Cài đặt.","Tắt hoàn toàn trạng thái kích hoạt Bắp Voice và nhân vật quả bắp, kể cả khi thiết bị từng lưu thiết lập bật.","Ẩn khung thoại truyện tranh, bảng điều khiển giọng nói và nhân vật hoạt hình; giữ nguyên Chatbox AI tiêu chuẩn và các chức năng quản lý khác."]},{v:"9.16", title:"Bắp Voice 2.1 – hợp nhất gửi/nhận dữ liệu", changes:["Dùng chung một pipeline hội thoại cho Chatbox chữ, giọng nói nhận diện thành văn bản và audio dự phòng: prompt nghiệp vụ, truy vấn dữ liệu, thực thi action và phản hồi.","Voice nhận diện trực tiếp gửi nguyên văn bản nhận diện vào pipeline Chatbox; không chỉ dừng ở ghi âm/đọc lại nội dung.","Audio dự phòng gửi âm thanh kèm chỉ dẫn nghe tiếng Việt, sau đó đi qua cùng bước truy vấn dữ liệu và thực thi action như Chatbox.","Giữ nguyên cơ chế xác nhận trước khi ghi/sửa/xóa dữ liệu; kết quả và các nút thao tác được hiển thị trong cùng giao diện hội thoại."]},{v:"9.15", title:"Tối ưu tốc độ AI Chatbox", changes:["Tạo lộ trình gọi API nhanh riêng cho Chatbox: tối đa 2 model thay vì lần lượt thử toàn bộ chuỗi dự phòng.","Bỏ retry chờ lâu trong Chatbox; lỗi tạm thời sẽ chuyển nhanh sang model dự phòng, các tác vụ AI chuyên biệt khác vẫn giữ cơ chế retry cũ.","Khi cần tìm kiếm web, ưu tiên một lượt Search trên model chính rồi mới hạ cấp có kiểm soát; loại bỏ cặp model/chế độ gọi trùng.","Giới hạn đầu ra Chatbox ở mức 2.048 token để giảm thời gian sinh câu trả lời dài không cần thiết; giữ nguyên truy vấn dữ liệu nội bộ và bước xác nhận thao tác."]},{v:"9.14", title:"Ổn định hóa Bắp Voice 2.0", changes:["Sửa bộ đếm lỗi nhận dạng để không bị đặt lại sau mỗi lần Web Speech API khởi động lại; chuyển sang ghi âm Gemini khi dịch vụ nhận dạng liên tục lỗi.","Chống xử lý trùng câu nói khi trình duyệt tự kết thúc phiên nhận dạng bằng cách hủy bộ hẹn giờ còn tồn tại.","Tăng khoảng chờ sau câu cuối để hạn chế cắt mất phần tiếp theo khi người dùng ngừng ngắn giữa các món hoặc số lượng.","Đồng bộ lại trạng thái nghe và xử lý khi chuyển giữa nhận dạng trực tiếp và ghi âm dự phòng."]},{v:"9.13", title:"Bắp Voice 2.0 – trợ lý giọng nói liên tục", changes:["Thay tương tác giọng nói của Trợ lý vui nhộn bằng nhận dạng tiếng Việt liên tục qua Web Speech API khi trình duyệt hỗ trợ; tự kết thúc từng lượt theo khoảng lặng và tự nghe lại sau khi trả lời.","Hiển thị và đọc lại bản nhận diện trước khi gửi nội dung văn bản cho Gemini; giữ nguyên câu nói gốc để đối chiếu.","Gemini xử lý câu nói tự nhiên qua cùng luồng Chatbox, tiếp tục dùng cơ chế xác nhận thao tác hiện có; đọc câu trả lời bằng Speech Synthesis khi khả dụng.","Đọc cảnh báo kinh doanh mức cao thành tiếng trong phiên trợ lý giọng nói đang hoạt động; bổ sung dừng/tạm dừng phiên nghe.","Trình duyệt không hỗ trợ Speech Recognition sẽ dùng luồng ghi âm Gemini dự phòng hiện có; không yêu cầu thêm khóa Speech-to-Text riêng."]},{v:"9.12", title:"Nâng cấp tìm kiếm web và truy vấn dữ liệu Bắp AI", changes:["Chatbox chính tự bật Google Search Grounding khi câu hỏi cần thông tin web mới; câu hỏi số liệu nội bộ tiếp tục ưu tiên dữ liệu thật trong ứng dụng.","Hiển thị liên kết nguồn web do Gemini trả về khi có grounding metadata; không tự tạo nguồn khi API không cung cấp.","Tăng giới hạn truy vấn dữ liệu nội bộ từ 3 lên 5 tập dữ liệu trong một lượt; vẫn thông báo khi danh sách bị giới hạn.","Dùng bộ tách JSON theo cân bằng ngoặc để giảm lỗi khi phản hồi AI có dấu ngoặc trong nội dung; thống nhất tầng gọi Gemini của Chatbox.","Chuẩn hóa retry một lần cho lỗi mạng/tạm thời trước khi chuyển mô hình dự phòng."]},
         {v:"9.11", title:"Làm chậm chuyển động thanh đơn và doanh thu", changes:["Tăng thời gian trượt thanh đơn lên khoảng 1,35–1,5 giây, giúp nhìn rõ toàn bộ quãng đường.","Tăng thời gian thu/mở khối doanh thu lên khoảng 1,45–1,6 giây; khung giao diện co giãn theo chuyển động.","Khóa opacity ở 1 cho cả hai thành phần, không sử dụng hiệu ứng mờ dần."]},{v:"8.92", title:"Sửa khung doanh thu thu gọn không che Trợ lý Bắp", changes:["Không dùng translateY âm khiến khối doanh thu trượt đè lên nhãn Trợ lý Bắp.","Thu gọn/mở rộng bằng max-height ngay trong luồng bố cục; khung thanh Trợ lý tự co chiều cao khi đóng doanh thu.","Ẩn nội dung tràn trong lúc chuyển động để không che các phần giao diện khác; giữ nguyên dữ liệu và bộ chọn ngày."]},{v:"8.91", title:"Sửa hiệu ứng trượt khối doanh thu", changes:["Sửa bộ điều khiển cũ vốn đặt hidden và display:none/block, khiến trình duyệt không thể chạy hiệu ứng chuyển động.","Gỡ xung đột CSS transform:none!important của bố cục thanh Trợ lý; khối doanh thu nay trượt xuống từ dưới thanh trợ lý khi vào Bán hàng và trượt lên khi rời tab.","Giữ độ rõ hoàn toàn, không dùng fade; thời gian mở khoảng 0,92 giây và đóng khoảng 0,82 giây."]},{v:"8.90", title:"Thêm hiệu ứng trượt cho khối Doanh thu bán hàng", changes:["Khối Doanh thu bán hàng ngay dưới thanh Trợ lý Bắp chỉ hiển thị ở tab Bán hàng và trượt dọc khi vào/rời tab.","Thời gian trượt khoảng 0,72–0,82 giây, chuyển động rõ ràng, không dùng hiệu ứng mờ dần.","Giữ nguyên số liệu doanh thu, bộ chọn ngày, lịch sử và thao tác thiết lập doanh thu."]},{v:"8.89", title:"Kéo dài chuyển động thanh đơn, bỏ hiệu ứng mờ", changes:["Thanh đơn trượt lên/xuống rõ ràng với quãng đường bằng 115% chiều cao thanh đơn.","Tăng thời gian chuyển động lên khoảng 0,7–0,8 giây để dễ quan sát.","Loại bỏ hoàn toàn hiệu ứng mờ dần; thanh đơn giữ độ đậm và độ rõ trong suốt chuyển động."]},{v:"8.88", title:"Thêm hiệu ứng trượt thanh đơn khi chuyển tab", changes:["Khi vào tab Bán hàng, thanh đơn trượt từ dưới lên trên, xuất hiện từ phía thanh công cụ tab.","Khi rời tab Bán hàng, thanh đơn trượt xuống dưới và mờ dần trước khi ẩn.","Giữ nguyên quy tắc chỉ hiển thị thanh đơn ở tab Bán hàng; tôn trọng thiết lập giảm chuyển động của thiết bị."]},{v:"8.87", title:"Chỉ hiển thị thanh đơn trong tab Bán hàng", changes:["Ẩn thanh đơn hàng cố định khi chuyển sang các tab khác.","Tự động hiện lại thanh đơn khi quay về tab Bán hàng; không thay đổi dữ liệu giỏ hàng hoặc chức năng thanh toán, lưu đơn, xóa đơn."]},{v:"8.86", title:"Thêm hiệu ứng chuyển đơn khi thanh toán và xóa", changes:["Khi Thu Tiền mặt hoặc Thu CK, màn hình Đơn đang lưu đóng ngay; biểu tượng hóa đơn bay từ nút Đơn đang lưu đến số doanh thu bán hàng trên thanh Trợ lý Bắp.","Khi xóa đơn trong danh sách, biểu tượng hóa đơn bay từ nút Đơn đang lưu đến nút Xóa của đơn đó; nút thùng rác nảy nhẹ khi biểu tượng đến nơi.","Giữ nguyên việc ghi nhận doanh thu, phương thức thanh toán, cập nhật tồn kho và xóa đơn; hoạt ảnh không trì hoãn thao tác dữ liệu."]},{v:"8.85", title:"Hiệu ứng lưu đơn bay vào danh sách chờ", changes:["Sau khi lưu đơn hợp lệ, biểu tượng hóa đơn bay theo đường cong từ nút Lưu đơn trong màn hình Đơn đến nút Đơn đang lưu trên thanh cố định.","Nút Đơn đang lưu nảy nhẹ và lóe vòng sáng khi biểu tượng đến nơi; số lượng đơn vẫn cập nhật theo logic cũ.","Giữ nguyên quy trình lưu đơn và dữ liệu đơn hiện có."]},{v:"8.84", title:"Thêm hiệu ứng món ăn bay vào nút Đơn", changes:["Khi chạm thẻ món hoặc nút cộng, biểu tượng món ăn bay theo đường cong từ vị trí món đến nút Đơn ở thanh cố định.","Nút Đơn nảy nhẹ khi biểu tượng món bay tới, tạo cảm giác món được đưa vào đơn.","Phát triển trực tiếp từ phiên bản 8.81 theo video mẫu; không mang theo các thử nghiệm rung/âm thanh của 8.82 và 8.83."]},{v:"8.81", title:"Ẩn chữ Nhóm món trong thẻ nhóm món", changes:["Xóa dòng tiêu đề NHÓM MÓN phía trên các thẻ nhóm món để giao diện gọn hơn.","Giữ nguyên các thẻ nhóm, thao tác chọn nhóm, vuốt chuyển nhóm và lọc món."]},{v:"8.80", title:"Đưa thông báo lên trên thanh đơn hàng", changes:["Điều chỉnh vị trí thông báo nổi để hiển thị phía trên thanh đơn hàng cố định, không còn bị thanh này che.","Căn khoảng cách theo thanh điều hướng và vùng an toàn iPhone; thông báo dài được phép xuống dòng.","Áp dụng chung cho thông báo huỷ đơn, lưu đơn, thêm món và các thông báo khác của ứng dụng."]},{v:"8.79", title:"Khôi phục nút Nói lên đơn", changes:["Gắn sự kiện bấm trực tiếp cho nút micro đang hiển thị trên thanh đơn hàng; trước đó mã vẫn tìm nút cũ btn-voice-order đã không còn trong HTML.","Đồng bộ trạng thái ghi âm, xử lý và dừng ghi âm với đúng nút micro trên thanh cố định.","Giữ nguyên luồng ghi âm, gửi âm thanh đến Gemini và phương án nhập bằng micro bàn phím khi cần."]},{v:"8.78", title:"Ghim cố định khu vực nhóm món", changes:["Giữ thẻ NHÓM MÓN ở mép trên của khung cuộn bán hàng khi người dùng cuộn danh sách món.","Danh sách món cuộn độc lập bên dưới; thanh nhóm món luôn nổi rõ và không bị nội dung che khuất.","Giữ nguyên thao tác vuốt trái/phải và hiệu ứng chuyển nhóm."]},{v:"8.77", title:"Cố định khung bán hàng, cuộn nội dung bên trong", changes:["Cố định màn hình bán hàng trong khoảng trống giữa thanh thông tin phía trên và thanh đơn hàng/điều hướng phía dưới.","Vuốt cuộn sẽ di chuyển nội dung bên trong khung, không làm trôi bố cục tổng thể.","Tự căn chiều cao theo thanh cố định, vùng an toàn iPhone và thay đổi kích thước màn hình."]},{v:"8.76", title:"Hiệu ứng đẩy khi vuốt đổi nhóm món", changes:["Thêm chuyển động đẩy hai chiều: nhóm cũ trượt ra, nhóm mới trượt vào theo hướng vuốt.","Giữ nguyên logic đổi nhóm, lọc món và cuộn dọc; tự dọn lớp chuyển động sau khi hoàn tất.","Tôn trọng thiết lập giảm chuyển động của thiết bị."]},{v:"8.75", title:"Vuốt trái phải để đổi nhóm món", changes:["Vuốt sang trái trên khu vực danh sách món để chuyển sang nhóm kế tiếp; vuốt sang phải để quay về nhóm trước.","Tự động cập nhật bộ lọc nhóm hiện tại, hỗ trợ vòng từ nhóm cuối về nhóm đầu và ngược lại.","Chỉ nhận vuốt ngang đủ dài, không can thiệp thao tác cuộn dọc thông thường."]},{v:"8.70", title:"Tinh gọn khu vực chọn món", changes:["Xóa nút Làm mới bên cạnh khu vực chọn món để giao diện gọn hơn.","Giữ nguyên bộ chọn ngày trong cụm doanh thu và các chức năng bán hàng còn lại."]},{v:"8.69", title:"Sửa icon chọn ngày và xóa ô ngày cũ", changes:["Đưa input ngày đang được logic bán hàng sử dụng vào nút icon cài đặt trong cụm doanh thu để thao tác chọn ngày hoạt động.","Xóa ô chọn ngày cũ ở khu vực danh sách món, chỉ giữ một bộ chọn ngày duy nhất.","Giữ nguyên bộ lọc doanh thu và các chức năng bán hàng."]},{v:"8.68", title:"Tối giản tiêu đề bán hàng và chuyển chọn ngày lên thanh doanh thu", changes:["Bỏ dòng chữ Chọn món nhanh để gọn phần đầu danh sách món.","Chuyển bộ chọn ngày vào cạnh tiêu đề Doanh thu bán hàng ngày dưới dạng icon cài đặt; giữ nguyên id và luồng xử lý ngày hiện có.","Giữ nút Làm mới và các chức năng bán hàng khác."]},{v:"8.67", title:"Tăng tương phản nền cụm trợ lý và thanh đơn", changes:["Đổi nền cụm Trợ lý Bắp và doanh thu sang tông xanh xám rất nhạt để tách nhẹ khỏi nền màn hình.","Tạo nền và bóng đổ dịu cho thanh đơn cố định; các nút phụ có nền sáng riêng.","Có màu tương ứng cho giao diện tối, không thay đổi chức năng hoặc dữ liệu."]},{v:"8.66", title:"Căn chiều rộng thanh Trợ lý Bắp và doanh thu", changes:["Bỏ đường viền nhấn màu ở cạnh trái thanh Trợ lý Bắp.","Căn hai mép thanh Trợ lý Bắp và thẻ doanh thu bằng chiều rộng khung Chọn món nhanh.","Giữ nguyên bố cục gộp chung, dữ liệu và logic doanh thu."]},{v:"8.65", title:"Gộp thẻ doanh thu vào thanh Trợ lý Bắp", changes:["Đưa thẻ doanh thu vào cùng một khung với thanh Trợ lý Bắp, nằm ngay bên dưới dòng thông tin chạy.","Toàn bộ cụm được cố định cùng nhau; thẻ doanh thu không còn tự định vị fixed/sticky riêng nên không bị trôi khi vuốt.","Chỉ hiển thị thẻ doanh thu khi đang ở tab Bán Hàng; giữ nguyên cách tính và dữ liệu."]},
         {v:"8.64", title:"Cố định thẻ doanh thu theo thanh Trợ lý Bắp", changes:["Chuyển thẻ doanh thu sang position: fixed và đồng bộ tọa độ, chiều rộng theo thanh Trợ lý Bắp ở đầu màn hình.","Tự cập nhật khi cuộn, đổi kích thước màn hình và chuyển tab; không thay đổi dữ liệu hoặc logic doanh thu."]},
         {v:"8.62", title:"Ghim thẻ doanh thu dưới thanh Trợ lý Bắp", changes:["Thẻ doanh thu bán hàng ngày luôn nằm ngay dưới thanh Trợ lý Bắp khi cuộn danh sách món.","Giữ nguyên dữ liệu, cách tính doanh thu và các thao tác bán hàng."]},
@@ -12364,121 +12350,13 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
       }
 
       document.getElementById("btn-open-appearance-settings").addEventListener("click", () => openSettingsGroupPopup("appearance-settings-content", "Giao diện & Màu sắc"));
-      document.getElementById("btn-open-assistant-settings").addEventListener("click", () => openSettingsGroupPopup("assistant-settings-content", "Trợ lý & Tương tác"));
+
       document.getElementById("btn-open-backup-settings").addEventListener("click", openBackupSettingsModal);
       document.getElementById("btn-open-ai-settings").addEventListener("click", openAiSettingsModal);
       document.getElementById("btn-open-vietqr-settings").addEventListener("click", openVietQrSettingsModal);
       updateVietQrSettingsBadge();
 
       document.getElementById("btn-check-app-update").addEventListener("click", openAppVersionModal);
-
-      function openDonateDeveloperModal() {
-        const tiers = [
-          { id: "coffee", icon: "☕", label: "Mời 1 ly cà phê", amount: 25000, msg: "Ung ho Nha Bap - Moi 1 ly ca phe" },
-          { id: "pho", icon: "🍜", label: "Mời 1 tô phở", amount: 50000, msg: "Ung ho Nha Bap - Moi 1 to pho" },
-          { id: "gas", icon: "⛽", label: "Đổ xăng đầy bình", amount: 80000, msg: "Ung ho Nha Bap - Do xang day binh" },
-          { id: "hotpot", icon: "🍲", label: "Mời một nồi lẩu", amount: 250000, msg: "Ung ho Nha Bap - Moi mot noi lau" },
-          { id: "beer", icon: "🍺", label: "Mời thùng bia", amount: 350000, msg: "Ung ho Nha Bap - Moi thung bia" }
-        ];
-        let selectedTier = tiers[0];
-
-        // VietQR Napas 247 chuẩn cho ví MoMo (971025) - Chủ tài khoản: VU VAN HUY
-        const DEV_BANK_BIN = "971025";
-        const DEV_ACCOUNT_NO = "0988782050";
-        const DEV_ACCOUNT_NAME = "VU VAN HUY";
-
-        function buildVietQrUrl(tier) {
-          const addInfo = encodeURIComponent(tier.msg);
-          const accName = encodeURIComponent(DEV_ACCOUNT_NAME);
-          return `https://img.vietqr.io/image/${DEV_BANK_BIN}-${DEV_ACCOUNT_NO}-compact2.png?amount=${tier.amount}&addInfo=${addInfo}&accountName=${accName}`;
-        }
-
-        function renderDonateModalBody() {
-          const qrImgEl = document.getElementById("donate-qr-img");
-          const amountLblEl = document.getElementById("donate-selected-amount");
-          const noteLblEl = document.getElementById("donate-selected-note");
-          if (qrImgEl) qrImgEl.src = buildVietQrUrl(selectedTier);
-          if (amountLblEl) amountLblEl.textContent = formatMoney(selectedTier.amount);
-          if (noteLblEl) noteLblEl.textContent = selectedTier.msg;
-
-          modalCard.querySelectorAll("[data-donate-tier]").forEach(btn => {
-            const isAct = btn.dataset.donateTier === selectedTier.id;
-            btn.style.borderColor = isAct ? "#DB2777" : "var(--border)";
-            btn.style.background = isAct ? "#FDF2F8" : "#FFFFFF";
-            btn.style.color = isAct ? "#9D174D" : "var(--ink)";
-          });
-        }
-
-        const tiersHtml = tiers.map(t => `
-          <button type="button" data-donate-tier="${t.id}" style="display:flex; align-items:center; justify-content:space-between; gap:8px; width:100%; padding:9px 12px; border:1.5px solid var(--border); border-radius:11px; background:#FFFFFF; cursor:pointer; font-family:inherit; text-align:left; transition:all 0.15s ease;">
-            <span style="display:flex; align-items:center; gap:8px; font-weight:700; font-size:13.5px;">
-              <span style="font-size:18px;">${t.icon}</span>
-              <span>${t.label}</span>
-            </span>
-            <strong style="font-size:13.5px; color:#DB2777; font-variant-numeric:tabular-nums;">${formatMoney(t.amount)}</strong>
-          </button>
-        `).join("");
-
-        modalCard.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-            <h3 style="margin:0; color:#9D174D;">❤️ Ủng hộ nhà phát triển</h3>
-            <span style="font-size:11.5px; font-weight:700; background:#FCE7F3; color:#DB2777; padding:3px 9px; border-radius:999px;">MoMo • VietQR</span>
-          </div>
-          <p style="font-size:12.5px; color:var(--muted); margin:0 0 10px; line-height:1.4;">
-            Cảm ơn bạn đã tin dùng <strong>Quản lý kinh doanh - Nhà Bắp</strong>! Chọn một gói tiếp sức bên dưới để quét mã QR chuyển khoản nhanh:
-          </p>
-
-          <div style="display:flex; flex-direction:column; gap:6px; margin-bottom:12px;">
-            ${tiersHtml}
-          </div>
-
-          <div style="background:linear-gradient(135deg, #ECFCCB 0%, #F7FEE7 100%); border:1.5px solid #BEF264; border-radius:14px; padding:12px; text-align:center;">
-            <div style="font-size:11.5px; font-weight:800; color:#D82D8B; letter-spacing:0.3px; margin-bottom:6px;">MOMO • VIETQR • NAPAS 247</div>
-            <div style="background:#FFFFFF; display:inline-block; padding:8px; border-radius:12px; border:1.5px solid #FBCFE8; box-shadow:0 3px 10px rgba(0,0,0,0.06);">
-              <img id="donate-qr-img" src="" alt="Mã QR ủng hộ VU VAN HUY" style="width:190px; height:190px; object-fit:contain; display:block;" onerror="this.onerror=null; this.src='https://placehold.co/190x190/FDF2F8/DB2777?text=MoMo+VU+VAN+HUY';" />
-            </div>
-            <div style="font-weight:800; font-size:15px; color:var(--ink); margin-top:8px;">VU VAN HUY</div>
-            <div style="font-size:12.5px; color:#374151; font-weight:600; margin-top:2px;">Ví MoMo: *******050 • Số tiền: <strong id="donate-selected-amount" style="color:#DB2777;">25.000 đ</strong></div>
-            <div style="font-size:11.5px; color:var(--muted); margin-top:3px;">Nội dung: <span id="donate-selected-note" style="font-weight:600; color:var(--ink);"></span></div>
-            <button type="button" class="btn-outline" id="btn-copy-donate-info" style="margin-top:8px; min-height:36px; font-size:12.5px; background:#FFFFFF; border-color:#84CC16; color:#3F6212; font-weight:700;">
-              📋 Sao chép nội dung chuyển khoản
-            </button>
-          </div>
-
-          <button type="button" class="btn-outline" style="width:100%; margin-top:12px;" id="m-close-donate">Đóng</button>
-        `;
-        modalBg.classList.remove("closing");
-        modalBg.classList.add("open");
-        renderDonateModalBody();
-
-        modalCard.querySelectorAll("[data-donate-tier]").forEach(btn => {
-          btn.addEventListener("click", () => {
-            const found = tiers.find(t => t.id === btn.dataset.donateTier);
-            if (found) {
-              selectedTier = found;
-              renderDonateModalBody();
-            }
-          });
-        });
-
-        document.getElementById("btn-copy-donate-info").addEventListener("click", () => {
-          const tempInput = document.createElement("textarea");
-          tempInput.value = `${DEV_ACCOUNT_NAME} - ${selectedTier.msg} (${formatMoney(selectedTier.amount)})`;
-          document.body.appendChild(tempInput);
-          tempInput.select();
-          try {
-            document.execCommand("copy");
-            showToast("Đã sao chép thông tin chuyển khoản!");
-          } catch (e) {
-            showToast("Không thể sao chép tự động");
-          }
-          document.body.removeChild(tempInput);
-        });
-
-        document.getElementById("m-close-donate").addEventListener("click", closeModal);
-      }
-
-      document.getElementById("btn-open-donate-dev").addEventListener("click", openDonateDeveloperModal);
 
       function openGdriveConnectModal() {
         modalCard.innerHTML = `
