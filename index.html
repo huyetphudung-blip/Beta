@@ -4518,7 +4518,7 @@ body.pos-order-fullscreen-active{touch-action:none}
         document.getElementById("m-close-data-history").addEventListener("click", closeModal);
       }
 
-      const APP_CHANGELOG = [{v:"1.6", title:"Liên kết nhà cung cấp với khoản chi", changes:["Thêm trường chọn nhà cung cấp vào biểu mẫu ghi khoản chi và sửa khoản chi.","Ưu tiên gợi ý nhà cung cấp đã khai báo có cung cấp mặt hàng/đầu mục tương ứng.","Lưu supplierId và tên nhà cung cấp trực tiếp trên bản ghi chi.","Đồng bộ nhà cung cấp đã chọn sang giao dịch nhập kho, lô hàng và lịch sử giá nguyên vật liệu.","Không tự chọn nhà cung cấp nếu có nhiều lựa chọn; vẫn cho phép để trống."]},{v:"1.5", title:"Sửa luồng tạo công nợ mới", changes:["Bổ sung action debt_add tách biệt với debt_update của khoản cũ.","Thiếu tổng tiền/đơn giá thì hỏi lại, không tự đoán.","Tạo thẻ xác nhận có thể chỉnh số tiền/số lượng; chỉ lưu sau khi xác nhận.","Chặn AI sửa/xóa khoản cũ khi người dùng yêu cầu tạo khoản mới.","Kiểm tra trùng trước khi tạo công nợ."]},{v:"1.4", title:"Ổn định Chatbox AI", changes:["Sửa chuỗi model dự phòng để luồng nhanh dùng Gemini 3.8 Flash và Gemini 3.5 Flash-Lite, tránh model trung gian không khả dụng.","Bổ sung retry có giới hạn cho lỗi mạng/5xx, chuyển model ngay khi gặp 429 và thêm timeout 45 giây cho mỗi lần gọi API.","Thông báo rõ lỗi quota, model không khả dụng, quyền truy cập, phản hồi trống và timeout.","Nếu bước tổng hợp sau truy vấn dữ liệu bị lỗi, Chatbox vẫn báo số kết quả đã truy xuất và không làm mất toàn bộ lượt xử lý.","Kiểm tra cấu trúc JSON trước khi chuyển sang thực thi action; dữ liệu sai định dạng không được tự ý ghi vào ứng dụng."]},{v:"1.1", title:"Liên kết công nợ với nhập kho", changes:["Khi ghi công nợ nhà cung cấp, nếu mặt hàng đã liên kết với một mặt hàng trong Kho, hiển thị tùy chọn nhập hàng vào Kho.","Khi xác nhận nhập kho, tự cộng tồn, tạo giao dịch nhập và tạo lô theo ngày, nhà cung cấp, số lượng và đơn giá tính từ phiếu công nợ.","Mặc định không tự nhập kho nếu người dùng không chọn; công nợ khách hàng không có tùy chọn nhập kho.","Khi sửa phiếu công nợ đã liên kết, hệ thống hoàn tác phần tồn còn lại của lần nhập cũ rồi cập nhật lại theo lựa chọn mới."]},{v:"1.0", title:"Phát hành chính thức Nhà Bắp v1.0", changes:["Đánh dấu phiên bản hiện tại là bản phát hành chính thức v1.0.","Gỡ thẻ Trợ lý & Tương tác khỏi Cài đặt nhưng giữ các phần tử tương thích ẩn để không làm gián đoạn JavaScript.","Gỡ thẻ Ủng hộ nhà phát triển và toàn bộ chức năng mở cửa sổ donate.","Giữ nguyên các chức năng quản lý, bán hàng, kho, báo cáo và dữ liệu hiện có."]},{v:"9.17.1", title:"Gỡ Bắp Voice 2.0 và Tương tác trực quan", changes:["Gỡ các tùy chọn Trợ lý vui nhộn và Tương tác trực quan khỏi Cài đặt.","Tắt hoàn toàn trạng thái kích hoạt Bắp Voice và nhân vật quả bắp, kể cả khi thiết bị từng lưu thiết lập bật.","Ẩn khung thoại truyện tranh, bảng điều khiển giọng nói và nhân vật hoạt hình; giữ nguyên Chatbox AI tiêu chuẩn và các chức năng quản lý khác."]},{v:"9.16", title:"Bắp Voice 2.1 – hợp nhất gửi/nhận dữ liệu", changes:["Dùng chung một pipeline hội thoại cho Chatbox chữ, giọng nói nhận diện thành văn bản và audio dự phòng: prompt nghiệp vụ, truy vấn dữ liệu, thực thi action và phản hồi.","Voice nhận diện trực tiếp gửi nguyên văn bản nhận diện vào pipeline Chatbox; không chỉ dừng ở ghi âm/đọc lại nội dung.","Audio dự phòng gửi âm thanh kèm chỉ dẫn nghe tiếng Việt, sau đó đi qua cùng bước truy vấn dữ liệu và thực thi action như Chatbox.","Giữ nguyên cơ chế xác nhận trước khi ghi/sửa/xóa dữ liệu; kết quả và các nút thao tác được hiển thị trong cùng giao diện hội thoại."]},{v:"9.15", title:"Tối ưu tốc độ AI Chatbox", changes:["Tạo lộ trình gọi API nhanh riêng cho Chatbox: tối đa 2 model thay vì lần lượt thử toàn bộ chuỗi dự phòng.","Bỏ retry chờ lâu trong Chatbox; lỗi tạm thời sẽ chuyển nhanh sang model dự phòng, các tác vụ AI chuyên biệt khác vẫn giữ cơ chế retry cũ.","Khi cần tìm kiếm web, ưu tiên một lượt Search trên model chính rồi mới hạ cấp có kiểm soát; loại bỏ cặp model/chế độ gọi trùng.","Giới hạn đầu ra Chatbox ở mức 2.048 token để giảm thời gian sinh câu trả lời dài không cần thiết; giữ nguyên truy vấn dữ liệu nội bộ và bước xác nhận thao tác."]},{v:"9.14", title:"Ổn định hóa Bắp Voice 2.0", changes:["Sửa bộ đếm lỗi nhận dạng để không bị đặt lại sau mỗi lần Web Speech API khởi động lại; chuyển sang ghi âm Gemini khi dịch vụ nhận dạng liên tục lỗi.","Chống xử lý trùng câu nói khi trình duyệt tự kết thúc phiên nhận dạng bằng cách hủy bộ hẹn giờ còn tồn tại.","Tăng khoảng chờ sau câu cuối để hạn chế cắt mất phần tiếp theo khi người dùng ngừng ngắn giữa các món hoặc số lượng.","Đồng bộ lại trạng thái nghe và xử lý khi chuyển giữa nhận dạng trực tiếp và ghi âm dự phòng."]},{v:"9.13", title:"Bắp Voice 2.0 – trợ lý giọng nói liên tục", changes:["Thay tương tác giọng nói của Trợ lý vui nhộn bằng nhận dạng tiếng Việt liên tục qua Web Speech API khi trình duyệt hỗ trợ; tự kết thúc từng lượt theo khoảng lặng và tự nghe lại sau khi trả lời.","Hiển thị và đọc lại bản nhận diện trước khi gửi nội dung văn bản cho Gemini; giữ nguyên câu nói gốc để đối chiếu.","Gemini xử lý câu nói tự nhiên qua cùng luồng Chatbox, tiếp tục dùng cơ chế xác nhận thao tác hiện có; đọc câu trả lời bằng Speech Synthesis khi khả dụng.","Đọc cảnh báo kinh doanh mức cao thành tiếng trong phiên trợ lý giọng nói đang hoạt động; bổ sung dừng/tạm dừng phiên nghe.","Trình duyệt không hỗ trợ Speech Recognition sẽ dùng luồng ghi âm Gemini dự phòng hiện có; không yêu cầu thêm khóa Speech-to-Text riêng."]},{v:"9.12", title:"Nâng cấp tìm kiếm web và truy vấn dữ liệu Bắp AI", changes:["Chatbox chính tự bật Google Search Grounding khi câu hỏi cần thông tin web mới; câu hỏi số liệu nội bộ tiếp tục ưu tiên dữ liệu thật trong ứng dụng.","Hiển thị liên kết nguồn web do Gemini trả về khi có grounding metadata; không tự tạo nguồn khi API không cung cấp.","Tăng giới hạn truy vấn dữ liệu nội bộ từ 3 lên 5 tập dữ liệu trong một lượt; vẫn thông báo khi danh sách bị giới hạn.","Dùng bộ tách JSON theo cân bằng ngoặc để giảm lỗi khi phản hồi AI có dấu ngoặc trong nội dung; thống nhất tầng gọi Gemini của Chatbox.","Chuẩn hóa retry một lần cho lỗi mạng/tạm thời trước khi chuyển mô hình dự phòng."]},
+      const APP_CHANGELOG = [{v:"1.8", title:"Khôi phục lịch sử giá theo từng nhà cung cấp", changes:["Sửa lỗi tham số nhà cung cấp bị thiếu trong hàm mở lịch sử, gây lỗi khi bấm xem chi tiết từ bảng giá đã phân nhóm.","Lịch sử chỉ hiển thị các mốc giá của đúng mặt hàng và nhà cung cấp được chọn.","Giữ ngữ cảnh nhà cung cấp khi quay lại, sửa hoặc xóa mốc giá.","Bổ sung supplierId cho các mốc giá nhập thủ công để liên kết ổn định với hồ sơ nhà cung cấp.","Thông tin cập nhật sao lưu: dữ liệu nhà cung cấp (suppliers), báo giá (supplierQuotes), lịch sử giá nguyên vật liệu (materialHistory) và các bản ghi giao dịch có liên kết nhà cung cấp được đưa vào gói JSON sao lưu hiện có; không thay đổi định dạng và quy trình sao lưu.","Khi khôi phục, ứng dụng sử dụng các trường dữ liệu tương ứng nếu có trong tệp sao lưu; tệp cũ không có supplierId vẫn được giữ theo thông tin tên nhà cung cấp sẵn có. Chưa xác nhận bằng kiểm thử phục hồi đầu-cuối."]},{v:"1.7", title:"Tách bảng giá nguyên vật liệu theo nhà cung cấp", changes:["Bảng giá nguyên vật liệu được nhóm riêng theo từng nhà cung cấp, không gộp đơn giá giữa các nhà cung cấp.","Mỗi mặt hàng hiển thị đơn giá mới nhất, ngày cập nhật, số mốc giá và biến động so với lần mua trước của chính nhà cung cấp đó.","Mở lịch sử giá từ từng dòng sẽ chỉ xem lịch sử của đúng mặt hàng và nhà cung cấp được chọn.","Các bản ghi chưa có nhà cung cấp được gom vào nhóm Chưa xác định nhà cung cấp; dữ liệu lịch sử cũ vẫn được giữ."]},{v:"1.6", title:"Liên kết nhà cung cấp với khoản chi", changes:["Thêm trường chọn nhà cung cấp vào biểu mẫu ghi khoản chi và sửa khoản chi.","Ưu tiên gợi ý nhà cung cấp đã khai báo có cung cấp mặt hàng/đầu mục tương ứng.","Lưu supplierId và tên nhà cung cấp trực tiếp trên bản ghi chi.","Đồng bộ nhà cung cấp đã chọn sang giao dịch nhập kho, lô hàng và lịch sử giá nguyên vật liệu.","Không tự chọn nhà cung cấp nếu có nhiều lựa chọn; vẫn cho phép để trống."]},{v:"1.5", title:"Sửa luồng tạo công nợ mới", changes:["Bổ sung action debt_add tách biệt với debt_update của khoản cũ.","Thiếu tổng tiền/đơn giá thì hỏi lại, không tự đoán.","Tạo thẻ xác nhận có thể chỉnh số tiền/số lượng; chỉ lưu sau khi xác nhận.","Chặn AI sửa/xóa khoản cũ khi người dùng yêu cầu tạo khoản mới.","Kiểm tra trùng trước khi tạo công nợ."]},{v:"1.4", title:"Ổn định Chatbox AI", changes:["Sửa chuỗi model dự phòng để luồng nhanh dùng Gemini 3.8 Flash và Gemini 3.5 Flash-Lite, tránh model trung gian không khả dụng.","Bổ sung retry có giới hạn cho lỗi mạng/5xx, chuyển model ngay khi gặp 429 và thêm timeout 45 giây cho mỗi lần gọi API.","Thông báo rõ lỗi quota, model không khả dụng, quyền truy cập, phản hồi trống và timeout.","Nếu bước tổng hợp sau truy vấn dữ liệu bị lỗi, Chatbox vẫn báo số kết quả đã truy xuất và không làm mất toàn bộ lượt xử lý.","Kiểm tra cấu trúc JSON trước khi chuyển sang thực thi action; dữ liệu sai định dạng không được tự ý ghi vào ứng dụng."]},{v:"1.1", title:"Liên kết công nợ với nhập kho", changes:["Khi ghi công nợ nhà cung cấp, nếu mặt hàng đã liên kết với một mặt hàng trong Kho, hiển thị tùy chọn nhập hàng vào Kho.","Khi xác nhận nhập kho, tự cộng tồn, tạo giao dịch nhập và tạo lô theo ngày, nhà cung cấp, số lượng và đơn giá tính từ phiếu công nợ.","Mặc định không tự nhập kho nếu người dùng không chọn; công nợ khách hàng không có tùy chọn nhập kho.","Khi sửa phiếu công nợ đã liên kết, hệ thống hoàn tác phần tồn còn lại của lần nhập cũ rồi cập nhật lại theo lựa chọn mới."]},{v:"1.0", title:"Phát hành chính thức Nhà Bắp v1.0", changes:["Đánh dấu phiên bản hiện tại là bản phát hành chính thức v1.0.","Gỡ thẻ Trợ lý & Tương tác khỏi Cài đặt nhưng giữ các phần tử tương thích ẩn để không làm gián đoạn JavaScript.","Gỡ thẻ Ủng hộ nhà phát triển và toàn bộ chức năng mở cửa sổ donate.","Giữ nguyên các chức năng quản lý, bán hàng, kho, báo cáo và dữ liệu hiện có."]},{v:"9.17.1", title:"Gỡ Bắp Voice 2.0 và Tương tác trực quan", changes:["Gỡ các tùy chọn Trợ lý vui nhộn và Tương tác trực quan khỏi Cài đặt.","Tắt hoàn toàn trạng thái kích hoạt Bắp Voice và nhân vật quả bắp, kể cả khi thiết bị từng lưu thiết lập bật.","Ẩn khung thoại truyện tranh, bảng điều khiển giọng nói và nhân vật hoạt hình; giữ nguyên Chatbox AI tiêu chuẩn và các chức năng quản lý khác."]},{v:"9.16", title:"Bắp Voice 2.1 – hợp nhất gửi/nhận dữ liệu", changes:["Dùng chung một pipeline hội thoại cho Chatbox chữ, giọng nói nhận diện thành văn bản và audio dự phòng: prompt nghiệp vụ, truy vấn dữ liệu, thực thi action và phản hồi.","Voice nhận diện trực tiếp gửi nguyên văn bản nhận diện vào pipeline Chatbox; không chỉ dừng ở ghi âm/đọc lại nội dung.","Audio dự phòng gửi âm thanh kèm chỉ dẫn nghe tiếng Việt, sau đó đi qua cùng bước truy vấn dữ liệu và thực thi action như Chatbox.","Giữ nguyên cơ chế xác nhận trước khi ghi/sửa/xóa dữ liệu; kết quả và các nút thao tác được hiển thị trong cùng giao diện hội thoại."]},{v:"9.15", title:"Tối ưu tốc độ AI Chatbox", changes:["Tạo lộ trình gọi API nhanh riêng cho Chatbox: tối đa 2 model thay vì lần lượt thử toàn bộ chuỗi dự phòng.","Bỏ retry chờ lâu trong Chatbox; lỗi tạm thời sẽ chuyển nhanh sang model dự phòng, các tác vụ AI chuyên biệt khác vẫn giữ cơ chế retry cũ.","Khi cần tìm kiếm web, ưu tiên một lượt Search trên model chính rồi mới hạ cấp có kiểm soát; loại bỏ cặp model/chế độ gọi trùng.","Giới hạn đầu ra Chatbox ở mức 2.048 token để giảm thời gian sinh câu trả lời dài không cần thiết; giữ nguyên truy vấn dữ liệu nội bộ và bước xác nhận thao tác."]},{v:"9.14", title:"Ổn định hóa Bắp Voice 2.0", changes:["Sửa bộ đếm lỗi nhận dạng để không bị đặt lại sau mỗi lần Web Speech API khởi động lại; chuyển sang ghi âm Gemini khi dịch vụ nhận dạng liên tục lỗi.","Chống xử lý trùng câu nói khi trình duyệt tự kết thúc phiên nhận dạng bằng cách hủy bộ hẹn giờ còn tồn tại.","Tăng khoảng chờ sau câu cuối để hạn chế cắt mất phần tiếp theo khi người dùng ngừng ngắn giữa các món hoặc số lượng.","Đồng bộ lại trạng thái nghe và xử lý khi chuyển giữa nhận dạng trực tiếp và ghi âm dự phòng."]},{v:"9.13", title:"Bắp Voice 2.0 – trợ lý giọng nói liên tục", changes:["Thay tương tác giọng nói của Trợ lý vui nhộn bằng nhận dạng tiếng Việt liên tục qua Web Speech API khi trình duyệt hỗ trợ; tự kết thúc từng lượt theo khoảng lặng và tự nghe lại sau khi trả lời.","Hiển thị và đọc lại bản nhận diện trước khi gửi nội dung văn bản cho Gemini; giữ nguyên câu nói gốc để đối chiếu.","Gemini xử lý câu nói tự nhiên qua cùng luồng Chatbox, tiếp tục dùng cơ chế xác nhận thao tác hiện có; đọc câu trả lời bằng Speech Synthesis khi khả dụng.","Đọc cảnh báo kinh doanh mức cao thành tiếng trong phiên trợ lý giọng nói đang hoạt động; bổ sung dừng/tạm dừng phiên nghe.","Trình duyệt không hỗ trợ Speech Recognition sẽ dùng luồng ghi âm Gemini dự phòng hiện có; không yêu cầu thêm khóa Speech-to-Text riêng."]},{v:"9.12", title:"Nâng cấp tìm kiếm web và truy vấn dữ liệu Bắp AI", changes:["Chatbox chính tự bật Google Search Grounding khi câu hỏi cần thông tin web mới; câu hỏi số liệu nội bộ tiếp tục ưu tiên dữ liệu thật trong ứng dụng.","Hiển thị liên kết nguồn web do Gemini trả về khi có grounding metadata; không tự tạo nguồn khi API không cung cấp.","Tăng giới hạn truy vấn dữ liệu nội bộ từ 3 lên 5 tập dữ liệu trong một lượt; vẫn thông báo khi danh sách bị giới hạn.","Dùng bộ tách JSON theo cân bằng ngoặc để giảm lỗi khi phản hồi AI có dấu ngoặc trong nội dung; thống nhất tầng gọi Gemini của Chatbox.","Chuẩn hóa retry một lần cho lỗi mạng/tạm thời trước khi chuyển mô hình dự phòng."]},
         {v:"9.11", title:"Làm chậm chuyển động thanh đơn và doanh thu", changes:["Tăng thời gian trượt thanh đơn lên khoảng 1,35–1,5 giây, giúp nhìn rõ toàn bộ quãng đường.","Tăng thời gian thu/mở khối doanh thu lên khoảng 1,45–1,6 giây; khung giao diện co giãn theo chuyển động.","Khóa opacity ở 1 cho cả hai thành phần, không sử dụng hiệu ứng mờ dần."]},{v:"8.92", title:"Sửa khung doanh thu thu gọn không che Trợ lý Bắp", changes:["Không dùng translateY âm khiến khối doanh thu trượt đè lên nhãn Trợ lý Bắp.","Thu gọn/mở rộng bằng max-height ngay trong luồng bố cục; khung thanh Trợ lý tự co chiều cao khi đóng doanh thu.","Ẩn nội dung tràn trong lúc chuyển động để không che các phần giao diện khác; giữ nguyên dữ liệu và bộ chọn ngày."]},{v:"8.91", title:"Sửa hiệu ứng trượt khối doanh thu", changes:["Sửa bộ điều khiển cũ vốn đặt hidden và display:none/block, khiến trình duyệt không thể chạy hiệu ứng chuyển động.","Gỡ xung đột CSS transform:none!important của bố cục thanh Trợ lý; khối doanh thu nay trượt xuống từ dưới thanh trợ lý khi vào Bán hàng và trượt lên khi rời tab.","Giữ độ rõ hoàn toàn, không dùng fade; thời gian mở khoảng 0,92 giây và đóng khoảng 0,82 giây."]},{v:"8.90", title:"Thêm hiệu ứng trượt cho khối Doanh thu bán hàng", changes:["Khối Doanh thu bán hàng ngay dưới thanh Trợ lý Bắp chỉ hiển thị ở tab Bán hàng và trượt dọc khi vào/rời tab.","Thời gian trượt khoảng 0,72–0,82 giây, chuyển động rõ ràng, không dùng hiệu ứng mờ dần.","Giữ nguyên số liệu doanh thu, bộ chọn ngày, lịch sử và thao tác thiết lập doanh thu."]},{v:"8.89", title:"Kéo dài chuyển động thanh đơn, bỏ hiệu ứng mờ", changes:["Thanh đơn trượt lên/xuống rõ ràng với quãng đường bằng 115% chiều cao thanh đơn.","Tăng thời gian chuyển động lên khoảng 0,7–0,8 giây để dễ quan sát.","Loại bỏ hoàn toàn hiệu ứng mờ dần; thanh đơn giữ độ đậm và độ rõ trong suốt chuyển động."]},{v:"8.88", title:"Thêm hiệu ứng trượt thanh đơn khi chuyển tab", changes:["Khi vào tab Bán hàng, thanh đơn trượt từ dưới lên trên, xuất hiện từ phía thanh công cụ tab.","Khi rời tab Bán hàng, thanh đơn trượt xuống dưới và mờ dần trước khi ẩn.","Giữ nguyên quy tắc chỉ hiển thị thanh đơn ở tab Bán hàng; tôn trọng thiết lập giảm chuyển động của thiết bị."]},{v:"8.87", title:"Chỉ hiển thị thanh đơn trong tab Bán hàng", changes:["Ẩn thanh đơn hàng cố định khi chuyển sang các tab khác.","Tự động hiện lại thanh đơn khi quay về tab Bán hàng; không thay đổi dữ liệu giỏ hàng hoặc chức năng thanh toán, lưu đơn, xóa đơn."]},{v:"8.86", title:"Thêm hiệu ứng chuyển đơn khi thanh toán và xóa", changes:["Khi Thu Tiền mặt hoặc Thu CK, màn hình Đơn đang lưu đóng ngay; biểu tượng hóa đơn bay từ nút Đơn đang lưu đến số doanh thu bán hàng trên thanh Trợ lý Bắp.","Khi xóa đơn trong danh sách, biểu tượng hóa đơn bay từ nút Đơn đang lưu đến nút Xóa của đơn đó; nút thùng rác nảy nhẹ khi biểu tượng đến nơi.","Giữ nguyên việc ghi nhận doanh thu, phương thức thanh toán, cập nhật tồn kho và xóa đơn; hoạt ảnh không trì hoãn thao tác dữ liệu."]},{v:"8.85", title:"Hiệu ứng lưu đơn bay vào danh sách chờ", changes:["Sau khi lưu đơn hợp lệ, biểu tượng hóa đơn bay theo đường cong từ nút Lưu đơn trong màn hình Đơn đến nút Đơn đang lưu trên thanh cố định.","Nút Đơn đang lưu nảy nhẹ và lóe vòng sáng khi biểu tượng đến nơi; số lượng đơn vẫn cập nhật theo logic cũ.","Giữ nguyên quy trình lưu đơn và dữ liệu đơn hiện có."]},{v:"8.84", title:"Thêm hiệu ứng món ăn bay vào nút Đơn", changes:["Khi chạm thẻ món hoặc nút cộng, biểu tượng món ăn bay theo đường cong từ vị trí món đến nút Đơn ở thanh cố định.","Nút Đơn nảy nhẹ khi biểu tượng món bay tới, tạo cảm giác món được đưa vào đơn.","Phát triển trực tiếp từ phiên bản 8.81 theo video mẫu; không mang theo các thử nghiệm rung/âm thanh của 8.82 và 8.83."]},{v:"8.81", title:"Ẩn chữ Nhóm món trong thẻ nhóm món", changes:["Xóa dòng tiêu đề NHÓM MÓN phía trên các thẻ nhóm món để giao diện gọn hơn.","Giữ nguyên các thẻ nhóm, thao tác chọn nhóm, vuốt chuyển nhóm và lọc món."]},{v:"8.80", title:"Đưa thông báo lên trên thanh đơn hàng", changes:["Điều chỉnh vị trí thông báo nổi để hiển thị phía trên thanh đơn hàng cố định, không còn bị thanh này che.","Căn khoảng cách theo thanh điều hướng và vùng an toàn iPhone; thông báo dài được phép xuống dòng.","Áp dụng chung cho thông báo huỷ đơn, lưu đơn, thêm món và các thông báo khác của ứng dụng."]},{v:"8.79", title:"Khôi phục nút Nói lên đơn", changes:["Gắn sự kiện bấm trực tiếp cho nút micro đang hiển thị trên thanh đơn hàng; trước đó mã vẫn tìm nút cũ btn-voice-order đã không còn trong HTML.","Đồng bộ trạng thái ghi âm, xử lý và dừng ghi âm với đúng nút micro trên thanh cố định.","Giữ nguyên luồng ghi âm, gửi âm thanh đến Gemini và phương án nhập bằng micro bàn phím khi cần."]},{v:"8.78", title:"Ghim cố định khu vực nhóm món", changes:["Giữ thẻ NHÓM MÓN ở mép trên của khung cuộn bán hàng khi người dùng cuộn danh sách món.","Danh sách món cuộn độc lập bên dưới; thanh nhóm món luôn nổi rõ và không bị nội dung che khuất.","Giữ nguyên thao tác vuốt trái/phải và hiệu ứng chuyển nhóm."]},{v:"8.77", title:"Cố định khung bán hàng, cuộn nội dung bên trong", changes:["Cố định màn hình bán hàng trong khoảng trống giữa thanh thông tin phía trên và thanh đơn hàng/điều hướng phía dưới.","Vuốt cuộn sẽ di chuyển nội dung bên trong khung, không làm trôi bố cục tổng thể.","Tự căn chiều cao theo thanh cố định, vùng an toàn iPhone và thay đổi kích thước màn hình."]},{v:"8.76", title:"Hiệu ứng đẩy khi vuốt đổi nhóm món", changes:["Thêm chuyển động đẩy hai chiều: nhóm cũ trượt ra, nhóm mới trượt vào theo hướng vuốt.","Giữ nguyên logic đổi nhóm, lọc món và cuộn dọc; tự dọn lớp chuyển động sau khi hoàn tất.","Tôn trọng thiết lập giảm chuyển động của thiết bị."]},{v:"8.75", title:"Vuốt trái phải để đổi nhóm món", changes:["Vuốt sang trái trên khu vực danh sách món để chuyển sang nhóm kế tiếp; vuốt sang phải để quay về nhóm trước.","Tự động cập nhật bộ lọc nhóm hiện tại, hỗ trợ vòng từ nhóm cuối về nhóm đầu và ngược lại.","Chỉ nhận vuốt ngang đủ dài, không can thiệp thao tác cuộn dọc thông thường."]},{v:"8.70", title:"Tinh gọn khu vực chọn món", changes:["Xóa nút Làm mới bên cạnh khu vực chọn món để giao diện gọn hơn.","Giữ nguyên bộ chọn ngày trong cụm doanh thu và các chức năng bán hàng còn lại."]},{v:"8.69", title:"Sửa icon chọn ngày và xóa ô ngày cũ", changes:["Đưa input ngày đang được logic bán hàng sử dụng vào nút icon cài đặt trong cụm doanh thu để thao tác chọn ngày hoạt động.","Xóa ô chọn ngày cũ ở khu vực danh sách món, chỉ giữ một bộ chọn ngày duy nhất.","Giữ nguyên bộ lọc doanh thu và các chức năng bán hàng."]},{v:"8.68", title:"Tối giản tiêu đề bán hàng và chuyển chọn ngày lên thanh doanh thu", changes:["Bỏ dòng chữ Chọn món nhanh để gọn phần đầu danh sách món.","Chuyển bộ chọn ngày vào cạnh tiêu đề Doanh thu bán hàng ngày dưới dạng icon cài đặt; giữ nguyên id và luồng xử lý ngày hiện có.","Giữ nút Làm mới và các chức năng bán hàng khác."]},{v:"8.67", title:"Tăng tương phản nền cụm trợ lý và thanh đơn", changes:["Đổi nền cụm Trợ lý Bắp và doanh thu sang tông xanh xám rất nhạt để tách nhẹ khỏi nền màn hình.","Tạo nền và bóng đổ dịu cho thanh đơn cố định; các nút phụ có nền sáng riêng.","Có màu tương ứng cho giao diện tối, không thay đổi chức năng hoặc dữ liệu."]},{v:"8.66", title:"Căn chiều rộng thanh Trợ lý Bắp và doanh thu", changes:["Bỏ đường viền nhấn màu ở cạnh trái thanh Trợ lý Bắp.","Căn hai mép thanh Trợ lý Bắp và thẻ doanh thu bằng chiều rộng khung Chọn món nhanh.","Giữ nguyên bố cục gộp chung, dữ liệu và logic doanh thu."]},{v:"8.65", title:"Gộp thẻ doanh thu vào thanh Trợ lý Bắp", changes:["Đưa thẻ doanh thu vào cùng một khung với thanh Trợ lý Bắp, nằm ngay bên dưới dòng thông tin chạy.","Toàn bộ cụm được cố định cùng nhau; thẻ doanh thu không còn tự định vị fixed/sticky riêng nên không bị trôi khi vuốt.","Chỉ hiển thị thẻ doanh thu khi đang ở tab Bán Hàng; giữ nguyên cách tính và dữ liệu."]},
         {v:"8.64", title:"Cố định thẻ doanh thu theo thanh Trợ lý Bắp", changes:["Chuyển thẻ doanh thu sang position: fixed và đồng bộ tọa độ, chiều rộng theo thanh Trợ lý Bắp ở đầu màn hình.","Tự cập nhật khi cuộn, đổi kích thước màn hình và chuyển tab; không thay đổi dữ liệu hoặc logic doanh thu."]},
         {v:"8.62", title:"Ghim thẻ doanh thu dưới thanh Trợ lý Bắp", changes:["Thẻ doanh thu bán hàng ngày luôn nằm ngay dưới thanh Trợ lý Bắp khi cuộn danh sách món.","Giữ nguyên dữ liệu, cách tính doanh thu và các thao tác bán hàng."]},
@@ -8989,6 +8989,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
             unitPrice: Number(m.unitPrice) || 0,
             stdUnit: m.stdUnit || "1 kg",
             supplier: m.supplier || findSupplierForCategory(m.category),
+            supplierId: m.supplierId || ((suppliersList || []).find(s => String(s.name || "").trim() === String(m.supplier || "").trim())?.id || ""),
             note: m.note || "Cập nhật báo giá"
           });
         });
@@ -9020,7 +9021,44 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
           };
         }).sort((a, b) => b.latestDate.localeCompare(a.latestDate));
 
-        return { summaryList, allEntries };
+        // Bảng giá tách riêng theo từng nhà cung cấp + từng nguyên liệu.
+        // Không gộp giá của các nhà cung cấp khác nhau vào cùng một mức giá.
+        const bySupplierMaterial = {};
+        allEntries.forEach(entry => {
+          const supplierName = String(entry.supplier || "").trim() || "Chưa xác định nhà cung cấp";
+          const supplierId = String(entry.supplierId || "");
+          const key = `${supplierId || supplierName.toLowerCase()}__${String(entry.category || "").toLowerCase()}`;
+          if (!bySupplierMaterial[key]) bySupplierMaterial[key] = {
+            supplier: supplierName,
+            supplierId,
+            category: entry.category,
+            history: []
+          };
+          bySupplierMaterial[key].history.push(entry);
+        });
+
+        const supplierSummaryList = Object.values(bySupplierMaterial).map(group => {
+          group.history.sort((a,b) => String(b.date || "").localeCompare(String(a.date || "")));
+          const latest = group.history[0];
+          const prev = group.history.length > 1 ? group.history[1] : null;
+          const diff = prev ? Number(latest.unitPrice) - Number(prev.unitPrice) : 0;
+          const pct = prev && Number(prev.unitPrice) > 0 ? diff / Number(prev.unitPrice) * 100 : 0;
+          return {
+            supplier: group.supplier,
+            supplierId: group.supplierId,
+            category: group.category,
+            latestPrice: Number(latest.unitPrice) || 0,
+            stdUnit: latest.stdUnit || "",
+            latestDate: latest.date || "",
+            prevPrice: prev ? Number(prev.unitPrice) || 0 : null,
+            diff, pct, history: group.history
+          };
+        }).sort((a,b) =>
+          a.supplier.localeCompare(b.supplier, "vi") ||
+          a.category.localeCompare(b.category, "vi")
+        );
+
+        return { summaryList, supplierSummaryList, allEntries };
       }
 
       function renderMaterialsView() {
@@ -9040,36 +9078,54 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
       }
 
       function openMaterialPriceListModal() {
-        const { summaryList } = buildMaterialPriceData();
-        const rowsHtml = summaryList.length === 0
-          ? `<div style="color:var(--muted); text-align:center; padding:18px 0;">Chưa có dữ liệu đơn giá nguyên liệu. Hãy nhập số lượng khi ghi khoản CHI hoặc bấm <strong>+ Cập nhật giá</strong>.</div>`
-          : summaryList.map(item => {
-              let badgeHtml = `<span style="color:var(--muted); font-size:11.5px;">Ổn định</span>`;
-              if (item.prevPrice !== null && Math.round(item.diff) !== 0) {
-                const isUp = item.diff > 0;
-                badgeHtml = `<span style="color:${isUp ? "var(--red)" : "var(--green)"}; font-weight:700; font-size:11.5px;">${isUp ? "▲" : "▼"} ${Math.abs(item.pct).toFixed(1)}%</span>`;
-              }
-              return `
-                <div class="cat-item-row" data-mat-detail="${item.category}" style="cursor:pointer;">
-                  <div style="flex:1; min-width:0;">
-                    <div style="font-weight:700; font-size:14px;">${item.category}</div>
-                    <div style="font-size:12px; color:var(--muted);">Cập nhật: ${formatShortDate(item.latestDate)} • ${item.history.length} mốc</div>
-                    <div style="font-size:12px; color:${item.supplier ? "var(--green)" : "var(--muted)"}; font-weight:600; margin-top:2px;">
-                      NCC: ${item.supplier || "Chưa gắn nhà cung cấp"}
-                    </div>
-                  </div>
-                  <div style="text-align:right; flex-shrink:0;">
-                    <div style="font-weight:800; font-size:14px; color:var(--ink);">${formatMoney(item.latestPrice)} <span style="font-weight:500; font-size:11.5px; color:var(--muted);">/ ${item.stdUnit}</span></div>
-                    <div>${badgeHtml}</div>
-                  </div>
+        const { supplierSummaryList } = buildMaterialPriceData();
+        const grouped = {};
+        supplierSummaryList.forEach(item => {
+          const key = item.supplierId || item.supplier;
+          if (!grouped[key]) grouped[key] = { supplier: item.supplier, items: [] };
+          grouped[key].items.push(item);
+        });
+
+        const supplierGroups = Object.values(grouped);
+        const rowsHtml = supplierGroups.length === 0
+          ? `<div style="color:var(--muted); text-align:center; padding:18px 0;">Chưa có dữ liệu đơn giá nguyên liệu. Hãy ghi khoản chi có số lượng và chọn nhà cung cấp hoặc bấm <strong>+ Cập nhật giá</strong>.</div>`
+          : supplierGroups.map(group => `
+              <section style="border:1px solid var(--line); border-radius:10px; margin-bottom:10px; overflow:hidden;">
+                <div style="padding:10px 12px; background:var(--subtle); font-weight:800; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                  <span>🏪 ${escapeHtmlStr(group.supplier)}</span>
+                  <span style="font-size:11px; color:var(--muted); font-weight:600;">${group.items.length} mặt hàng</span>
                 </div>
-              `;
-            }).join("");
+                ${group.items.map(item => {
+                  let badgeHtml = `<span style="color:var(--muted); font-size:11.5px;">Chưa có mốc so sánh</span>`;
+                  if (item.prevPrice !== null && Math.round(item.diff) !== 0) {
+                    const isUp = item.diff > 0;
+                    badgeHtml = `<span style="color:${isUp ? "var(--red)" : "var(--green)"}; font-weight:700; font-size:11.5px;">${isUp ? "▲" : "▼"} ${Math.abs(item.pct).toFixed(1)}%</span>`;
+                  } else if (item.prevPrice !== null) {
+                    badgeHtml = `<span style="color:var(--muted); font-size:11.5px;">Ổn định</span>`;
+                  }
+                  return `
+                    <div class="cat-item-row" data-mat-detail="${escapeHtmlStr(item.category)}" data-mat-supplier="${escapeHtmlStr(item.supplier)}" style="cursor:pointer; border-radius:0; border-width:0 0 1px 0;">
+                      <div style="flex:1; min-width:0;">
+                        <div style="font-weight:700; font-size:14px;">${escapeHtmlStr(item.category)}</div>
+                        <div style="font-size:12px; color:var(--muted);">Cập nhật: ${formatShortDate(item.latestDate)} • ${item.history.length} mốc giá của NCC này</div>
+                      </div>
+                      <div style="text-align:right; flex-shrink:0;">
+                        <div style="font-weight:800; font-size:14px; color:var(--ink);">${formatMoney(item.latestPrice)} <span style="font-weight:500; font-size:11.5px; color:var(--muted);">/ ${escapeHtmlStr(item.stdUnit)}</span></div>
+                        <div>${badgeHtml}</div>
+                      </div>
+                    </div>
+                  `;
+                }).join("")}
+              </section>
+            `).join("");
 
         modalCard.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h3 style="margin:0;">Bảng giá nguyên vật liệu (${summaryList.length})</h3>
-            <button type="button" class="btn-submit" id="m-mat-quick-add" style="width:auto; min-height:34px; padding:0 10px; margin:0; font-size:12.5px;">+ Cập nhật giá</button>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
+            <div>
+              <h3 style="margin:0;">Bảng giá nguyên vật liệu theo nhà cung cấp</h3>
+              <div style="font-size:11.5px;color:var(--muted);margin-top:3px;">Mỗi nhà cung cấp có bảng giá và lịch sử riêng</div>
+            </div>
+            <button type="button" class="btn-submit" id="m-mat-quick-add" style="width:auto; min-height:34px; padding:0 10px; margin:0; font-size:12.5px; flex-shrink:0;">+ Cập nhật giá</button>
           </div>
           <div style="max-height:58vh; overflow-y:auto;">${rowsHtml}</div>
           <button type="button" class="btn-outline" style="width:100%; margin-top:14px;" id="m-close-mat-list">Đóng</button>
@@ -9082,14 +9138,26 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
           document.getElementById("btn-mat-add-price").click();
         });
         modalCard.querySelectorAll("[data-mat-detail]").forEach(row => {
-          row.addEventListener("click", () => openMaterialHistoryModal(row.dataset.matDetail));
+          row.addEventListener("click", () => openMaterialHistoryModal(row.dataset.matDetail, row.dataset.matSupplier || ""));
         });
       }
 
-      function openMaterialHistoryModal(catName) {
+      function openMaterialHistoryModal(catName, supplierName) {
         const { summaryList } = buildMaterialPriceData();
-        const target = summaryList.find(x => x.category === catName);
-        if (!target) return;
+        const categoryTarget = summaryList.find(x => x.category === catName);
+        if (!categoryTarget) return;
+        const normalizeSupplier = value => String(value || "").trim() || "Chưa xác định nhà cung cấp";
+        const selectedSupplier = supplierName ? normalizeSupplier(supplierName) : "";
+        const history = selectedSupplier
+          ? categoryTarget.history.filter(entry => normalizeSupplier(entry.supplier) === selectedSupplier)
+          : categoryTarget.history;
+        if (!history.length) return;
+        const target = {
+          ...categoryTarget,
+          history,
+          latestPrice: history[0].unitPrice,
+          stdUnit: history[0].stdUnit
+        };
 
         const rowsHtml = target.history.map((h, i) => {
           const prev = target.history[i + 1];
@@ -9116,7 +9184,7 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
 
         modalCard.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-            <h3 style="margin:0;">Lịch sử giá: ${catName}</h3>
+            <h3 style="margin:0;">Lịch sử giá: ${escapeHtmlStr(catName)}${selectedSupplier ? ` • ${escapeHtmlStr(selectedSupplier)}` : ""}</h3>
             <span style="font-weight:800; color:var(--accent);">${formatMoney(target.latestPrice)}/${target.stdUnit}</span>
           </div>
           <div style="max-height:56vh; overflow-y:auto;">${rowsHtml}</div>
@@ -9131,14 +9199,14 @@ Số dư quỹ sẽ được tính lại. Thao tác này không xóa giao dịch
         document.getElementById("m-back-mat-list").addEventListener("click", openMaterialPriceListModal);
         document.getElementById("m-close-mat-hist").addEventListener("click", closeModal);
         modalCard.querySelectorAll("[data-edit-mat-hist]").forEach(btn => {
-          btn.addEventListener("click", () => openEditMaterialPriceModal(btn.dataset.editMatHist, catName));
+          btn.addEventListener("click", () => openEditMaterialPriceModal(btn.dataset.editMatHist, catName, selectedSupplier));
         });
         modalCard.querySelectorAll("[data-del-mat-hist]").forEach(btn => {
           btn.addEventListener("click", () => {
             manualMaterialHistory = manualMaterialHistory.filter(x => x.id !== btn.dataset.delMatHist);
             saveMaterialHistory();
             renderMaterialsView();
-            openMaterialHistoryModal(catName);
+            openMaterialHistoryModal(catName, selectedSupplier);
             showToast("Đã xóa mốc giá");
           });
         });
