@@ -3135,6 +3135,15 @@ body.pos-order-fullscreen-active{touch-action:none}
             <input type="number" id="chi-amount" inputmode="numeric" min="0" step="1000" placeholder="VD: 250000" required />
           </div>
 
+          <div class="form-group">
+            <label for="chi-method">Nguồn tiền chi</label>
+            <select id="chi-method" required>
+              <option value="tm" selected>Tiền mặt (TM)</option>
+              <option value="tk">Tài khoản ngân hàng (TK)</option>
+            </select>
+            <div class="tx-sub" style="margin-top:5px;">Khoản chi sẽ được trừ trực tiếp vào số dư nguồn tiền đã chọn trong Sổ quỹ và Đối soát.</div>
+          </div>
+
           <div class="row-2">
             <div class="form-group">
               <label for="chi-qty">Số lượng (tuỳ chọn)</label>
@@ -7143,6 +7152,7 @@ body.pos-order-fullscreen-active{touch-action:none}
           supplierId: supplierLink.supplierId,
           supplier: supplierLink.supplier,
           amount,
+          method: document.getElementById("chi-method").value === "tk" ? "tk" : "tm",
           qty: qtyRaw === "" ? "" : Number(qtyRaw),
           unit: document.getElementById("chi-unit").value,
           note: document.getElementById("chi-note").value.trim()
@@ -7151,6 +7161,7 @@ body.pos-order-fullscreen-active{touch-action:none}
         const syncedToWh = syncExpenseRecordToWarehouse(newChiRec);
         saveRecords();
         document.getElementById("chi-amount").value = "";
+        document.getElementById("chi-method").value = "tm";
         document.getElementById("chi-qty").value = "";
         document.getElementById("chi-unit").value = "";
         document.getElementById("chi-note").value = "";
@@ -7230,7 +7241,7 @@ body.pos-order-fullscreen-active{touch-action:none}
                 `;
               } else {
                 const qText = formatQty(r.qty, r.unit);
-                const subParts = [formatVNDate(r.date)];
+                const subParts = [formatVNDate(r.date), `Nguồn: ${r.method === "tk" ? "TK" : "TM"}`];
                 if (qText !== "-") subParts.push(`SL: ${qText}`);
                 if (r.note) subParts.push(r.note);
                 return `
@@ -7407,6 +7418,13 @@ body.pos-order-fullscreen-active{touch-action:none}
               <label>Số tiền chi (đ)</label>
               <input type="number" id="m-amount" inputmode="numeric" step="1000" value="${rec.amount}" />
             </div>
+            <div class="form-group">
+              <label>Nguồn tiền chi</label>
+              <select id="m-method">
+                <option value="tm" ${(rec.method || "tm") === "tm" ? "selected" : ""}>Tiền mặt (TM)</option>
+                <option value="tk" ${rec.method === "tk" ? "selected" : ""}>Tài khoản ngân hàng (TK)</option>
+              </select>
+            </div>
             <div class="row-2">
               <div class="form-group">
                 <label>Số lượng</label>
@@ -7472,6 +7490,7 @@ body.pos-order-fullscreen-active{touch-action:none}
             rec.supplierId = supplierLink.supplierId;
             rec.supplier = supplierLink.supplier;
             rec.amount = amt;
+            rec.method = document.getElementById("m-method").value === "tk" ? "tk" : "tm";
             rec.qty = qRaw === "" ? "" : Number(qRaw);
             rec.unit = document.getElementById("m-unit").value;
             rec.note = document.getElementById("m-note").value.trim();
@@ -7556,7 +7575,7 @@ body.pos-order-fullscreen-active{touch-action:none}
               const title = r.reconcilePnlOnly ? (r.category || "Điều chỉnh doanh thu đối soát") : (r.type === "thu" ? "Doanh thu bán hàng" : r.category);
               const sub = r.type === "thu"
                 ? `TK: ${formatMoney(r.tk)} | TM: ${formatMoney(r.tm)}${r.note ? " • " + r.note : ""}`
-                : `${formatQty(r.qty, r.unit) !== "-" ? "SL: " + formatQty(r.qty, r.unit) + " • " : ""}${r.note || ""}`;
+                : `${r.method === "tk" ? "Nguồn: TK" : "Nguồn: TM"}${formatQty(r.qty, r.unit) !== "-" ? " • SL: " + formatQty(r.qty, r.unit) : ""}${r.note ? " • " + r.note : ""}`;
               return `
                 <div class="tx-row">
                   <div class="tx-info">
@@ -7924,7 +7943,7 @@ body.pos-order-fullscreen-active{touch-action:none}
           if (r.type === "thu") {
             return `${r.date},THU,Doanh thu,,,${r.tk || 0},${r.tm || 0},${r.amount},"${safeNote}"`;
           }
-          return `${r.date},CHI,"${escapeHtmlStr(r.category)}",${r.qty || ""},${r.unit || ""},,,${r.amount},"${safeNote}"`;
+          return `${r.date},CHI,"${escapeHtmlStr(r.category)}",${r.qty || ""},${r.unit || ""},${r.method === "tk" ? "TK" : "TM"},,${r.amount},"${safeNote}"`;
         }).join("\n");
 
         const blob = new Blob(["\uFEFF" + header + rows], { type: "text/csv;charset=utf-8;" });
