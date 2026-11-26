@@ -5361,10 +5361,14 @@ body.pos-order-fullscreen-active{touch-action:none}
             const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
             vals.push({ iso, weekend: d.getDay() === 0 || d.getDay() === 6, qty: Number(usageMap[`${iso}|${item.id}`]) || 0 });
           }
-          const weekdays = vals.filter(x => !x.weekend), weekends = vals.filter(x => x.weekend);
+          // Chỉ tính các ngày thực sự có tiêu hao theo định mức đơn POS.
+          // Ngày không có đơn POS/không phát sinh tiêu hao không được đưa vào mẫu số.
+          const activeVals = vals.filter(x => x.qty > 0);
+          const weekdays = activeVals.filter(x => !x.weekend), weekends = activeVals.filter(x => x.weekend);
           const avgWeekday = weekdays.length ? weekdays.reduce((a,x)=>a+x.qty,0)/weekdays.length : 0;
           const avgWeekend = weekends.length ? weekends.reduce((a,x)=>a+x.qty,0)/weekends.length : 0;
-          const totalAvg = vals.length ? vals.reduce((a,x)=>a+x.qty,0)/vals.length : 0;
+          const totalAvg = activeVals.length ? activeVals.reduce((a,x)=>a+x.qty,0)/activeVals.length : 0;
+          const activeDays = activeVals.length;
           let remaining = Number(item.stock) || 0, days = 0, projected = null;
           if (totalAvg > 0) {
             for (let step=1; step<=180 && remaining>0; step++) {
@@ -5375,7 +5379,7 @@ body.pos-order-fullscreen-active{touch-action:none}
             }
           }
           const dateLabel = projected ? `${String(projected.getDate()).padStart(2,"0")}/${String(projected.getMonth()+1).padStart(2,"0")}/${projected.getFullYear()}` : (totalAvg > 0 ? "Trên 180 ngày" : "Chưa đủ dữ liệu");
-          results.push({ item, avgWeekday, avgWeekend, totalAvg, dateLabel, days });
+          results.push({ item, avgWeekday, avgWeekend, totalAvg, activeDays, dateLabel, days });
         });
         return results;
       }
@@ -5393,6 +5397,7 @@ body.pos-order-fullscreen-active{touch-action:none}
               <strong style="color:${x.days<=3?"var(--red)":"#92400E"};">${x.dateLabel}</strong>
             </div>
             <div style="font-size:11.5px;">Còn ${Number(x.item.stock||0).toLocaleString("vi-VN")} ${escapeHtmlStr(x.item.unit)} • TB ngày thường ${x.avgWeekday.toFixed(2)} • cuối tuần ${x.avgWeekend.toFixed(2)} ${escapeHtmlStr(x.item.unit)}/ngày</div>
+            <div style="font-size:10.5px;color:var(--muted);">Tính trên ${x.activeDays} ngày có tiêu hao đơn POS</div>
           </div>`).join("") : `Chưa có dữ liệu tiêu thụ đủ tin cậy. Hãy thiết lập <strong>Định mức</strong> cho món POS và ghi nhận bán hàng từ hôm nay.`;
         const byDate = {};
         warehouseTxList.filter(tx => tx.type === "out" && tx.source !== "pos_auto" && tx.date >= new Date(Date.now()-7*86400000).toISOString().slice(0,10))
